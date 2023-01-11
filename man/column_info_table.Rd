@@ -4,7 +4,7 @@
 \alias{column_info_table}
 \title{Parse a tibble and ensure it meets standards}
 \usage{
-column_info_table(.data, maxlevels = 6, col_id)
+column_info_table(.data, maxlevels = 6, col_id = NULL, cols_to_plot)
 }
 \arguments{
 \item{.data}{data.frame to autoplot (data.frame)}
@@ -12,6 +12,8 @@ column_info_table(.data, maxlevels = 6, col_id)
 \item{maxlevels}{for categorical variables, what is the maximum number of distinct values to allow (too many will make it hard to find a palette that suits). (number)}
 
 \item{col_id}{name of column to use for}
+
+\item{cols_to_plot}{names of columns in \code{.data} that should be plotted. By default plots all valid columns (character)}
 }
 \value{
 tibble with the following columns:
@@ -24,9 +26,4 @@ tibble with the following columns:
 }
 \description{
 Parse a tibble and ensure it meets standards
-}
-\examples{
-path_gg1d <- system.file('testdata/testinput.csv', package = 'gg1d')
-df <- read.csv(path_gg1d, header = TRUE)
-gg1d:::column_info_table(df)
 }

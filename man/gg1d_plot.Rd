@@ -7,10 +7,17 @@
 gg1d_plot(
   .data,
   col_id = NULL,
-  col_sort_by = character(0),
+  col_sort = NULL,
   maxlevels = 6,
   verbose = TRUE,
-  debug_return_col_info = FALSE
+  drop_unused_id_levels = FALSE,
+  interactive = TRUE,
+  debug_return_col_info = FALSE,
+  limit_plots = TRUE,
+  cols_to_plot = NULL,
+  sort_type = c("frequency", "alphabetical"),
+  desc = TRUE,
+  width = 0.9
 )
 }
 \arguments{
@@ -18,11 +25,29 @@ gg1d_plot(
 
 \item{col_id}{name of column to use for}
 
-\item{col_sort_by}{name of column to sort on}
+\item{col_sort}{column to sort sample order by. By default uses the supplied order of levels in col_id (order of appearance if a character type)}
 
 \item{maxlevels}{for categorical variables, what is the maximum number of distinct values to allow (too many will make it hard to find a palette that suits). (number)}
 
 \item{verbose}{verbosity level}
+
+\item{drop_unused_id_levels}{if col_id is a factor with unused levels, should these be dropped or included in visualisation}
+
+\item{interactive}{produce interactive ggiraph visualiastion (flag)}
+
+\item{debug_return_col_info}{return column info instead of plots. Helpful when debugging (logical)}
+
+\item{limit_plots}{throw an error when there are > 15 plottable columns in table (logical)}
+
+\item{cols_to_plot}{names of columns in \code{.data} that should be plotted. By default plots all valid columns (character)}
+
+\item{sort_type}{controls how categorical variables are sorted.
+Numerical variables are always sorted in numerical order irrespective of the value given here.
+Options are \code{alphabetical} or \code{frequency}}
+
+\item{desc}{sort in descending order (flag)}
+
+\item{width}{controls how much space is present between bars and tiles within each plot. Can be 0-1 where values of 1 makes bars/tiles take up 100\% of available space (no gaps between bars)}
 }
 \value{
 ggiraph interactive visualisation
@@ -33,9 +58,8 @@ and automatic plot selection based on variable type.
 Plots are fully interactive, and custom tooltips can be added.
 }
 \examples{
-path_gg1d <- system.file('testdata/testinput.csv', package = 'gg1d')
+path_gg1d <- system.file("testdata/testinput.csv", package = "gg1d")
 df <- read.csv(path_gg1d, header = TRUE)
 gg1d_plot(df)
-
 
 }

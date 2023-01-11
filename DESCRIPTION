@@ -14,6 +14,11 @@ BugReports: https://github.com/selkamand/gg1d/issues
 Imports: 
     assertions (>= 0.0.0.9000),
     cli,
-    ggplot2
-Remotes:  
+    forcats,
+    ggplot2,
+    patchwork,
+    rlang
+Remotes: 
     selkamand/assertions
+Suggests: 
+    covr

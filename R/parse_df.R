@@ -102,7 +102,7 @@ colvalues <- function(.data) {
 #' @param desc sort in descending order (flag)
 #' @param width controls how much space is present between bars and tiles within each plot. Can be 0-1 where values of 1 makes bars/tiles take up 100% of available space (no gaps between bars)
 #' @param col_sort column to sort sample order by. By default uses the supplied order of levels in col_id (order of appearance if a character type)
-#'
+#' @param relative_height_numeric how many times taller should numeric plots be relative to categorical tile plots (number)
 #' @return ggiraph interactive visualisation
 #'
 #' @examples
@@ -113,7 +113,7 @@ colvalues <- function(.data) {
 #' @importFrom ggplot2 ggplot aes geom_col geom_tile theme %+replace% element_blank element_text element_line
 #' @export
 #'
-gg1d_plot <- function(.data, col_id = NULL, col_sort = NULL, maxlevels = 6, verbose = TRUE, drop_unused_id_levels = FALSE, interactive = TRUE, debug_return_col_info = FALSE, limit_plots = TRUE, cols_to_plot = NULL, sort_type = c("frequency", "alphabetical"), desc = TRUE, width = 0.9) {
+gg1d_plot <- function(.data, col_id = NULL, col_sort = NULL, maxlevels = 6, verbose = TRUE, drop_unused_id_levels = FALSE, interactive = TRUE, debug_return_col_info = FALSE, limit_plots = TRUE, cols_to_plot = NULL, sort_type = c("frequency", "alphabetical"), desc = TRUE, width = 0.9, relative_height_numeric = 4) {
 
   # Assertions --------------------------------------------------------------
   assertions::assert_dataframe(.data)
@@ -124,6 +124,8 @@ gg1d_plot <- function(.data, col_id = NULL, col_sort = NULL, maxlevels = 6, verb
   assertions::assert_flag(limit_plots)
   assertions::assert_flag(desc)
   assertions::assert_flag(verbose)
+  assertions::assert_number(relative_height_numeric)
+
   if(!is.null(cols_to_plot)) assertions::assert_names_include(.data, names = cols_to_plot)
   sort_type <- rlang::arg_match(sort_type)
 
@@ -193,6 +195,7 @@ gg1d_plot <- function(.data, col_id = NULL, col_sort = NULL, maxlevels = 6, verb
   if (limit_plots && plottable_cols > max_plottable_cols) {
     cli::cli_abort("Autoplotting > 15 fields by `gg1d_plot` is not recommended (visualisation ends up very squished). If you're certain you want to proceed, set limit_plots = `FALSE`. Alternatively, use `cols_to_plot` to specify <=15 columns within your dataset.")
   }
+
   gglist <- lapply(
     X = seq_len(nrow(df_col_info)),
     function(i) {
@@ -235,9 +238,12 @@ gg1d_plot <- function(.data, col_id = NULL, col_sort = NULL, maxlevels = 6, verb
   # Remove null columns
   gglist <- gglist[!vapply(gglist, is.null, logical(1))]
 
+  # Get relative heights for plots (make numeric variables taller)
+  relheights = ifelse(df_col_info$coltype[df_col_info$plottable] == "numeric", yes = relative_height_numeric, no = 1)
+
   # Align plots vertically
   if (verbose) cli::cli_alert_info("Stacking plots vertically")
-  ggpatch <- patchwork::wrap_plots(gglist, ncol = 1)
+  ggpatch <- patchwork::wrap_plots(gglist, ncol = 1, heights = relheights)
 
   # Return -----------------------------------------------------------
   return(ggpatch)

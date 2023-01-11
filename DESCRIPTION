@@ -8,8 +8,12 @@ Description: What the package does (one paragraph).
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.0.0
+RoxygenNote: 7.2.3
 URL: https://github.com/selkamand/gg1d
 BugReports: https://github.com/selkamand/gg1d/issues
 Imports: 
-    cli
+    assertions (>= 0.0.0.9000),
+    cli,
+    ggplot2
+Remotes:  
+    selkamand/assertions

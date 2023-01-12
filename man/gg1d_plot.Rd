@@ -17,7 +17,9 @@ gg1d_plot(
   cols_to_plot = NULL,
   sort_type = c("frequency", "alphabetical"),
   desc = TRUE,
-  width = 0.9
+  width = 0.9,
+  relative_height_numeric = 4,
+  tooltip_column_suffix = "_tooltip"
 )
 }
 \arguments{
@@ -48,6 +50,10 @@ Options are \code{alphabetical} or \code{frequency}}
 \item{desc}{sort in descending order (flag)}
 
 \item{width}{controls how much space is present between bars and tiles within each plot. Can be 0-1 where values of 1 makes bars/tiles take up 100\% of available space (no gaps between bars)}
+
+\item{relative_height_numeric}{how many times taller should numeric plots be relative to categorical tile plots (number)}
+
+\item{tooltip_column_suffix}{the suffix added to a column name that indicates column should be used as a tooltip (string)}
 }
 \value{
 ggiraph interactive visualisation
@@ -60,6 +66,6 @@ Plots are fully interactive, and custom tooltips can be added.
 \examples{
 path_gg1d <- system.file("testdata/testinput.csv", package = "gg1d")
 df <- read.csv(path_gg1d, header = TRUE)
-gg1d_plot(df)
+gg1d_plot(df, col_id = "ID", col_sort = "Glasses")
 
 }

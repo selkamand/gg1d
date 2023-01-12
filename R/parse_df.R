@@ -8,9 +8,10 @@
 #' 2) coltype (categorical/numeric/tooltip/invalid)
 #' 3) ndistinct (number of distinct values)
 #' 4) plottable (should this column be plotted)
+#' 4) tooltip_col (the name of the column to use as the tooltip) or NA if no obvious tooltip column found
 #'
 #'
-column_info_table <- function(.data, maxlevels = 6, col_id = NULL, cols_to_plot) {
+column_info_table <- function(.data, maxlevels = 6, col_id = NULL, cols_to_plot, tooltip_column_suffix = "_tooltip") {
   # Assertions
   assertions::assert_string(col_id)
   assertions::assert_names_include(.data, col_id)
@@ -19,6 +20,7 @@ column_info_table <- function(.data, maxlevels = 6, col_id = NULL, cols_to_plot)
   df_column_info <- data.frame(
     colnames = colnames(.data),
     coltype = coltypes(.data, col_id),
+    coltooltip = coltooltip(.data, tooltip_column_suffix),
     ndistinct = colvalues(.data)
   )
   # df_column_info <- dplyr::as_tibble(df_column_info)
@@ -45,6 +47,14 @@ column_info_table <- function(.data, maxlevels = 6, col_id = NULL, cols_to_plot)
 }
 
 
+coltooltip <- function(.data, tooltip_column_suffix){
+   vapply(
+     colnames(.data),
+     function(name) { colnames(.data)[match(paste0(name, tooltip_column_suffix), colnames(.data))]},
+     character(1)
+   )
+
+}
 
 coltypes <- function(.data, col_id) {
   # First Pass of coltypes
@@ -102,7 +112,9 @@ colvalues <- function(.data) {
 #' @param desc sort in descending order (flag)
 #' @param width controls how much space is present between bars and tiles within each plot. Can be 0-1 where values of 1 makes bars/tiles take up 100% of available space (no gaps between bars)
 #' @param col_sort column to sort sample order by. By default uses the supplied order of levels in col_id (order of appearance if a character type)
+#' @param tooltip_column_suffix the suffix added to a column name that indicates column should be used as a tooltip (string)
 #' @param relative_height_numeric how many times taller should numeric plots be relative to categorical tile plots (number)
+#'
 #' @return ggiraph interactive visualisation
 #'
 #' @examples
@@ -113,7 +125,7 @@ colvalues <- function(.data) {
 #' @importFrom ggplot2 ggplot aes geom_col geom_tile theme %+replace% element_blank element_text element_line
 #' @export
 #'
-gg1d_plot <- function(.data, col_id = NULL, col_sort = NULL, maxlevels = 6, verbose = TRUE, drop_unused_id_levels = FALSE, interactive = TRUE, debug_return_col_info = FALSE, limit_plots = TRUE, cols_to_plot = NULL, sort_type = c("frequency", "alphabetical"), desc = TRUE, width = 0.9, relative_height_numeric = 4) {
+gg1d_plot <- function(.data, col_id = NULL, col_sort = NULL, maxlevels = 6, verbose = TRUE, drop_unused_id_levels = FALSE, interactive = TRUE, debug_return_col_info = FALSE, limit_plots = TRUE, cols_to_plot = NULL, sort_type = c("frequency", "alphabetical"), desc = TRUE, width = 0.9, relative_height_numeric = 4, tooltip_column_suffix = "_tooltip") {
 
   # Assertions --------------------------------------------------------------
   assertions::assert_dataframe(.data)
@@ -125,6 +137,7 @@ gg1d_plot <- function(.data, col_id = NULL, col_sort = NULL, maxlevels = 6, verb
   assertions::assert_flag(desc)
   assertions::assert_flag(verbose)
   assertions::assert_number(relative_height_numeric)
+  assertions::assert_string(tooltip_column_suffix)
 
   if(!is.null(cols_to_plot)) assertions::assert_names_include(.data, names = cols_to_plot)
   sort_type <- rlang::arg_match(sort_type)
@@ -150,7 +163,7 @@ gg1d_plot <- function(.data, col_id = NULL, col_sort = NULL, maxlevels = 6, verb
 
 
   # Identify Plottable Columns Columns ------------------------------------------------------------
-  df_col_info <- column_info_table(.data, maxlevels = maxlevels, col_id = col_id, cols_to_plot = cols_to_plot)
+  df_col_info <- column_info_table(.data, maxlevels = maxlevels, col_id = col_id, cols_to_plot = cols_to_plot, tooltip_column_suffix = tooltip_column_suffix)
 
   # If debugging, return df_col_info
   if (debug_return_col_info) {
@@ -177,10 +190,8 @@ gg1d_plot <- function(.data, col_id = NULL, col_sort = NULL, maxlevels = 6, verb
       "*" = "Order type: {.strong {sort_type}}",
       "*" = "Sort order: {.strong {ifelse(desc, 'descending', 'ascending')}}"
     ))
-    .data[[col_id]] <- forcats::fct_reorder(.data[[col_id]], smartrank(.data[[col_sort]], sort_by = sort_type, desc = desc))
+    .data[[col_id]] <- forcats::fct_reorder(.data[[col_id]], rank::smartrank(.data[[col_sort]], sort_by = sort_type, desc = desc, verbose = verbose))
   }
-
-
 
 
   # Plot --------------------------------------------------------------------
@@ -201,6 +212,9 @@ gg1d_plot <- function(.data, col_id = NULL, col_sort = NULL, maxlevels = 6, verb
     function(i) {
       colname <- df_col_info[["colnames"]][i]
       coltype <- df_col_info[["coltype"]][i]
+      coltooltip <- df_col_info[["coltooltip"]][i]
+      if(is.na(coltooltip))
+
       ndistinct <- df_col_info[["ndistinct"]][i]
       plottable <- df_col_info[["plottable"]][i]
 
@@ -213,16 +227,37 @@ gg1d_plot <- function(.data, col_id = NULL, col_sort = NULL, maxlevels = 6, verb
         if (verbose) cli::cli_alert_success("{.success Plotting} column {.strong {colname}}")
       }
 
+      # Create interactive geom aesthetics
+      if(is.na(coltooltip)){
+        aes_interactive <- aes(
+          data_id = .data[[col_id]],
+          tooltip = paste0(
+            tag_bold(colname), ": ", .data[[colname]],
+            "<br>",
+            tag_bold(col_id), ": ", .data[[col_id]]
+          )
+        )
+      }
+      else
+      {
+        aes_interactive <- aes(
+          data_id = .data[[col_id]],
+          tooltip = .data[[coltooltip]]
+        )
+      }
+
+
+
       # Draw the actual plot
       if (coltype == "categorical") {
         gg <- ggplot(.data, aes(x = .data[[col_id]], y = "", fill = .data[[colname]])) +
-          geom_tile(width = width) +
+          ggiraph::geom_tile_interactive(mapping = aes_interactive, width = width) +
           ggplot2::scale_x_discrete(drop = drop_unused_id_levels) +
           ggplot2::ylab(colname) +
           theme_categorical()
       } else if (coltype == "numeric") {
         gg <- ggplot2::ggplot(.data, aes(x = .data[[col_id]], y = .data[[colname]])) +
-          geom_col(width = width) +
+          ggiraph::geom_col_interactive(mapping = aes_interactive, width = width) +
           ggplot2::scale_x_discrete(drop = drop_unused_id_levels) +
           ggplot2::scale_y_continuous(breaks = sensible_2_breaks(.data[[colname]])) +
           ggplot2::ylab(colname) +
@@ -245,9 +280,22 @@ gg1d_plot <- function(.data, col_id = NULL, col_sort = NULL, maxlevels = 6, verb
   if (verbose) cli::cli_alert_info("Stacking plots vertically")
   ggpatch <- patchwork::wrap_plots(gglist, ncol = 1, heights = relheights)
 
+
+
+  # Interactivity -----------------------------------------------------------
+  if(interactive)
+    cli::cli_alert_info("Making plot interactive since `interactive = TRUE`")
+    ggpatch <- ggiraph::girafe(
+      ggobj = ggpatch,
+      options =  list(
+        opts_hover = ggiraph::opts_hover(css = "stroke:black;cursor:pointer;r:5px;")
+      )
+    )
+
   # Return -----------------------------------------------------------
   return(ggpatch)
 }
+
 
 theme_categorical <- function() {
   ggplot2::theme_minimal() %+replace%
@@ -278,114 +326,18 @@ theme_numeric <- function() {
 }
 
 
-smartrank <- function(x, sort_by = c("alphabetical", "frequency"), desc = TRUE) {
-  sort_by <- rlang::arg_match(sort_by)
-
-  if (is.numeric(x)) {
-    if(desc)
-      ranking <- rank(-x)
-    else
-      ranking <- rank(x)
-    return(ranking)
-  }
-  else if (is.character(x) || is.factor(x) || is.logical(x)) {
-    if (sort_by == "alphabetical") {
-      return(rank(x, ties.method = "min"))
-    } else if (sort_by == "frequency") {
-
-      x = as.character(x)
-
-      # Create a table of the frequencies of each element
-      freq_table <- as.data.frame(table(x))
-
-      # Add an index column to the table
-      freq_table$idx <- 1:nrow(freq_table)
-
-      # Sort the table by the frequencies in descending order, and by alphabetic order then by original index in case of ties
-      if(desc)
-        freq  <-  -freq_table$Freq
-      else
-        freq <- freq_table$Freq
-
-      freq_table <- freq_table[order(freq, freq_table$x, freq_table$idx),]
-
-      # Get the original vector elements in the sorted order
-      return(match(x, freq_table$x))
-    }
-    else
-      cli::cli_abort("Author has forgotten to code a responce when sort_by == {sort_by}")
-  }
-  else {
-    cli::cli_abort("Input must be a numeric, character, or factor vector.")
-  }
+tag_bold <- function(x){
+  paste0("<b>", x, "</b>", collapse = "")
 }
 
-smartsort <- function(x, sort_categorical_by = c("alphabetical", "frequency"), desc = TRUE){
-  sort_categorical_by <- rlang::arg_match(sort_categorical_by)
-
-  if (is.numeric(x)) {
-    return(sort(x, decreasing = desc))
-  }
-  else if (is.character(x) || is.factor(x)) {
-    if (sort_categorical_by == "alphabetical") {
-      sort(x)
-    } else if (sort_categorical_by == "frequency") {
-      return(sort_by_frequency(x))
-      #x_counts <- freq_table[match(x, names(freq_table))]
-    }
-    else
-      cli::cli_abort("Author has forgotten to code a responce when sort_by == {sort_by}")
-  }
-  else {
-    cli::cli_abort("Input must be a numeric, character, or factor vector.")
-  }
-}
-
-
-# multi_rank_with_tiebreakers <- function(first, ..., ties.method = "average") {
-#   # create a matrix of input vectors
-#   mat <- cbind(first, ...)
-#   base_ranks <- rank(mat[,1], ties.method = ties.method)
-#
-#   for (i in seq_len(ncol(mat))) {
-#     # Reorder the values for which the base_ranks are the same
-#     ties <- mat[which(duplicated(base_ranks) | duplicated(base_ranks, fromLast = TRUE)), i]
-#     tie_ranks <- rank(ties, ties.method = ties.method)
-#     # Replace the previous ranks by the tiebreakers
-#     base_ranks[which(duplicated(base_ranks) | duplicated(base_ranks, fromLast = TRUE))] <- tie_ranks
-#   }
-#   return(base_ranks)
-# }
-
-multi_rank <- function(...){
-  #browser()
-  vectors <- list(...)
-  rank_order <- rank(vectors[[1]], ties.method = "first")
-  for(i in 2:length(vectors)){
-    ties <- which(rank_order == rank_order[vectors[[i]]])
-    rank_order[ties] <- rank(vectors[[i]][ties], ties.method = "first")
-  }
-  return(rank_order)
-}
-
-sort_by_frequency <- function(x) {
-  # Create a table of the frequencies of each element
-  freq_table <- as.data.frame(table(x))
-
-  # Add an index column to the table
-  freq_table$idx <- 1:nrow(freq_table)
-
-  # Sort the table by the frequencies in descending order, and by alphabetic order then by original index in case of ties
-  freq_table <- freq_table[order(-freq_table$Freq, freq_table$x, freq_table$idx),]
-
-
-  # Get the original vector elements in the sorted order
-  sorted_x <- x[order(match(x, freq_table$x))]
-
-  return(sorted_x)
-}
-
-
+#' GGplot breaks
+#'
+#' Find sensible values to add 2 breaks at for a ggplot2 axis
+#'
+#' @param vector vector fed into ggplot axis you want to define sensible breaks for
+#'
+#' @return vector of length 2. first element descripts upper break position, lower describes lower break
+#'
 sensible_2_breaks <- function(vector){
   upper <- max(vector)
   lower <- min(0, min(vector))

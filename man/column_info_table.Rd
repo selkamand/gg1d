@@ -4,7 +4,13 @@
 \alias{column_info_table}
 \title{Parse a tibble and ensure it meets standards}
 \usage{
-column_info_table(.data, maxlevels = 6, col_id = NULL, cols_to_plot)
+column_info_table(
+  .data,
+  maxlevels = 6,
+  col_id = NULL,
+  cols_to_plot,
+  tooltip_column_suffix = "_tooltip"
+)
 }
 \arguments{
 \item{.data}{data.frame to autoplot (data.frame)}
@@ -14,6 +20,8 @@ column_info_table(.data, maxlevels = 6, col_id = NULL, cols_to_plot)
 \item{col_id}{name of column to use for}
 
 \item{cols_to_plot}{names of columns in \code{.data} that should be plotted. By default plots all valid columns (character)}
+
+\item{tooltip_column_suffix}{the suffix added to a column name that indicates column should be used as a tooltip (string)}
 }
 \value{
 tibble with the following columns:
@@ -22,6 +30,7 @@ tibble with the following columns:
 \item coltype (categorical/numeric/tooltip/invalid)
 \item ndistinct (number of distinct values)
 \item plottable (should this column be plotted)
+\item tooltip_col (the name of the column to use as the tooltip) or NA if no obvious tooltip column found
 }
 }
 \description{

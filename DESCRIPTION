@@ -15,10 +15,13 @@ Imports:
     assertions (>= 0.0.0.9000),
     cli,
     forcats,
+    ggiraph,
     ggplot2,
     patchwork,
+    rank (>= 0.0.0.9000),
     rlang
-Remotes: 
-    selkamand/assertions
+Remotes:  
+    selkamand/assertions,
+    selkamand/rank
 Suggests: 
     covr

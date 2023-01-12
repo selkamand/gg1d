@@ -55,7 +55,7 @@ path_gg1d <- system.file("testdata/testinput.csv", package = "gg1d")
 df <- read.csv(path_gg1d, header = TRUE)
 
 # Plot data, sort by Glasses
-gg1d_plot(df, col_id = "ID", col_sort = "Glasses")
+gg1d_plot(df, col_id = "ID", col_sort = "Glasses", interactive = FALSE)
 #> ! Categorical columns must have <= 6 unique values to be visualised. Columns with too many unique values: Date (19)
 #> 
 #> ── Sorting ─────────────────────────────────────────────────────────────────────
@@ -76,6 +76,7 @@ gg1d_plot(df, col_id = "ID", col_sort = "Glasses")
 #> ! Skipping column WearingHat_tooltip
 #> ! Skipping column Date
 #> ℹ Stacking plots vertically
+#> ℹ Rendering static plot. For interactive version set `interactive = TRUE`
 ```
 
 <img src="man/figures/README-example-1.png" width="100%" />

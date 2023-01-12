@@ -125,7 +125,15 @@ colvalues <- function(.data) {
 #' @importFrom ggplot2 ggplot aes geom_col geom_tile theme %+replace% element_blank element_text element_line
 #' @export
 #'
-gg1d_plot <- function(.data, col_id = NULL, col_sort = NULL, maxlevels = 6, verbose = TRUE, drop_unused_id_levels = FALSE, interactive = TRUE, debug_return_col_info = FALSE, limit_plots = TRUE, cols_to_plot = NULL, sort_type = c("frequency", "alphabetical"), desc = TRUE, width = 0.9, relative_height_numeric = 4, tooltip_column_suffix = "_tooltip") {
+gg1d_plot <- function(
+    .data, col_id = NULL, col_sort = NULL, maxlevels = 6, verbose = TRUE,
+    drop_unused_id_levels = FALSE, interactive = TRUE, debug_return_col_info = FALSE,
+    palettes = NULL,
+    limit_plots = TRUE, cols_to_plot = NULL,
+    sort_type = c("frequency", "alphabetical"), desc = TRUE, width = 0.9, relative_height_numeric = 4,
+    tooltip_column_suffix = "_tooltip",
+    show_legend_titles = FALSE, show_legend = !interactive, legend_position = c("right", "left", "bottom", "top"),
+    legend_title_position = c("top", "bottom", "left", "right"), legend_nrow = 4, legend_title_size = NULL, legend_text_size = NULL, legend_key_size = 0.3) {
 
   # Assertions --------------------------------------------------------------
   assertions::assert_dataframe(.data)
@@ -138,9 +146,19 @@ gg1d_plot <- function(.data, col_id = NULL, col_sort = NULL, maxlevels = 6, verb
   assertions::assert_flag(verbose)
   assertions::assert_number(relative_height_numeric)
   assertions::assert_string(tooltip_column_suffix)
+  assertions::assert_flag(show_legend)
+  assertions::assert_flag(show_legend_titles)
+  assertions::assert_number(legend_key_size)
 
-  if(!is.null(cols_to_plot)) assertions::assert_names_include(.data, names = cols_to_plot)
+  # Conditional
+  if (!is.null(legend_nrow)) assertions::assert_number(legend_nrow)
+  if (!is.null(cols_to_plot)) assertions::assert_names_include(.data, names = cols_to_plot)
+  if (!is.null(legend_title_size)) assertions::assert_number(legend_title_size)
+
+  # Argument Matching
   sort_type <- rlang::arg_match(sort_type)
+  legend_position <- rlang::arg_match(legend_position)
+  legend_title_position <- rlang::arg_match(legend_title_position)
 
   # Configuration -----------------------------------------------------------
   max_plottable_cols <- 15
@@ -149,7 +167,6 @@ gg1d_plot <- function(.data, col_id = NULL, col_sort = NULL, maxlevels = 6, verb
   # Formatting --------------------------------------------------------------
   cli::cli_div(theme = list(span.warn = list(color = "yellow", "font-weight" = "bold")))
   cli::cli_div(theme = list(span.success = list(color = "darkgreen", "font-weight" = "bold")))
-
 
   # Preprocessing -----------------------------------------------------------
   # Add col_id column if it user hasn't supplied one
@@ -185,12 +202,13 @@ gg1d_plot <- function(.data, col_id = NULL, col_sort = NULL, maxlevels = 6, verb
     assertions::assert_string(col_sort)
     assertions::assert_names_include(.data, names = col_sort)
 
-    cli::cli_bullets(c(
+    if(verbose){ cli::cli_bullets(c(
       "*" = "Sorting X axis by: {.strong {col_sort}}",
       "*" = "Order type: {.strong {sort_type}}",
       "*" = "Sort order: {.strong {ifelse(desc, 'descending', 'ascending')}}"
     ))
-    .data[[col_id]] <- forcats::fct_reorder(.data[[col_id]], rank::smartrank(.data[[col_sort]], sort_by = sort_type, desc = desc, verbose = verbose))
+    }
+    .data[[col_id]] <- forcats::fct_reorder(.data[[col_id]], rank::smartrank(.data[[col_sort]], sort_by = sort_type, desc = desc, verbose = FALSE))
   }
 
 
@@ -254,7 +272,18 @@ gg1d_plot <- function(.data, col_id = NULL, col_sort = NULL, maxlevels = 6, verb
           ggiraph::geom_tile_interactive(mapping = aes_interactive, width = width) +
           ggplot2::scale_x_discrete(drop = drop_unused_id_levels) +
           ggplot2::ylab(colname) +
-          theme_categorical()
+          theme_categorical(
+            show_legend_titles = show_legend_titles,
+            show_legend = show_legend,
+            legend_position = legend_position,
+            legend_title_size = legend_title_size,
+            legend_text_size = legend_text_size,
+            legend_key_size = legend_key_size
+            ) +
+          ggplot2::guides(fill = ggplot2::guide_legend(
+            title.position = legend_title_position,
+            nrow = legend_nrow
+            ))
       } else if (coltype == "numeric") {
         gg <- ggplot2::ggplot(.data, aes(x = .data[[col_id]], y = .data[[colname]])) +
           ggiraph::geom_col_interactive(mapping = aes_interactive, width = width) +
@@ -283,21 +312,24 @@ gg1d_plot <- function(.data, col_id = NULL, col_sort = NULL, maxlevels = 6, verb
 
 
   # Interactivity -----------------------------------------------------------
-  if(interactive)
-    cli::cli_alert_info("Making plot interactive since `interactive = TRUE`")
+  if(interactive){
+    if(verbose) cli::cli_alert_info("Making plot interactive since `interactive = TRUE`")
     ggpatch <- ggiraph::girafe(
       ggobj = ggpatch,
       options =  list(
         opts_hover = ggiraph::opts_hover(css = "stroke:black;cursor:pointer;r:5px;")
       )
-    )
+    )}
+  else{
+    if(verbose) cli::cli_alert_info("Rendering static plot. For interactive version set `interactive = TRUE`")
+  }
 
   # Return -----------------------------------------------------------
   return(ggpatch)
 }
 
 
-theme_categorical <- function() {
+theme_categorical <- function(show_legend = TRUE, show_legend_titles = FALSE, legend_position = "right", legend_title_size = NULL, legend_text_size = NULL, legend_key_size = 0.3) {
   ggplot2::theme_minimal() %+replace%
 
     theme(
@@ -306,8 +338,11 @@ theme_categorical <- function() {
       axis.text.x = element_blank(),
       axis.title.x = element_blank(),
       axis.title.y = element_text(angle = 0),
-      legend.key.size = ggplot2::unit(0.3, "line"),
-      legend.justification = "left"
+      legend.key.size = ggplot2::unit(legend_key_size, "line"),
+      legend.title = if(show_legend_titles) element_text(size = legend_title_size) else element_blank(),
+      legend.justification = "left",
+      legend.text = element_text(size = legend_text_size),
+      legend.position = if(show_legend) legend_position else "none"
     )
 }
 

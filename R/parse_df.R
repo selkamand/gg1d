@@ -11,7 +11,7 @@
 #' 4) tooltip_col (the name of the column to use as the tooltip) or NA if no obvious tooltip column found
 #'
 #'
-column_info_table <- function(.data, maxlevels = 6, col_id = NULL, cols_to_plot, tooltip_column_suffix = "_tooltip") {
+column_info_table <- function(.data, maxlevels = 6, col_id = NULL, cols_to_plot, tooltip_column_suffix = "_tooltip", palettes) {
   # Assertions
   assertions::assert_string(col_id)
   assertions::assert_names_include(.data, col_id)
@@ -41,6 +41,9 @@ column_info_table <- function(.data, maxlevels = 6, col_id = NULL, cols_to_plot,
     char_cols_with_too_many_levels <- paste0(char_cols_with_too_many_levels, " (", df_column_info$ndistinct[lgl_too_many_levels], ")")
     cli::cli_alert_warning("{.strong Categorical columns} must have {.strong <= {maxlevels} unique values} to be visualised. Columns with too many unique values: {.strong {char_cols_with_too_many_levels}}")
   }
+
+  # Add palette colours
+  df_column_info$palette <- choose_colours(.data, palettes = palettes, plottable = df_column_info$plottable, ndistinct = df_column_info$ndistinct, coltype = df_column_info$coltype)
 
   # Return table describing
   return(df_column_info)
@@ -89,6 +92,34 @@ colvalues <- function(.data) {
   }, FUN.VALUE = numeric(1))
 }
 
+choose_colours <- function(data, palettes, plottable, ndistinct, coltype, default_colours = RColorBrewer::brewer.pal(4, name = "Set3")){
+
+  assertions::assert_character(default_colours)
+
+  colors <- lapply(seq_len(ncol(data)), FUN = function(i){
+    colname <- colnames(data)[[i]]
+    is_plottable <- plottable[[i]]
+
+    if(!is_plottable | coltype[i] != "categorical"){
+      return(NULL)
+    }
+    else if(colname %in% names(palettes)){
+        # Add code to validate that all values in column are described by palette
+        colors <- unlist(palettes[[colname]])
+        assertions::assert_names_include(colors, names = unique(data[[colname]]))
+        return(palettes[[colname]])
+    }
+    else{
+      assertions::assert(length(default_colours) >= ndistinct[i], msg = "Too many unique values in column to assign each a colour using the default palette. Either change the default palette to one that supports colours, reduce the number of levels in this column, or exclude it from the plotting using `cols_to_plot` argument OR maxlevels")
+      colors <- default_colours
+    }
+    })
+
+
+  return(colors)
+
+}
+
 
 #' AutoPlot an entire data.frame
 #'
@@ -114,6 +145,15 @@ colvalues <- function(.data) {
 #' @param col_sort column to sort sample order by. By default uses the supplied order of levels in col_id (order of appearance if a character type)
 #' @param tooltip_column_suffix the suffix added to a column name that indicates column should be used as a tooltip (string)
 #' @param relative_height_numeric how many times taller should numeric plots be relative to categorical tile plots (number)
+#' @param show_legend_titles show legend titles (flag)
+#' @param show_legendshow show the legend (flag)
+#' @param legend_position position of the legend on the plot (string, options are "right", "left", "bottom", "top")
+#' @param legend_title_position position of the title of the legend on the plot (string, options are "top", "bottom", "left", "right")
+#' @param legend_nrow the number of rows in the legend (number)
+#' @param legend_title_size the size of the title of the legend (number)
+#' @param legend_text_size the size of the text in the legend (number)
+#' @param legend_key_size the size of the key in the legend (number)
+#' @param palettes A list of named vectors. List names correspond to .data column names (categorical only). Vector names to levels of columns. Vector values are colours, the vector names are used to map values in .data to a colour.
 #'
 #' @return ggiraph interactive visualisation
 #'
@@ -154,6 +194,7 @@ gg1d_plot <- function(
   if (!is.null(legend_nrow)) assertions::assert_number(legend_nrow)
   if (!is.null(cols_to_plot)) assertions::assert_names_include(.data, names = cols_to_plot)
   if (!is.null(legend_title_size)) assertions::assert_number(legend_title_size)
+  if (!is.null(palettes)) assertions::assert_list(palettes)
 
   # Argument Matching
   sort_type <- rlang::arg_match(sort_type)
@@ -180,7 +221,13 @@ gg1d_plot <- function(
 
 
   # Identify Plottable Columns Columns ------------------------------------------------------------
-  df_col_info <- column_info_table(.data, maxlevels = maxlevels, col_id = col_id, cols_to_plot = cols_to_plot, tooltip_column_suffix = tooltip_column_suffix)
+  df_col_info <- column_info_table(
+    .data, maxlevels = maxlevels,
+    col_id = col_id,
+    cols_to_plot = cols_to_plot,
+    tooltip_column_suffix = tooltip_column_suffix,
+    palettes = palettes
+  )
 
   # If debugging, return df_col_info
   if (debug_return_col_info) {
@@ -231,10 +278,9 @@ gg1d_plot <- function(
       colname <- df_col_info[["colnames"]][i]
       coltype <- df_col_info[["coltype"]][i]
       coltooltip <- df_col_info[["coltooltip"]][i]
-      if(is.na(coltooltip))
-
       ndistinct <- df_col_info[["ndistinct"]][i]
       plottable <- df_col_info[["plottable"]][i]
+      palette <- unlist(df_col_info[["palette"]][i])
 
 
       # Don't plot if not plottable
@@ -283,7 +329,9 @@ gg1d_plot <- function(
           ggplot2::guides(fill = ggplot2::guide_legend(
             title.position = legend_title_position,
             nrow = legend_nrow
-            ))
+            )) +
+          ggplot2::scale_fill_manual(values = palette)
+
       } else if (coltype == "numeric") {
         gg <- ggplot2::ggplot(.data, aes(x = .data[[col_id]], y = .data[[colname]])) +
           ggiraph::geom_col_interactive(mapping = aes_interactive, width = width) +
@@ -378,6 +426,3 @@ sensible_2_breaks <- function(vector){
   lower <- min(0, min(vector))
   c(upper, lower)
 }
-
-
-

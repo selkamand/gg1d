@@ -13,13 +13,22 @@ gg1d_plot(
   drop_unused_id_levels = FALSE,
   interactive = TRUE,
   debug_return_col_info = FALSE,
+  palettes = NULL,
   limit_plots = TRUE,
   cols_to_plot = NULL,
   sort_type = c("frequency", "alphabetical"),
   desc = TRUE,
   width = 0.9,
   relative_height_numeric = 4,
-  tooltip_column_suffix = "_tooltip"
+  tooltip_column_suffix = "_tooltip",
+  show_legend_titles = FALSE,
+  show_legend = !interactive,
+  legend_position = c("right", "left", "bottom", "top"),
+  legend_title_position = c("top", "bottom", "left", "right"),
+  legend_nrow = 4,
+  legend_title_size = NULL,
+  legend_text_size = NULL,
+  legend_key_size = 0.3
 )
 }
 \arguments{
@@ -39,6 +48,8 @@ gg1d_plot(
 
 \item{debug_return_col_info}{return column info instead of plots. Helpful when debugging (logical)}
 
+\item{palettes}{A list of named vectors. List names correspond to .data column names (categorical only). Vector names to levels of columns. Vector values are colours, the vector names are used to map values in .data to a colour.}
+
 \item{limit_plots}{throw an error when there are > 15 plottable columns in table (logical)}
 
 \item{cols_to_plot}{names of columns in \code{.data} that should be plotted. By default plots all valid columns (character)}
@@ -54,6 +65,22 @@ Options are \code{alphabetical} or \code{frequency}}
 \item{relative_height_numeric}{how many times taller should numeric plots be relative to categorical tile plots (number)}
 
 \item{tooltip_column_suffix}{the suffix added to a column name that indicates column should be used as a tooltip (string)}
+
+\item{show_legend_titles}{show legend titles (flag)}
+
+\item{legend_position}{position of the legend on the plot (string, options are "right", "left", "bottom", "top")}
+
+\item{legend_title_position}{position of the title of the legend on the plot (string, options are "top", "bottom", "left", "right")}
+
+\item{legend_nrow}{the number of rows in the legend (number)}
+
+\item{legend_title_size}{the size of the title of the legend (number)}
+
+\item{legend_text_size}{the size of the text in the legend (number)}
+
+\item{legend_key_size}{the size of the key in the legend (number)}
+
+\item{show_legendshow}{show the legend (flag)}
 }
 \value{
 ggiraph interactive visualisation

@@ -9,7 +9,8 @@ column_info_table(
   maxlevels = 6,
   col_id = NULL,
   cols_to_plot,
-  tooltip_column_suffix = "_tooltip"
+  tooltip_column_suffix = "_tooltip",
+  palettes
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ column_info_table(
 \item{cols_to_plot}{names of columns in \code{.data} that should be plotted. By default plots all valid columns (character)}
 
 \item{tooltip_column_suffix}{the suffix added to a column name that indicates column should be used as a tooltip (string)}
+
+\item{palettes}{A list of named vectors. List names correspond to .data column names (categorical only). Vector names to levels of columns. Vector values are colours, the vector names are used to map values in .data to a colour.}
 }
 \value{
 tibble with the following columns:

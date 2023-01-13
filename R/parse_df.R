@@ -146,7 +146,7 @@ choose_colours <- function(data, palettes, plottable, ndistinct, coltype, defaul
 #' @param tooltip_column_suffix the suffix added to a column name that indicates column should be used as a tooltip (string)
 #' @param relative_height_numeric how many times taller should numeric plots be relative to categorical tile plots (number)
 #' @param show_legend_titles show legend titles (flag)
-#' @param show_legendshow show the legend (flag)
+#' @param show_legend show the legend (flag)
 #' @param legend_position position of the legend on the plot (string, options are "right", "left", "bottom", "top")
 #' @param legend_title_position position of the title of the legend on the plot (string, options are "top", "bottom", "left", "right")
 #' @param legend_nrow the number of rows in the legend (number)

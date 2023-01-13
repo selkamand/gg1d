@@ -68,6 +68,8 @@ Options are \code{alphabetical} or \code{frequency}}
 
 \item{show_legend_titles}{show legend titles (flag)}
 
+\item{show_legend}{show the legend (flag)}
+
 \item{legend_position}{position of the legend on the plot (string, options are "right", "left", "bottom", "top")}
 
 \item{legend_title_position}{position of the title of the legend on the plot (string, options are "top", "bottom", "left", "right")}
@@ -79,8 +81,6 @@ Options are \code{alphabetical} or \code{frequency}}
 \item{legend_text_size}{the size of the text in the legend (number)}
 
 \item{legend_key_size}{the size of the key in the legend (number)}
-
-\item{show_legendshow}{show the legend (flag)}
 }
 \value{
 ggiraph interactive visualisation

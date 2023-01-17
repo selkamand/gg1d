@@ -80,4 +80,4 @@ gg1d_plot(df, col_id = "ID", col_sort = "Glasses", interactive = FALSE, legend_n
 #> Warning: Removed 2 rows containing missing values (`position_stack()`).
 ```
 
-<img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
+<img src="man/figures/README-example-1.png" width="100%" />

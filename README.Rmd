@@ -47,7 +47,7 @@ devtools::install_github("selkamand/gg1d")
 
 ## Quick Start
 
-```{r}
+```{r, example}
 # Load library
 library(gg1d)
 

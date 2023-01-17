@@ -11,7 +11,7 @@
 #' 4) tooltip_col (the name of the column to use as the tooltip) or NA if no obvious tooltip column found
 #'
 #'
-column_info_table <- function(.data, maxlevels = 6, col_id = NULL, cols_to_plot, tooltip_column_suffix = "_tooltip", palettes, colours_default, colours_default_logical) {
+column_info_table <- function(.data, maxlevels = 6, col_id = NULL, cols_to_plot, tooltip_column_suffix = "_tooltip", palettes, colours_default, colours_default_logical, verbose) {
   # Assertions
   assertions::assert_string(col_id)
   assertions::assert_names_include(.data, col_id)
@@ -39,7 +39,7 @@ column_info_table <- function(.data, maxlevels = 6, col_id = NULL, cols_to_plot,
   if (sum(lgl_too_many_levels) > 0) {
     char_cols_with_too_many_levels <- df_column_info$colnames[lgl_too_many_levels]
     char_cols_with_too_many_levels <- paste0(char_cols_with_too_many_levels, " (", df_column_info$ndistinct[lgl_too_many_levels], ")")
-    cli::cli_alert_warning("{.strong Categorical columns} must have {.strong <= {maxlevels} unique values} to be visualised. Columns with too many unique values: {.strong {char_cols_with_too_many_levels}}")
+    if(verbose) cli::cli_alert_warning("{.strong Categorical columns} must have {.strong <= {maxlevels} unique values} to be visualised. Columns with too many unique values: {.strong {char_cols_with_too_many_levels}}")
   }
 
   # Add palette colours
@@ -96,7 +96,7 @@ coltypes <- function(.data, col_id) {
 
 colvalues <- function(.data) {
   vapply(.data, FUN = function(vec) {
-    length(unique(vec))
+    length(na.omit(unique(vec)))
   }, FUN.VALUE = numeric(1))
 }
 
@@ -114,7 +114,7 @@ choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colour
     }
     else if(colname %in% names(palettes)){
       colors <- unlist(palettes[[colname]])
-      assertions::assert_names_include(colors, names = unique(data[[colname]]))
+      assertions::assert_names_include(colors, names = na.omit(unique(data[[colname]])))
       return(palettes[[colname]])
     }
     else if (is_lgl){
@@ -248,7 +248,8 @@ gg1d_plot <- function(
     tooltip_column_suffix = tooltip_column_suffix,
     palettes = palettes,
     colours_default = colours_default,
-    colours_default_logical = colours_default_logical
+    colours_default_logical = colours_default_logical,
+    verbose = verbose
   )
 
   # If debugging, return df_col_info

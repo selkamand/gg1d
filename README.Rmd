@@ -56,5 +56,29 @@ path_gg1d <- system.file("testdata/testinput.csv", package = "gg1d")
 df <- read.csv(path_gg1d, header = TRUE, na.strings = "")
 
 # Plot data, sort by Glasses
-gg1d_plot(df, col_id = "ID", col_sort = "Glasses", interactive = FALSE, legend_nrow = 2)
+gg1d_plot(
+  df, 
+  col_id = "ID", 
+  col_sort = "Glasses", 
+  interactive = FALSE, legend_nrow = 2, verbose = FALSE
+)
 ```
+
+## Customise Colours
+
+Customise colours by supplying a named list to the `palettes` argument
+
+```{r}
+gg1d_plot(
+  df, 
+  col_id = "ID", 
+  col_sort = "Glasses", 
+  palettes = list("EyeColour" = c(
+    Brown = "rosybrown4",
+    Blue = "steelblue",
+    Green = "seagreen"
+    )),
+  interactive = FALSE, legend_nrow = 2, verbose = FALSE
+)
+```
+

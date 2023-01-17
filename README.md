@@ -52,7 +52,7 @@ library(gg1d)
 
 # Read data
 path_gg1d <- system.file("testdata/testinput.csv", package = "gg1d")
-df <- read.csv(path_gg1d, header = TRUE)
+df <- read.csv(path_gg1d, header = TRUE, na.strings = "")
 
 # Plot data, sort by Glasses
 gg1d_plot(df, col_id = "ID", col_sort = "Glasses", interactive = FALSE)
@@ -77,6 +77,7 @@ gg1d_plot(df, col_id = "ID", col_sort = "Glasses", interactive = FALSE)
 #> ! Skipping column Date
 #> ℹ Stacking plots vertically
 #> ℹ Rendering static plot. For interactive version set `interactive = TRUE`
+#> Warning: Removed 2 rows containing missing values (`position_stack()`).
 ```
 
 <img src="man/figures/README-example-1.png" width="100%" />

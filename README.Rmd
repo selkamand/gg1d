@@ -53,7 +53,7 @@ library(gg1d)
 
 # Read data
 path_gg1d <- system.file("testdata/testinput.csv", package = "gg1d")
-df <- read.csv(path_gg1d, header = TRUE)
+df <- read.csv(path_gg1d, header = TRUE, na.strings = "")
 
 # Plot data, sort by Glasses
 gg1d_plot(df, col_id = "ID", col_sort = "Glasses", interactive = FALSE)

@@ -11,8 +11,8 @@ column_info_table(
   cols_to_plot,
   tooltip_column_suffix = "_tooltip",
   palettes,
-  default_colours,
-  default_colours_logical
+  colours_default,
+  colours_default_logical
 )
 }
 \arguments{
@@ -27,6 +27,10 @@ column_info_table(
 \item{tooltip_column_suffix}{the suffix added to a column name that indicates column should be used as a tooltip (string)}
 
 \item{palettes}{A list of named vectors. List names correspond to .data column names (categorical only). Vector names to levels of columns. Vector values are colours, the vector names are used to map values in .data to a colour.}
+
+\item{colours_default}{default colours to use for variables. will be used to colour variables with no palette supplied.}
+
+\item{colours_default_logical}{colours for binary variables (vector of 3 colors where elements represent colours of TRUE, FALSE, and NA respectively) (character)}
 }
 \value{
 tibble with the following columns:

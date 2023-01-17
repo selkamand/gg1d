@@ -11,7 +11,7 @@
 #' 4) tooltip_col (the name of the column to use as the tooltip) or NA if no obvious tooltip column found
 #'
 #'
-column_info_table <- function(.data, maxlevels = 6, col_id = NULL, cols_to_plot, tooltip_column_suffix = "_tooltip", palettes, default_colours, default_colours_logical) {
+column_info_table <- function(.data, maxlevels = 6, col_id = NULL, cols_to_plot, tooltip_column_suffix = "_tooltip", palettes, colours_default, colours_default_logical) {
   # Assertions
   assertions::assert_string(col_id)
   assertions::assert_names_include(.data, col_id)
@@ -49,8 +49,8 @@ column_info_table <- function(.data, maxlevels = 6, col_id = NULL, cols_to_plot,
     plottable = df_column_info$plottable,
     ndistinct = df_column_info$ndistinct,
     coltype = df_column_info$coltype,
-    default_colours = default_colours,
-    default_colours_logical = default_colours_logical
+    colours_default = colours_default,
+    colours_default_logical = colours_default_logical
   )
 
   # Return table describing
@@ -100,9 +100,9 @@ colvalues <- function(.data) {
   }, FUN.VALUE = numeric(1))
 }
 
-choose_colours <- function(data, palettes, plottable, ndistinct, coltype, default_colours, default_colours_logical){
+choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colours_default, colours_default_logical){
 
-  assertions::assert_character(default_colours)
+  assertions::assert_character(colours_default)
 
   colors <- lapply(seq_len(ncol(data)), FUN = function(i){
     colname <- colnames(data)[[i]]
@@ -118,11 +118,11 @@ choose_colours <- function(data, palettes, plottable, ndistinct, coltype, defaul
       return(palettes[[colname]])
     }
     else if (is_lgl){
-      colors <- default_colours_logical
+      colors <- colours_default_logical
     }
     else{
-      assertions::assert(length(default_colours) >= ndistinct[i], msg = "Too many unique values in column to assign each a colour using the default palette. Either change the default palette to one that supports colours, reduce the number of levels in this column, or exclude it from the plotting using `cols_to_plot` argument OR maxlevels")
-      colors <- default_colours
+      assertions::assert(length(colours_default) >= ndistinct[i], msg = "Too many unique values in column to assign each a colour using the default palette. Either change the default palette to one that supports colours, reduce the number of levels in this column, or exclude it from the plotting using `cols_to_plot` argument OR maxlevels")
+      colors <- colours_default
     }
     })
 
@@ -247,8 +247,8 @@ gg1d_plot <- function(
     cols_to_plot = cols_to_plot,
     tooltip_column_suffix = tooltip_column_suffix,
     palettes = palettes,
-    default_colours = colours_default,
-    default_colours_logical = colours_default_logical
+    colours_default = colours_default,
+    colours_default_logical = colours_default_logical
   )
 
   # If debugging, return df_col_info

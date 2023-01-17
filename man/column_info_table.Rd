@@ -10,7 +10,9 @@ column_info_table(
   col_id = NULL,
   cols_to_plot,
   tooltip_column_suffix = "_tooltip",
-  palettes
+  palettes,
+  default_colours,
+  default_colours_logical
 )
 }
 \arguments{

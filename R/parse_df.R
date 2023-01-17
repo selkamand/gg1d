@@ -11,7 +11,7 @@
 #' 4) tooltip_col (the name of the column to use as the tooltip) or NA if no obvious tooltip column found
 #'
 #'
-column_info_table <- function(.data, maxlevels = 6, col_id = NULL, cols_to_plot, tooltip_column_suffix = "_tooltip", palettes) {
+column_info_table <- function(.data, maxlevels = 6, col_id = NULL, cols_to_plot, tooltip_column_suffix = "_tooltip", palettes, default_colours, default_colours_logical) {
   # Assertions
   assertions::assert_string(col_id)
   assertions::assert_names_include(.data, col_id)
@@ -43,7 +43,15 @@ column_info_table <- function(.data, maxlevels = 6, col_id = NULL, cols_to_plot,
   }
 
   # Add palette colours
-  df_column_info$palette <- choose_colours(.data, palettes = palettes, plottable = df_column_info$plottable, ndistinct = df_column_info$ndistinct, coltype = df_column_info$coltype)
+  df_column_info$palette <- choose_colours(
+    .data,
+    palettes = palettes,
+    plottable = df_column_info$plottable,
+    ndistinct = df_column_info$ndistinct,
+    coltype = df_column_info$coltype,
+    default_colours = default_colours,
+    default_colours_logical = default_colours_logical
+  )
 
   # Return table describing
   return(df_column_info)
@@ -92,22 +100,25 @@ colvalues <- function(.data) {
   }, FUN.VALUE = numeric(1))
 }
 
-choose_colours <- function(data, palettes, plottable, ndistinct, coltype, default_colours = RColorBrewer::brewer.pal(4, name = "Set3")){
+choose_colours <- function(data, palettes, plottable, ndistinct, coltype, default_colours, default_colours_logical){
 
   assertions::assert_character(default_colours)
 
   colors <- lapply(seq_len(ncol(data)), FUN = function(i){
     colname <- colnames(data)[[i]]
     is_plottable <- plottable[[i]]
+    is_lgl <- is.logical(data[[colname]])
 
     if(!is_plottable | coltype[i] != "categorical"){
       return(NULL)
     }
     else if(colname %in% names(palettes)){
-        # Add code to validate that all values in column are described by palette
-        colors <- unlist(palettes[[colname]])
-        assertions::assert_names_include(colors, names = unique(data[[colname]]))
-        return(palettes[[colname]])
+      colors <- unlist(palettes[[colname]])
+      assertions::assert_names_include(colors, names = unique(data[[colname]]))
+      return(palettes[[colname]])
+    }
+    else if (is_lgl){
+      colors <- default_colours_logical
     }
     else{
       assertions::assert(length(default_colours) >= ndistinct[i], msg = "Too many unique values in column to assign each a colour using the default palette. Either change the default palette to one that supports colours, reduce the number of levels in this column, or exclude it from the plotting using `cols_to_plot` argument OR maxlevels")
@@ -154,12 +165,14 @@ choose_colours <- function(data, palettes, plottable, ndistinct, coltype, defaul
 #' @param legend_text_size the size of the text in the legend (number)
 #' @param legend_key_size the size of the key in the legend (number)
 #' @param palettes A list of named vectors. List names correspond to .data column names (categorical only). Vector names to levels of columns. Vector values are colours, the vector names are used to map values in .data to a colour.
-#'
+#' @param colours_default default colours to use for variables. will be used to colour variables with no palette supplied.
+#' @param colours_default_logical colours for binary variables (vector of 3 colors where elements represent colours of TRUE, FALSE, and NA respectively) (character)
+#' @param colours_missing colour to use for values of NA (string)
 #' @return ggiraph interactive visualisation
 #'
 #' @examples
 #' path_gg1d <- system.file("testdata/testinput.csv", package = "gg1d")
-#' df <- read.csv(path_gg1d, header = TRUE)
+#' df <- read.csv(path_gg1d, header = TRUE, na.strings = "")
 #' gg1d_plot(df, col_id = "ID", col_sort = "Glasses")
 #'
 #' @importFrom ggplot2 ggplot aes geom_col geom_tile theme %+replace% element_blank element_text element_line
@@ -169,6 +182,9 @@ gg1d_plot <- function(
     .data, col_id = NULL, col_sort = NULL, maxlevels = 6, verbose = TRUE,
     drop_unused_id_levels = FALSE, interactive = TRUE, debug_return_col_info = FALSE,
     palettes = NULL,
+    colours_default = c("#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F","#E5C494"),
+    colours_default_logical = c("TRUE" = "#648fff", "FALSE" = "#dc267f"),
+    colours_missing = "grey90",
     limit_plots = TRUE, cols_to_plot = NULL,
     sort_type = c("frequency", "alphabetical"), desc = TRUE, width = 0.9, relative_height_numeric = 4,
     tooltip_column_suffix = "_tooltip",
@@ -189,12 +205,16 @@ gg1d_plot <- function(
   assertions::assert_flag(show_legend)
   assertions::assert_flag(show_legend_titles)
   assertions::assert_number(legend_key_size)
+  assertions::assert_equal(length(colours_default_logical), 2)
+  assertions::assert_names_include(colours_default_logical, c("TRUE", "FALSE"))
+  assertions::assert_string(colours_missing)
 
-  # Conditional
+  # Conditional Assertions
   if (!is.null(legend_nrow)) assertions::assert_number(legend_nrow)
   if (!is.null(cols_to_plot)) assertions::assert_names_include(.data, names = cols_to_plot)
   if (!is.null(legend_title_size)) assertions::assert_number(legend_title_size)
   if (!is.null(palettes)) assertions::assert_list(palettes)
+  if(!all(colnames(.data) %in% names(palettes))) assertions::assert_greater_than_or_equal_to(length(colours_default), minimum = maxlevels)
 
   # Argument Matching
   sort_type <- rlang::arg_match(sort_type)
@@ -226,7 +246,9 @@ gg1d_plot <- function(
     col_id = col_id,
     cols_to_plot = cols_to_plot,
     tooltip_column_suffix = tooltip_column_suffix,
-    palettes = palettes
+    palettes = palettes,
+    default_colours = colours_default,
+    default_colours_logical = colours_default_logical
   )
 
   # If debugging, return df_col_info
@@ -291,6 +313,8 @@ gg1d_plot <- function(
         if (verbose) cli::cli_alert_success("{.success Plotting} column {.strong {colname}}")
       }
 
+
+
       # Create interactive geom aesthetics
       if(is.na(coltooltip)){
         aes_interactive <- aes(
@@ -304,6 +328,9 @@ gg1d_plot <- function(
       }
       else
       {
+        # replace values of NA with ""
+        .data[[coltooltip]] <- ifelse(is.na(.data[[coltooltip]]), "",.data[[coltooltip]])
+
         aes_interactive <- aes(
           data_id = .data[[col_id]],
           tooltip = .data[[coltooltip]]
@@ -315,7 +342,7 @@ gg1d_plot <- function(
       # Draw the actual plot
       if (coltype == "categorical") {
         gg <- ggplot(.data, aes(x = .data[[col_id]], y = "", fill = .data[[colname]])) +
-          ggiraph::geom_tile_interactive(mapping = aes_interactive, width = width) +
+          ggiraph::geom_tile_interactive(mapping = aes_interactive, width = width, na.rm = TRUE) +
           ggplot2::scale_x_discrete(drop = drop_unused_id_levels) +
           ggplot2::ylab(colname) +
           theme_categorical(
@@ -330,11 +357,12 @@ gg1d_plot <- function(
             title.position = legend_title_position,
             nrow = legend_nrow
             )) +
-          ggplot2::scale_fill_manual(values = palette)
+          ggplot2::scale_fill_manual(values = palette, na.value = colours_missing)
 
       } else if (coltype == "numeric") {
         gg <- ggplot2::ggplot(.data, aes(x = .data[[col_id]], y = .data[[colname]])) +
-          ggiraph::geom_col_interactive(mapping = aes_interactive, width = width) +
+          ggiraph::geom_col_interactive(mapping = aes_interactive, width = width, na.rm = TRUE) +
+          ggplot2::geom_text(aes(label = ifelse(.data[[colname]] == 0, yes = "0", no = "")), na.rm = TRUE, vjust=0) +
           ggplot2::scale_x_discrete(drop = drop_unused_id_levels) +
           ggplot2::scale_y_continuous(breaks = sensible_2_breaks(.data[[colname]])) +
           ggplot2::ylab(colname) +

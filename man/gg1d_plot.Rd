@@ -14,6 +14,10 @@ gg1d_plot(
   interactive = TRUE,
   debug_return_col_info = FALSE,
   palettes = NULL,
+  colours_default = c("#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F",
+    "#E5C494"),
+  colours_default_logical = c(`TRUE` = "#648fff", `FALSE` = "#dc267f"),
+  colours_missing = "grey90",
   limit_plots = TRUE,
   cols_to_plot = NULL,
   sort_type = c("frequency", "alphabetical"),
@@ -49,6 +53,12 @@ gg1d_plot(
 \item{debug_return_col_info}{return column info instead of plots. Helpful when debugging (logical)}
 
 \item{palettes}{A list of named vectors. List names correspond to .data column names (categorical only). Vector names to levels of columns. Vector values are colours, the vector names are used to map values in .data to a colour.}
+
+\item{colours_default}{default colours to use for variables. will be used to colour variables with no palette supplied.}
+
+\item{colours_default_logical}{colours for binary variables (vector of 3 colors where elements represent colours of TRUE, FALSE, and NA respectively) (character)}
+
+\item{colours_missing}{colour to use for values of NA (string)}
 
 \item{limit_plots}{throw an error when there are > 15 plottable columns in table (logical)}
 
@@ -92,7 +102,7 @@ Plots are fully interactive, and custom tooltips can be added.
 }
 \examples{
 path_gg1d <- system.file("testdata/testinput.csv", package = "gg1d")
-df <- read.csv(path_gg1d, header = TRUE)
+df <- read.csv(path_gg1d, header = TRUE, na.strings = "")
 gg1d_plot(df, col_id = "ID", col_sort = "Glasses")
 
 }

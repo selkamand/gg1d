@@ -450,7 +450,7 @@ tag_bold <- function(x){
 #' @return vector of length 2. first element descripts upper break position, lower describes lower break
 #'
 sensible_2_breaks <- function(vector){
-  upper <- max(vector)
-  lower <- min(0, min(vector))
+  upper <- max(vector, na.rm = TRUE)
+  lower <- min(0, min(vector, na.rm = TRUE), na.rm = TRUE)
   c(upper, lower)
 }

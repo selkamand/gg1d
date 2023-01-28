@@ -12,7 +12,8 @@ column_info_table(
   tooltip_column_suffix = "_tooltip",
   palettes,
   colours_default,
-  colours_default_logical
+  colours_default_logical,
+  verbose
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ column_info_table(
 \item{colours_default}{default colours to use for variables. will be used to colour variables with no palette supplied.}
 
 \item{colours_default_logical}{colours for binary variables (vector of 3 colors where elements represent colours of TRUE, FALSE, and NA respectively) (character)}
+
+\item{verbose}{verbosity level}
 }
 \value{
 tibble with the following columns:

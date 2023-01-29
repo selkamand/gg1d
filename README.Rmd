@@ -60,7 +60,7 @@ gg1d_plot(
   df, 
   col_id = "ID", 
   col_sort = "Glasses", 
-  interactive = FALSE, legend_nrow = 2, verbose = FALSE, show_legend_titles = TRUE
+  interactive = FALSE, legend_nrow = 2, verbose = FALSE
 )
 ```
 

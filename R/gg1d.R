@@ -161,6 +161,7 @@ choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colour
 #' @param legend_position position of the legend on the plot (string, options are "right", "left", "bottom", "top")
 #' @param legend_title_position position of the title of the legend on the plot (string, options are "top", "bottom", "left", "right")
 #' @param legend_nrow the number of rows in the legend (number)
+#' @param legend_ncol the number of columns in the legend. Set `legend_nrow = NULL` when using legend_ncol (number)
 #' @param legend_title_size the size of the title of the legend (number)
 #' @param legend_text_size the size of the text in the legend (number)
 #' @param legend_key_size the size of the key in the legend (number)
@@ -189,7 +190,9 @@ gg1d_plot <- function(
     sort_type = c("frequency", "alphabetical"), desc = TRUE, width = 0.9, relative_height_numeric = 4,
     tooltip_column_suffix = "_tooltip",
     show_legend_titles = FALSE, show_legend = !interactive, legend_position = c("right", "left", "bottom", "top"),
-    legend_title_position = c("top", "bottom", "left", "right"), legend_nrow = 4, legend_title_size = NULL, legend_text_size = NULL, legend_key_size = 0.3) {
+    legend_title_position = c("top", "bottom", "left", "right"),
+    legend_nrow = 4, legend_ncol = NULL,
+    legend_title_size = NULL, legend_text_size = NULL, legend_key_size = 0.3) {
 
   # Assertions --------------------------------------------------------------
   assertions::assert_dataframe(.data)
@@ -215,6 +218,9 @@ gg1d_plot <- function(
   if (!is.null(legend_title_size)) assertions::assert_number(legend_title_size)
   if (!is.null(palettes)) assertions::assert_list(palettes)
   if(!all(colnames(.data) %in% names(palettes))) assertions::assert_greater_than_or_equal_to(length(colours_default), minimum = maxlevels)
+  if(!is.null(legend_nrow)) assertions::assert_number(legend_nrow)
+  if(!is.null(legend_ncol)) assertions::assert_number(legend_ncol)
+  if(!is.null(legend_nrow) & !is.null(legend_ncol)) cli::cli_abort("You've set both {.strong legend_nrow = {legend_nrow}} and {.strong legend_ncol = {legend_ncol}}. Please choose one or the other, and set whichever you don't use to NULL")
 
   # Argument Matching
   sort_type <- rlang::arg_match(sort_type)
@@ -356,7 +362,8 @@ gg1d_plot <- function(
             ) +
           ggplot2::guides(fill = ggplot2::guide_legend(
             title.position = legend_title_position,
-            nrow = legend_nrow
+            nrow = legend_nrow,
+            ncol = legend_ncol
             )) +
           ggplot2::scale_fill_manual(values = palette, na.value = colours_missing)
 

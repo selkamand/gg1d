@@ -163,6 +163,7 @@ choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colour
 #' @param legend_nrow the number of rows in the legend (number)
 #' @param legend_ncol the number of columns in the legend. Set `legend_nrow = NULL` when using legend_ncol (number)
 #' @param legend_title_size the size of the title of the legend (number)
+#' @param legend_title_beautify beautify legend title (add spaces to snake_case / camelCase & capitalise each word) (flag)
 #' @param legend_text_size the size of the text in the legend (number)
 #' @param legend_key_size the size of the key in the legend (number)
 #' @param palettes A list of named vectors. List names correspond to .data column names (categorical only). Vector names to levels of columns. Vector values are colours, the vector names are used to map values in .data to a colour.
@@ -191,6 +192,7 @@ gg1d_plot <- function(
     tooltip_column_suffix = "_tooltip",
     show_legend_titles = FALSE, show_legend = !interactive, legend_position = c("right", "left", "bottom", "top"),
     legend_title_position = c("top", "bottom", "left", "right"),
+    legend_title_beautify = TRUE,
     legend_nrow = 4, legend_ncol = NULL,
     legend_title_size = NULL, legend_text_size = NULL, legend_key_size = 0.3) {
 
@@ -211,6 +213,7 @@ gg1d_plot <- function(
   assertions::assert_equal(length(colours_default_logical), 2)
   assertions::assert_names_include(colours_default_logical, c("TRUE", "FALSE"))
   assertions::assert_string(colours_missing)
+  assertions::assert_flag(legend_title_beautify)
 
   # Conditional Assertions
   if (!is.null(legend_nrow)) assertions::assert_number(legend_nrow)
@@ -362,6 +365,7 @@ gg1d_plot <- function(
             ) +
           ggplot2::guides(fill = ggplot2::guide_legend(
             title.position = legend_title_position,
+            title = if(legend_title_beautify) beautify(colname) else colname,
             nrow = legend_nrow,
             ncol = legend_ncol
             )) +
@@ -461,4 +465,25 @@ sensible_2_breaks <- function(vector){
   upper <- max(vector, na.rm = TRUE)
   lower <- min(0, min(vector, na.rm = TRUE), na.rm = TRUE)
   c(upper, lower)
+}
+
+
+#' Make strings prettier for printing
+#'
+#' Takes an input string and 'beautify' by converting underscores to spaces and
+#'
+#' @param string input string
+#'
+#' @return string
+#'
+beautify <- function(string){
+  # underscores to spaces
+  string <- gsub(x=string, pattern = "_", replacement = " ")
+
+  # camelCase to camel Case
+  string <- gsub(x=string, pattern = "([a-z])([A-Z])", replacement = "\\1 \\2")
+
+  # Capitalise Each Word
+  string <- gsub(x=string, pattern = "^([a-z])",  perl = TRUE, replacement = ("\\U\\1"))
+  string <- gsub(x=string, pattern = " ([a-z])",  perl = TRUE, replacement = ("\\U\\1"))
 }

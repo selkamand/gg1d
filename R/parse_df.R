@@ -416,7 +416,7 @@ theme_categorical <- function(show_legend = TRUE, show_legend_titles = FALSE, le
       axis.title.x = element_blank(),
       axis.title.y = element_text(angle = 0),
       legend.key.size = ggplot2::unit(legend_key_size, "line"),
-      legend.title = if(show_legend_titles) element_text(size = legend_title_size) else element_blank(),
+      legend.title = if(show_legend_titles) element_text(size = legend_title_size, face = "bold", hjust = 0) else element_blank(),
       legend.justification = "left",
       legend.text = element_text(size = legend_text_size),
       legend.position = if(show_legend) legend_position else "none"

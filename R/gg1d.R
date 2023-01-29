@@ -218,6 +218,9 @@ gg1d_plot <- function(
   if (!is.null(legend_title_size)) assertions::assert_number(legend_title_size)
   if (!is.null(palettes)) assertions::assert_list(palettes)
   if(!all(colnames(.data) %in% names(palettes))) assertions::assert_greater_than_or_equal_to(length(colours_default), minimum = maxlevels)
+  if(!is.null(legend_nrow)) assertions::assert_number(legend_nrow)
+  if(!is.null(legend_ncol)) assertions::assert_number(legend_ncol)
+  if(!is.null(legend_nrow) & !is.null(legend_ncol)) cli::cli_abort("You've set both {.strong legend_nrow = {legend_nrow}} and {.strong legend_ncol = {legend_ncol}}. Please choose one or the other, and set whichever you don't use to NULL")
 
   # Argument Matching
   sort_type <- rlang::arg_match(sort_type)

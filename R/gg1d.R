@@ -485,5 +485,5 @@ beautify <- function(string){
 
   # Capitalise Each Word
   string <- gsub(x=string, pattern = "^([a-z])",  perl = TRUE, replacement = ("\\U\\1"))
-  string <- gsub(x=string, pattern = " ([a-z])",  perl = TRUE, replacement = ("\\U\\1"))
+  string <- gsub(x=string, pattern = " ([a-z])",  perl = TRUE, replacement = (" \\U\\1"))
 }

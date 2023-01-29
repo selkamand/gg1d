@@ -29,6 +29,7 @@ gg1d_plot(
   show_legend = !interactive,
   legend_position = c("right", "left", "bottom", "top"),
   legend_title_position = c("top", "bottom", "left", "right"),
+  legend_title_beautify = TRUE,
   legend_nrow = 4,
   legend_ncol = NULL,
   legend_title_size = NULL,
@@ -84,6 +85,8 @@ Options are \code{alphabetical} or \code{frequency}}
 \item{legend_position}{position of the legend on the plot (string, options are "right", "left", "bottom", "top")}
 
 \item{legend_title_position}{position of the title of the legend on the plot (string, options are "top", "bottom", "left", "right")}
+
+\item{legend_title_beautify}{beautify legend title (add spaces to snake_case / camelCase & capitalise each word) (flag)}
 
 \item{legend_nrow}{the number of rows in the legend (number)}
 

@@ -170,7 +170,10 @@ choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colour
 #' @param colours_default default colours to use for variables. will be used to colour variables with no palette supplied.
 #' @param colours_default_logical colours for binary variables (vector of 3 colors where elements represent colours of TRUE, FALSE, and NA respectively) (character)
 #' @param colours_missing colour to use for values of NA (string)
+#' @param na_marker what text should be added to NA values for numeric variables to indicate the value is NA, not 0 (string)
+#' @param na_marker_size how large should the na_marker be (number)
 #' @param vertical_spacing how large should the gap between each data row be (unit = pt) (number)
+#'
 #' @return ggiraph interactive visualisation
 #'
 #' @examples
@@ -196,7 +199,7 @@ gg1d_plot <- function(
     legend_title_beautify = TRUE,
     legend_nrow = 4, legend_ncol = NULL,
     legend_title_size = NULL, legend_text_size = NULL, legend_key_size = 0.3,
-    vertical_spacing = 0) {
+    vertical_spacing = 0, na_marker = "!", na_marker_size = 4) {
 
   # Assertions --------------------------------------------------------------
   assertions::assert_dataframe(.data)
@@ -376,12 +379,16 @@ gg1d_plot <- function(
           ggplot2::scale_fill_manual(values = palette, na.value = colours_missing)
 
       } else if (coltype == "numeric") {
+        #browser()
         gg <- ggplot2::ggplot(.data, aes(x = .data[[col_id]], y = .data[[colname]])) +
           ggiraph::geom_col_interactive(mapping = aes_interactive, width = width, na.rm = TRUE) +
-          ggplot2::geom_text(aes(label = ifelse(.data[[colname]] == 0, yes = "0", no = "")), na.rm = TRUE, vjust=0) +
+          ggplot2::geom_text(
+            data = function(x){x[is.na(x[[colname]]), ,drop=FALSE]},  #only add text where value is NA
+            aes(label = na_marker, y = 0), size = na_marker_size, na.rm = TRUE, vjust=0
+            ) +
           ggplot2::scale_x_discrete(drop = drop_unused_id_levels) +
           ggplot2::scale_y_continuous(breaks = sensible_2_breaks(.data[[colname]])) +
-          ggplot2::ylab(colname) +
+          ggplot2::ylab(if(legend_title_beautify) beautify(colname) else colname) +
           theme_numeric(vertical_spacing = vertical_spacing)
       } else {
         cli::cli_abort("Unsure how to plot coltype: {coltype}")

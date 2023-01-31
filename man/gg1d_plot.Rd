@@ -35,7 +35,9 @@ gg1d_plot(
   legend_title_size = NULL,
   legend_text_size = NULL,
   legend_key_size = 0.3,
-  vertical_spacing = 0
+  vertical_spacing = 0,
+  na_marker = "!",
+  na_marker_size = 4
 )
 }
 \arguments{
@@ -100,6 +102,10 @@ Options are \code{alphabetical} or \code{frequency}}
 \item{legend_key_size}{the size of the key in the legend (number)}
 
 \item{vertical_spacing}{how large should the gap between each data row be (unit = pt) (number)}
+
+\item{na_marker}{what text should be added to NA values for numeric variables to indicate the value is NA, not 0 (string)}
+
+\item{na_marker_size}{how large should the na_marker be (number)}
 }
 \value{
 ggiraph interactive visualisation

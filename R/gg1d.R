@@ -170,6 +170,7 @@ choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colour
 #' @param colours_default default colours to use for variables. will be used to colour variables with no palette supplied.
 #' @param colours_default_logical colours for binary variables (vector of 3 colors where elements represent colours of TRUE, FALSE, and NA respectively) (character)
 #' @param colours_missing colour to use for values of NA (string)
+#' @param vertical_spacing how large should the gap between each data row be (unit = pt) (number)
 #' @return ggiraph interactive visualisation
 #'
 #' @examples
@@ -194,7 +195,8 @@ gg1d_plot <- function(
     legend_title_position = c("top", "bottom", "left", "right"),
     legend_title_beautify = TRUE,
     legend_nrow = 4, legend_ncol = NULL,
-    legend_title_size = NULL, legend_text_size = NULL, legend_key_size = 0.3) {
+    legend_title_size = NULL, legend_text_size = NULL, legend_key_size = 0.3,
+    vertical_spacing = 0) {
 
   # Assertions --------------------------------------------------------------
   assertions::assert_dataframe(.data)
@@ -214,6 +216,7 @@ gg1d_plot <- function(
   assertions::assert_names_include(colours_default_logical, c("TRUE", "FALSE"))
   assertions::assert_string(colours_missing)
   assertions::assert_flag(legend_title_beautify)
+  assertions::assert_number(vertical_spacing)
 
   # Conditional Assertions
   if (!is.null(legend_nrow)) assertions::assert_number(legend_nrow)
@@ -354,14 +357,15 @@ gg1d_plot <- function(
         gg <- ggplot(.data, aes(x = .data[[col_id]], y = "", fill = .data[[colname]])) +
           ggiraph::geom_tile_interactive(mapping = aes_interactive, width = width, na.rm = TRUE) +
           ggplot2::scale_x_discrete(drop = drop_unused_id_levels) +
-          ggplot2::ylab(colname) +
+          ggplot2::ylab(if(legend_title_beautify) beautify(colname) else colname) +
           theme_categorical(
             show_legend_titles = show_legend_titles,
             show_legend = show_legend,
             legend_position = legend_position,
             legend_title_size = legend_title_size,
             legend_text_size = legend_text_size,
-            legend_key_size = legend_key_size
+            legend_key_size = legend_key_size,
+            vertical_spacing = vertical_spacing
             ) +
           ggplot2::guides(fill = ggplot2::guide_legend(
             title.position = legend_title_position,
@@ -378,7 +382,7 @@ gg1d_plot <- function(
           ggplot2::scale_x_discrete(drop = drop_unused_id_levels) +
           ggplot2::scale_y_continuous(breaks = sensible_2_breaks(.data[[colname]])) +
           ggplot2::ylab(colname) +
-          theme_numeric()
+          theme_numeric(vertical_spacing = vertical_spacing)
       } else {
         cli::cli_abort("Unsure how to plot coltype: {coltype}")
       }
@@ -396,7 +400,6 @@ gg1d_plot <- function(
   # Align plots vertically
   if (verbose) cli::cli_alert_info("Stacking plots vertically")
   ggpatch <- patchwork::wrap_plots(gglist, ncol = 1, heights = relheights)
-
 
 
   # Interactivity -----------------------------------------------------------
@@ -417,7 +420,7 @@ gg1d_plot <- function(
 }
 
 
-theme_categorical <- function(show_legend = TRUE, show_legend_titles = FALSE, legend_position = "right", legend_title_size = NULL, legend_text_size = NULL, legend_key_size = 0.3) {
+theme_categorical <- function(show_legend = TRUE, show_legend_titles = FALSE, legend_position = "right", legend_title_size = NULL, legend_text_size = NULL, legend_key_size = 0.3, vertical_spacing = 0) {
   ggplot2::theme_minimal() %+replace%
 
     theme(
@@ -425,26 +428,34 @@ theme_categorical <- function(show_legend = TRUE, show_legend_titles = FALSE, le
       axis.text.y.left = element_blank(),
       axis.text.x = element_blank(),
       axis.title.x = element_blank(),
-      axis.title.y = element_text(angle = 0),
+      axis.title.y = element_text(
+        angle = 0, vjust = 0.5,
+        margin = ggplot2::margin(0, -2, 0, 0)
+        ),
       legend.key.size = ggplot2::unit(legend_key_size, "line"),
       legend.title = if(show_legend_titles) element_text(size = legend_title_size, face = "bold", hjust = 0) else element_blank(),
       legend.justification = "left",
       legend.text = element_text(size = legend_text_size),
-      legend.position = if(show_legend) legend_position else "none"
+      legend.position = if(show_legend) legend_position else "none",
+      plot.margin = ggplot2::margin(t = 0, r = 0, b = vertical_spacing, l = 0, unit = "pt"),
     )
 }
 
-theme_numeric <- function() {
+theme_numeric <- function(vertical_spacing = 0) {
   ggplot2::theme_minimal() %+replace%
 
     theme(
       panel.grid = element_blank(),
-      axis.title.y.left = element_text(angle = 0, vjust = 0.5),
+      axis.title.y.left = element_text(
+        angle = 0, vjust = 0.5,
+        margin = ggplot2::margin(0, -2, 0, 0)
+        ),
       axis.text.x = element_blank(),
       axis.title.x = element_blank(),
       axis.line.y = element_line(linewidth = 0.3),
       axis.text.y.left = element_text(size = 8),
-      axis.ticks.y = element_line()
+      axis.ticks.y = element_line(),
+      plot.margin = ggplot2::margin(t = 0, r = 0, b = vertical_spacing, l = 0, unit = "pt")
     )
 }
 

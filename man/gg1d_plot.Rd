@@ -34,7 +34,8 @@ gg1d_plot(
   legend_ncol = NULL,
   legend_title_size = NULL,
   legend_text_size = NULL,
-  legend_key_size = 0.3
+  legend_key_size = 0.3,
+  vertical_spacing = 0
 )
 }
 \arguments{
@@ -97,6 +98,8 @@ Options are \code{alphabetical} or \code{frequency}}
 \item{legend_text_size}{the size of the text in the legend (number)}
 
 \item{legend_key_size}{the size of the key in the legend (number)}
+
+\item{vertical_spacing}{how large should the gap between each data row be (unit = pt) (number)}
 }
 \value{
 ggiraph interactive visualisation

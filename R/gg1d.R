@@ -498,6 +498,9 @@ beautify <- function(string){
   # underscores to spaces
   string <- gsub(x=string, pattern = "_", replacement = " ")
 
+  # dots to spaces
+  string <- gsub(x=string, pattern = ".", replacement = " ", fixed = TRUE)
+
   # camelCase to camel Case
   string <- gsub(x=string, pattern = "([a-z])([A-Z])", replacement = "\\1 \\2")
 

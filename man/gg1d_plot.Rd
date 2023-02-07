@@ -25,6 +25,7 @@ gg1d_plot(
   width = 0.9,
   relative_height_numeric = 4,
   tooltip_column_suffix = "_tooltip",
+  ignore_column_regex = "_ignore$",
   show_legend_titles = FALSE,
   show_legend = !interactive,
   legend_position = c("right", "left", "bottom", "top"),
@@ -80,6 +81,8 @@ Options are \code{alphabetical} or \code{frequency}}
 \item{relative_height_numeric}{how many times taller should numeric plots be relative to categorical tile plots (number)}
 
 \item{tooltip_column_suffix}{the suffix added to a column name that indicates column should be used as a tooltip (string)}
+
+\item{ignore_column_regex}{a regex string that, if matches a column name,  will cause that  column to be exclude from plotting (string)  (default: "_ignore$")}
 
 \item{show_legend_titles}{show legend titles (flag)}
 

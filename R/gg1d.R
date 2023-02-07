@@ -11,7 +11,7 @@
 #' 4) tooltip_col (the name of the column to use as the tooltip) or NA if no obvious tooltip column found
 #'
 #'
-column_info_table <- function(.data, maxlevels = 6, col_id = NULL, cols_to_plot, tooltip_column_suffix = "_tooltip", palettes, colours_default, colours_default_logical, verbose) {
+column_info_table <- function(.data, maxlevels = 6, col_id = NULL, cols_to_plot, tooltip_column_suffix = "_tooltip", ignore_column_regex = "_ignore$" ,palettes, colours_default, colours_default_logical, verbose) {
   # Assertions
   assertions::assert_string(col_id)
   assertions::assert_names_include(.data, col_id)
@@ -32,9 +32,15 @@ column_info_table <- function(.data, maxlevels = 6, col_id = NULL, cols_to_plot,
   # Mark columns as not plottable if
   # 1) they are a categorical variable with more than `maxlevels` distinct values
   # 2) Their coltype is 'invalid', 'id', or 'tooltip'
-  # 3) The`cols_to_plot` variable is TRUE and column names are NOT in the list of cols_to_plot
+  # 3) The`cols_to_plot` variable is suppplied and column names are NOT in the list of cols_to_plot
+  # 4) Their colnames match the _ignore suffix
   lgl_too_many_levels <- df_column_info$coltype == "categorical" & df_column_info$ndistinct > maxlevels
-  df_column_info[["plottable"]] <- !lgl_too_many_levels & !df_column_info$coltype %in% c("invalid", "id", "tooltip") & (is.null(cols_to_plot) | df_column_info$colnames %in% c(cols_to_plot))
+  df_column_info[["plottable"]] <-
+    !lgl_too_many_levels & !df_column_info$coltype %in% c("invalid", "id", "tooltip") &
+    (is.null(cols_to_plot) | df_column_info$colnames %in% c(cols_to_plot)) &
+    (grepl(x=df_column_info$colnames, pattern = ignore_column_regex))
+
+
 
   if (sum(lgl_too_many_levels) > 0) {
     char_cols_with_too_many_levels <- df_column_info$colnames[lgl_too_many_levels]
@@ -173,6 +179,7 @@ choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colour
 #' @param na_marker what text should be added to NA values for numeric variables to indicate the value is NA, not 0 (string)
 #' @param na_marker_size how large should the na_marker be (number)
 #' @param vertical_spacing how large should the gap between each data row be (unit = pt) (number)
+#' @param ignore_column_regex a regex string that, if matches a column name,  will cause that  column to be exclude from plotting (string)  (default: "_ignore$")
 #'
 #' @return ggiraph interactive visualisation
 #'
@@ -194,6 +201,7 @@ gg1d_plot <- function(
     limit_plots = TRUE, cols_to_plot = NULL,
     sort_type = c("frequency", "alphabetical"), desc = TRUE, width = 0.9, relative_height_numeric = 4,
     tooltip_column_suffix = "_tooltip",
+    ignore_column_regex = "_ignore$",
     show_legend_titles = FALSE, show_legend = !interactive, legend_position = c("right", "left", "bottom", "top"),
     legend_title_position = c("top", "bottom", "left", "right"),
     legend_title_beautify = TRUE,
@@ -220,6 +228,8 @@ gg1d_plot <- function(
   assertions::assert_string(colours_missing)
   assertions::assert_flag(legend_title_beautify)
   assertions::assert_number(vertical_spacing)
+  assertions::assert_string(ignore_colun_suffix)
+
 
   # Conditional Assertions
   if (!is.null(legend_nrow)) assertions::assert_number(legend_nrow)
@@ -264,6 +274,7 @@ gg1d_plot <- function(
     palettes = palettes,
     colours_default = colours_default,
     colours_default_logical = colours_default_logical,
+    ignore_column_regex = ignore_column_regex,
     verbose = verbose
   )
 

@@ -10,6 +10,7 @@ column_info_table(
   col_id = NULL,
   cols_to_plot,
   tooltip_column_suffix = "_tooltip",
+  ignore_column_regex = "_ignore$",
   palettes,
   colours_default,
   colours_default_logical,
@@ -26,6 +27,8 @@ column_info_table(
 \item{cols_to_plot}{names of columns in \code{.data} that should be plotted. By default plots all valid columns (character)}
 
 \item{tooltip_column_suffix}{the suffix added to a column name that indicates column should be used as a tooltip (string)}
+
+\item{ignore_column_regex}{a regex string that, if matches a column name,  will cause that  column to be exclude from plotting (string)  (default: "_ignore$")}
 
 \item{palettes}{A list of named vectors. List names correspond to .data column names (categorical only). Vector names to levels of columns. Vector values are colours, the vector names are used to map values in .data to a colour.}
 

@@ -373,10 +373,17 @@ gg1d_plot <- function(
 
       # Draw the actual plot
       if (coltype == "categorical") {
-        gg <- ggplot(.data, aes(x = .data[[col_id]], y = {{colname}}, fill = .data[[colname]])) +
+        gg <- ggplot(
+          .data,
+          aes(
+            x = .data[[col_id]],
+            y = if(legend_title_beautify) beautify(colname) else colname,
+            fill = .data[[colname]]
+            )
+          ) +
           ggiraph::geom_tile_interactive(mapping = aes_interactive, width = width, na.rm = TRUE) +
           ggplot2::scale_x_discrete(drop = drop_unused_id_levels) +
-          ggplot2::ylab(if(legend_title_beautify) beautify(colname) else colname) +
+          #ggplot2::ylab(if(legend_title_beautify) beautify(colname) else colname) +
           theme_categorical(
             show_legend_titles = show_legend_titles,
             show_legend = show_legend,

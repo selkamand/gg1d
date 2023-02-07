@@ -181,7 +181,7 @@ choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colour
 #' @param vertical_spacing how large should the gap between each data row be (unit = pt) (number)
 #' @param ignore_column_regex a regex string that, if matches a column name,  will cause that  column to be exclude from plotting (string)  (default: "_ignore$")
 #' @param fontsize_y_text size of y axis text (number)
-#' @param numeric_ylab_margin_right margin between numeric ylab and plot. remove (number)
+#' @param numeric_nudge_numeric_ylab margin between numeric ylab and plot. remove (number)
 #'
 #' @return ggiraph interactive visualisation
 #'
@@ -211,7 +211,7 @@ gg1d_plot <- function(
     legend_title_size = NULL, legend_text_size = NULL, legend_key_size = 0.3,
     vertical_spacing = 0, na_marker = "!", na_marker_size = 4,
     fontsize_y_text = 12,
-    numeric_ylab_margin_right = -2
+    numeric_nudge_numeric_ylab = -2
     ) {
 
   # Assertions --------------------------------------------------------------
@@ -408,7 +408,7 @@ gg1d_plot <- function(
           #ggplot2::annotate(geom = "text", x = -10 - nchar(colname)*8, label=colname, y = mean(sensible_2_breaks(.data[[colname]])))+
           #ggplot2::coord_cartesian(ylim = range(.data[[colname]]), clip = TRUE) +
           ggplot2::ylab(if(legend_title_beautify) beautify(colname) else colname) +
-          theme_numeric(vertical_spacing = vertical_spacing, fontsize_y_text = fontsize_y_text, ylab_margin_right = numeric_ylab_margin_right)
+          theme_numeric(vertical_spacing = vertical_spacing, fontsize_y_text = fontsize_y_text, nudge_numeric_ylab = numeric_nudge_numeric_ylab)
       } else {
         cli::cli_abort("Unsure how to plot coltype: {coltype}")
       }
@@ -468,14 +468,14 @@ theme_categorical <- function(fontsize_y_text = 12, show_legend = TRUE,show_lege
     )
 }
 
-theme_numeric <- function(vertical_spacing = 0, ylab_margin_right = -2, fontsize_y_text = 12) {
+theme_numeric <- function(vertical_spacing = 0, nudge_numeric_ylab = 2, fontsize_y_text = 12) {
   ggplot2::theme_minimal() %+replace%
 
     theme(
       panel.grid = element_blank(),
       axis.title.y.left = element_text(
         angle = 0, vjust = 0.5, size = fontsize_y_text,
-        margin = ggplot2::margin(0, -ylab_margin_right, 0, 0)
+        margin = ggplot2::margin(0, -nudge_numeric_ylab, 0, 0)
         ),
       axis.text.x = element_blank(),
       axis.title.x = element_blank(),

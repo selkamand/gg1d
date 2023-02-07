@@ -40,7 +40,7 @@ gg1d_plot(
   na_marker = "!",
   na_marker_size = 4,
   fontsize_y_text = 12,
-  numeric_ylab_margin_right = -2
+  numeric_nudge_numeric_ylab = -2
 )
 }
 \arguments{
@@ -114,7 +114,7 @@ Options are \code{alphabetical} or \code{frequency}}
 
 \item{fontsize_y_text}{size of y axis text (number)}
 
-\item{numeric_ylab_margin_right}{margin between numeric ylab and plot. remove (number)}
+\item{numeric_nudge_numeric_ylab}{margin between numeric ylab and plot. remove (number)}
 }
 \value{
 ggiraph interactive visualisation

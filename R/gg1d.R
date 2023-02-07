@@ -368,7 +368,7 @@ gg1d_plot <- function(
 
       # Draw the actual plot
       if (coltype == "categorical") {
-        gg <- ggplot(.data, aes(x = .data[[col_id]], y = "", fill = .data[[colname]])) +
+        gg <- ggplot(.data, aes(x = .data[[col_id]], y = {{colname}}, fill = .data[[colname]])) +
           ggiraph::geom_tile_interactive(mapping = aes_interactive, width = width, na.rm = TRUE) +
           ggplot2::scale_x_discrete(drop = drop_unused_id_levels) +
           ggplot2::ylab(if(legend_title_beautify) beautify(colname) else colname) +
@@ -443,13 +443,14 @@ theme_categorical <- function(show_legend = TRUE, show_legend_titles = FALSE, le
 
     theme(
       panel.grid = element_blank(),
-      axis.text.y.left = element_blank(),
+      #axis.text.y.left = element_blank(),
       axis.text.x = element_blank(),
       axis.title.x = element_blank(),
-      axis.title.y = element_text(
-        angle = 0, vjust = 0.5,
-        margin = ggplot2::margin(0, -2, 0, 0)
-        ),
+      axis.title.y = element_blank(),
+      # axis.title.y = element_text(
+      #   angle = 0, vjust = 0.5,
+      #   margin = ggplot2::margin(0, -2, 0, 0)
+      #   ),
       legend.key.size = ggplot2::unit(legend_key_size, "line"),
       legend.title = if(show_legend_titles) element_text(size = legend_title_size, face = "bold", hjust = 0) else element_blank(),
       legend.justification = "left",

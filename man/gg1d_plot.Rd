@@ -38,7 +38,9 @@ gg1d_plot(
   legend_key_size = 0.3,
   vertical_spacing = 0,
   na_marker = "!",
-  na_marker_size = 4
+  na_marker_size = 4,
+  fontsize_y_text = 12,
+  numeric_ylab_margin_right = -2
 )
 }
 \arguments{
@@ -109,6 +111,10 @@ Options are \code{alphabetical} or \code{frequency}}
 \item{na_marker}{what text should be added to NA values for numeric variables to indicate the value is NA, not 0 (string)}
 
 \item{na_marker_size}{how large should the na_marker be (number)}
+
+\item{fontsize_y_text}{size of y axis text (number)}
+
+\item{numeric_ylab_margin_right}{margin between numeric ylab and plot. remove (number)}
 }
 \value{
 ggiraph interactive visualisation

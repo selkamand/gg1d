@@ -38,7 +38,7 @@ column_info_table <- function(.data, maxlevels = 6, col_id = NULL, cols_to_plot,
   df_column_info[["plottable"]] <-
     !lgl_too_many_levels & !df_column_info$coltype %in% c("invalid", "id", "tooltip") &
     (is.null(cols_to_plot) | df_column_info$colnames %in% c(cols_to_plot)) &
-    (grepl(x=df_column_info$colnames, pattern = ignore_column_regex))
+    (!grepl(x=df_column_info$colnames, pattern = ignore_column_regex))
 
 
 
@@ -228,7 +228,7 @@ gg1d_plot <- function(
   assertions::assert_string(colours_missing)
   assertions::assert_flag(legend_title_beautify)
   assertions::assert_number(vertical_spacing)
-  assertions::assert_string(ignore_colun_suffix)
+  assertions::assert_string(ignore_column_regex)
 
 
   # Conditional Assertions

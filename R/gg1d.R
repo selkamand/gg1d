@@ -182,7 +182,7 @@ choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colour
 #' @param ignore_column_regex a regex string that, if matches a column name,  will cause that  column to be exclude from plotting (string)  (default: "_ignore$")
 #' @param fontsize_y_text size of y axis text (number)
 #' @param nudge_numeric_ylab margin between numeric ylab and plot. remove (number)
-#'
+#' @param y_axis_position whether y axis should be on left or right side (either 'left' or 'right')
 #' @return ggiraph interactive visualisation
 #'
 #' @examples
@@ -211,7 +211,8 @@ gg1d_plot <- function(
     legend_title_size = NULL, legend_text_size = NULL, legend_key_size = 0.3,
     vertical_spacing = 0, na_marker = "!", na_marker_size = 4,
     fontsize_y_text = 12,
-    nudge_numeric_ylab = -2
+    nudge_numeric_ylab = -2,
+    y_axis_position = c("left", "right")
     ) {
 
   # Assertions --------------------------------------------------------------
@@ -250,6 +251,7 @@ gg1d_plot <- function(
   sort_type <- rlang::arg_match(sort_type)
   legend_position <- rlang::arg_match(legend_position)
   legend_title_position <- rlang::arg_match(legend_title_position)
+  y_axis_position <- rlang::arg_match(y_axis_position)
 
   # Configuration -----------------------------------------------------------
   max_plottable_cols <- 15
@@ -400,7 +402,8 @@ gg1d_plot <- function(
             nrow = legend_nrow,
             ncol = legend_ncol
             )) +
-          ggplot2::scale_fill_manual(values = palette, na.value = colours_missing)
+          ggplot2::scale_fill_manual(values = palette, na.value = colours_missing) +
+          ggplot2::scale_y_discrete(position = y_axis_position)
 
       } else if (coltype == "numeric") {
         #browser()
@@ -411,11 +414,12 @@ gg1d_plot <- function(
             aes(label = na_marker, y = 0), size = na_marker_size, na.rm = TRUE, vjust=0
             ) +
           ggplot2::scale_x_discrete(drop = drop_unused_id_levels) +
-          ggplot2::scale_y_continuous(breaks = sensible_2_breaks(.data[[colname]])) +
+          ggplot2::scale_y_continuous(breaks = sensible_2_breaks(.data[[colname]]), position = y_axis_position) +
           #ggplot2::annotate(geom = "text", x = -10 - nchar(colname)*8, label=colname, y = mean(sensible_2_breaks(.data[[colname]])))+
           #ggplot2::coord_cartesian(ylim = range(.data[[colname]]), clip = TRUE) +
           ggplot2::ylab(if(legend_title_beautify) beautify(colname) else colname) +
           theme_numeric(vertical_spacing = vertical_spacing, fontsize_y_text = fontsize_y_text, nudge_numeric_ylab = nudge_numeric_ylab)
+
       } else {
         cli::cli_abort("Unsure how to plot coltype: {coltype}")
       }
@@ -478,12 +482,17 @@ theme_categorical <- function(fontsize_y_text = 12, show_legend = TRUE,show_lege
 theme_numeric <- function(vertical_spacing = 0, nudge_numeric_ylab = 2, fontsize_y_text = 12) {
   ggplot2::theme_minimal() %+replace%
 
+
     theme(
       panel.grid = element_blank(),
+      axis.title.y.right = element_text(
+        angle = 0, vjust = 0.5, size = fontsize_y_text,
+        margin = ggplot2::margin(0, 0, 0, -nudge_numeric_ylab)
+        ),
       axis.title.y.left = element_text(
         angle = 0, vjust = 0.5, size = fontsize_y_text,
         margin = ggplot2::margin(0, -nudge_numeric_ylab, 0, 0)
-        ),
+      ),
       axis.text.x = element_blank(),
       axis.title.x = element_blank(),
       axis.line.y = element_line(linewidth = 0.3),

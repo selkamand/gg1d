@@ -40,7 +40,8 @@ gg1d_plot(
   na_marker = "!",
   na_marker_size = 4,
   fontsize_y_text = 12,
-  nudge_numeric_ylab = -2
+  nudge_numeric_ylab = -2,
+  y_axis_position = c("left", "right")
 )
 }
 \arguments{
@@ -115,6 +116,8 @@ Options are \code{alphabetical} or \code{frequency}}
 \item{fontsize_y_text}{size of y axis text (number)}
 
 \item{nudge_numeric_ylab}{margin between numeric ylab and plot. remove (number)}
+
+\item{y_axis_position}{whether y axis should be on left or right side (either 'left' or 'right')}
 }
 \value{
 ggiraph interactive visualisation

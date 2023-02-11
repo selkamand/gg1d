@@ -51,7 +51,8 @@ gg1d_plot(
   colours_heatmap_high = "seagreen",
   transform_heatmap = c("identity", "log10", "log2"),
   fontsize_values_heatmap = 3,
-  colours_values_heatmap = "white"
+  colours_values_heatmap = "white",
+  fontsize_barplot_y_numbers = 8
 )
 }
 \arguments{
@@ -148,6 +149,8 @@ Options are \code{alphabetical} or \code{frequency}}
 \item{fontsize_values_heatmap}{font size of text describing values in heatmap (number)}
 
 \item{colours_values_heatmap}{colour of text describing values in heatmap (string)}
+
+\item{fontsize_barplot_y_numbers}{fontsize of the text describing numeric barplot max & min values (number)}
 }
 \value{
 ggiraph interactive visualisation

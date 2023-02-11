@@ -17,10 +17,11 @@ Imports:
     forcats,
     ggiraph,
     ggplot2,
+    ggtext,
     patchwork,
     rank (>= 0.0.0.9000),
     rlang
-Remotes:  
+Remotes: 
     selkamand/assertions,
     selkamand/rank
 Suggests: 

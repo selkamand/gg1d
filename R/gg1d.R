@@ -102,7 +102,7 @@ coltypes <- function(.data, col_id) {
 
 colvalues <- function(.data) {
   vapply(.data, FUN = function(vec) {
-    length(na.omit(unique(vec)))
+    length(stats::na.omit(unique(vec)))
   }, FUN.VALUE = numeric(1))
 }
 
@@ -120,7 +120,7 @@ choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colour
     }
     else if(colname %in% names(palettes)){
       colors <- unlist(palettes[[colname]])
-      assertions::assert_names_include(colors, names = na.omit(unique(data[[colname]])))
+      assertions::assert_names_include(colors, names = stats::na.omit(unique(data[[colname]])))
       return(palettes[[colname]])
     }
     else if (is_lgl){

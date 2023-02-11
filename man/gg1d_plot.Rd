@@ -39,11 +39,19 @@ gg1d_plot(
   legend_key_size = 0.3,
   vertical_spacing = 0,
   na_marker = "!",
-  na_marker_size = 4,
+  na_marker_size = 8,
+  show_na_marker_categorical = FALSE,
+  show_na_marker_heatmap = FALSE,
+  show_values_heatmap = TRUE,
   fontsize_y_text = 12,
   nudge_numeric_ylab = -2,
   y_axis_position = c("left", "right"),
-  legend_orientation_heatmap = c("horizontal", "vertical")
+  legend_orientation_heatmap = c("horizontal", "vertical"),
+  colours_heatmap_low = "purple",
+  colours_heatmap_high = "seagreen",
+  transform_heatmap = c("identity", "log10", "log2"),
+  fontsize_values_heatmap = 3,
+  colours_values_heatmap = "white"
 )
 }
 \arguments{
@@ -117,6 +125,12 @@ Options are \code{alphabetical} or \code{frequency}}
 
 \item{na_marker_size}{how large should the na_marker be (number)}
 
+\item{show_na_marker_categorical}{should a text marker of NA values (e.g. '!') be rendered on tiles with NA values (flag)}
+
+\item{show_na_marker_heatmap}{should a text marker of NA values (e.g. '!') be rendered on tiles with NA values (flag)}
+
+\item{show_values_heatmap}{should quantitative values be displayed on heatmap tiles (flag)}
+
 \item{fontsize_y_text}{size of y axis text (number)}
 
 \item{nudge_numeric_ylab}{margin between numeric ylab and plot - only valid if numeric_plot_type = "bar" (number)}
@@ -124,6 +138,16 @@ Options are \code{alphabetical} or \code{frequency}}
 \item{y_axis_position}{whether y axis should be on left or right side (either 'left' or 'right')}
 
 \item{legend_orientation_heatmap}{should legend orientation be "horizontal" or "vertical"}
+
+\item{colours_heatmap_low}{colour of lowest value in heatmap (string)}
+
+\item{colours_heatmap_high}{colour of highest value in heatmap (string)}
+
+\item{transform_heatmap}{transformation to apply to values before heatmap visualisation. one of 'identity' (no transformation), 'log10', or 'log2'}
+
+\item{fontsize_values_heatmap}{font size of text describing values in heatmap (number)}
+
+\item{colours_values_heatmap}{colour of text describing values in heatmap (string)}
 }
 \value{
 ggiraph interactive visualisation

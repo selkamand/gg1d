@@ -184,7 +184,16 @@ choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colour
 #' @param nudge_numeric_ylab margin between numeric ylab and plot - only valid if numeric_plot_type = "bar" (number)
 #' @param y_axis_position whether y axis should be on left or right side (either 'left' or 'right')
 #' @param numeric_plot_type visual representation of numeric properties. One of 'bar', for bar charts, or 'heatmap' for heatmaps.
+#' @param show_na_marker_categorical should a text marker of NA values (e.g. '!') be rendered on tiles with NA values (flag)
+#' @param show_na_marker_heatmap should a text marker of NA values (e.g. '!') be rendered on tiles with NA values (flag)
+#' @param show_values_heatmap should quantitative values be displayed on heatmap tiles (flag)
+#' @param colours_heatmap_low colour of lowest value in heatmap (string)
+#' @param colours_heatmap_high colour of highest value in heatmap (string)
+#' @param transform_heatmap transformation to apply to values before heatmap visualisation. one of 'identity' (no transformation), 'log10', or 'log2'
+#' @param fontsize_values_heatmap font size of text describing values in heatmap (number)
+#' @param colours_values_heatmap colour of text describing values in heatmap (string)
 #' @param legend_orientation_heatmap should legend orientation be "horizontal" or "vertical"
+#'
 #' @return ggiraph interactive visualisation
 #'
 #' @examples
@@ -214,14 +223,17 @@ gg1d_plot <- function(
     legend_title_size = NULL, legend_text_size = NULL, legend_key_size = 0.3,
     vertical_spacing = 0, na_marker = "!", na_marker_size = 8,
     show_na_marker_categorical = FALSE,
+    show_na_marker_heatmap = FALSE,
+    show_values_heatmap = TRUE,
     fontsize_y_text = 12,
     nudge_numeric_ylab = -2,
     y_axis_position = c("left", "right"),
     legend_orientation_heatmap = c("horizontal", "vertical"),
     colours_heatmap_low = "purple",
-    #colours_heatmap_mid = "blue",
     colours_heatmap_high = "seagreen",
-    transform_heatmap = c("identity", "log10", "log2")
+    transform_heatmap = c("identity", "log10", "log2"),
+    fontsize_values_heatmap = 3,
+    colours_values_heatmap = "white"
     ) {
 
   # Assertions --------------------------------------------------------------
@@ -247,6 +259,11 @@ gg1d_plot <- function(
   assertions::assert_string(colours_heatmap_low)
   #if (!is.null(colours_heatmap_mid)) assertions::assert_string(colours_heatmap_mid)
   assertions::assert_string(colours_heatmap_high)
+  assertions::assert_logical(show_values_heatmap)
+  assertions::assert_number(fontsize_values_heatmap)
+  assertions::assert_string(colours_values_heatmap)
+  assertions::assert_logical(show_na_marker_categorical)
+  assertions::assert_logical(show_na_marker_heatmap)
 
   # Conditional Assertions
   if (!is.null(legend_nrow)) assertions::assert_number(legend_nrow)
@@ -427,8 +444,10 @@ gg1d_plot <- function(
             )) +
           ggplot2::scale_fill_manual(values = palette, na.value = colours_missing) +
           ggplot2::scale_y_discrete(position = y_axis_position)
+      }
 
-      } else if (coltype == "numeric" && numeric_plot_type == "bar") {
+      # Numeric Bar -------------------------------------------------------------------------
+      else if (coltype == "numeric" && numeric_plot_type == "bar") {
         gg <- ggplot2::ggplot(.data, aes(x = .data[[col_id]], y = .data[[colname]])) +
           ggiraph::geom_col_interactive(mapping = aes_interactive, width = width, na.rm = TRUE) +
           ggplot2::geom_text(
@@ -440,10 +459,21 @@ gg1d_plot <- function(
           ggplot2::ylab(if(legend_title_beautify) beautify(colname) else colname) +
           theme_numeric_bar(vertical_spacing = vertical_spacing, fontsize_y_text = fontsize_y_text, nudge_numeric_ylab = nudge_numeric_ylab)
       }
+      # Numeric Heatmap -------------------------------------------------------------------------
       else if (coltype == "numeric" && numeric_plot_type == "heatmap") {
         gg <- ggplot2::ggplot(.data, aes(x = .data[[col_id]], y = {{colname}}, fill = .data[[colname]])) +
           ggiraph::geom_tile_interactive(mapping = aes_interactive, width = width, na.rm = TRUE) +
           ggplot2::scale_x_discrete(drop = drop_unused_id_levels) +
+          {if(show_na_marker_heatmap) {
+            ggplot2::geom_text(
+              data = function(x){x[is.na(x[[colname]]), ,drop=FALSE]},  #only add text where value is NA
+              aes(label = na_marker), size = na_marker_size, na.rm = TRUE, vjust=0.5
+            ) }} +
+          {if(show_values_heatmap) {
+            ggplot2::geom_text(
+              aes(label = .data[[colname]]),
+              size = fontsize_values_heatmap, color = colours_values_heatmap, na.rm = TRUE, vjust=0.5
+            ) }} +
           theme_numeric_heatmap(
             show_legend_titles = show_legend_titles,
             show_legend = show_legend,

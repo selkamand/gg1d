@@ -161,7 +161,7 @@ choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colour
 #' @param width controls how much space is present between bars and tiles within each plot. Can be 0-1 where values of 1 makes bars/tiles take up 100% of available space (no gaps between bars)
 #' @param col_sort column to sort sample order by. By default uses the supplied order of levels in col_id (order of appearance if a character type)
 #' @param tooltip_column_suffix the suffix added to a column name that indicates column should be used as a tooltip (string)
-#' @param relative_height_numeric how many times taller should numeric plots be relative to categorical tile plots (number)
+#' @param relative_height_numeric how many times taller should numeric plots be relative to categorical tile plots. Only taken into account if numeric_plot_type == "bar" (number)
 #' @param show_legend_titles show legend titles (flag)
 #' @param show_legend show the legend (flag)
 #' @param legend_position position of the legend on the plot (string, options are "right", "left", "bottom", "top")
@@ -181,8 +181,10 @@ choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colour
 #' @param vertical_spacing how large should the gap between each data row be (unit = pt) (number)
 #' @param ignore_column_regex a regex string that, if matches a column name,  will cause that  column to be exclude from plotting (string)  (default: "_ignore$")
 #' @param fontsize_y_text size of y axis text (number)
-#' @param nudge_numeric_ylab margin between numeric ylab and plot. remove (number)
+#' @param nudge_numeric_ylab margin between numeric ylab and plot - only valid if numeric_plot_type = "bar" (number)
 #' @param y_axis_position whether y axis should be on left or right side (either 'left' or 'right')
+#' @param numeric_plot_type visual representation of numeric properties. One of 'bar', for bar charts, or 'heatmap' for heatmaps.
+#' @param legend_orientation_heatmap should legend orientation be "horizontal" or "vertical"
 #' @return ggiraph interactive visualisation
 #'
 #' @examples
@@ -207,12 +209,14 @@ gg1d_plot <- function(
     show_legend_titles = FALSE, show_legend = !interactive, legend_position = c("right", "left", "bottom", "top"),
     legend_title_position = c("top", "bottom", "left", "right"),
     legend_title_beautify = TRUE,
+    numeric_plot_type = c('bar', "heatmap"),
     legend_nrow = 4, legend_ncol = NULL,
     legend_title_size = NULL, legend_text_size = NULL, legend_key_size = 0.3,
     vertical_spacing = 0, na_marker = "!", na_marker_size = 4,
     fontsize_y_text = 12,
     nudge_numeric_ylab = -2,
-    y_axis_position = c("left", "right")
+    y_axis_position = c("left", "right"),
+    legend_orientation_heatmap = c("horizontal", "vertical")
     ) {
 
   # Assertions --------------------------------------------------------------
@@ -252,6 +256,11 @@ gg1d_plot <- function(
   legend_position <- rlang::arg_match(legend_position)
   legend_title_position <- rlang::arg_match(legend_title_position)
   y_axis_position <- rlang::arg_match(y_axis_position)
+  numeric_plot_type <- rlang::arg_match(numeric_plot_type)
+  legend_orientation_heatmap <- rlang::arg_match(legend_orientation_heatmap)
+
+  # Ignore relative_height_numeric if plot type is numeric
+  if(numeric_plot_type == "heatmap") relative_height_numeric = 1
 
   # Configuration -----------------------------------------------------------
   max_plottable_cols <- 15
@@ -405,7 +414,7 @@ gg1d_plot <- function(
           ggplot2::scale_fill_manual(values = palette, na.value = colours_missing) +
           ggplot2::scale_y_discrete(position = y_axis_position)
 
-      } else if (coltype == "numeric") {
+      } else if (coltype == "numeric" && numeric_plot_type == "bar") {
         #browser()
         gg <- ggplot2::ggplot(.data, aes(x = .data[[col_id]], y = .data[[colname]])) +
           ggiraph::geom_col_interactive(mapping = aes_interactive, width = width, na.rm = TRUE) +
@@ -415,12 +424,33 @@ gg1d_plot <- function(
             ) +
           ggplot2::scale_x_discrete(drop = drop_unused_id_levels) +
           ggplot2::scale_y_continuous(breaks = sensible_2_breaks(.data[[colname]]), position = y_axis_position) +
-          #ggplot2::annotate(geom = "text", x = -10 - nchar(colname)*8, label=colname, y = mean(sensible_2_breaks(.data[[colname]])))+
-          #ggplot2::coord_cartesian(ylim = range(.data[[colname]]), clip = TRUE) +
           ggplot2::ylab(if(legend_title_beautify) beautify(colname) else colname) +
-          theme_numeric(vertical_spacing = vertical_spacing, fontsize_y_text = fontsize_y_text, nudge_numeric_ylab = nudge_numeric_ylab)
-
-      } else {
+          theme_numeric_bar(vertical_spacing = vertical_spacing, fontsize_y_text = fontsize_y_text, nudge_numeric_ylab = nudge_numeric_ylab)
+      }
+      else if (coltype == "numeric" && numeric_plot_type == "heatmap") {
+        #browser()
+        gg <- ggplot2::ggplot(.data, aes(x = .data[[col_id]], y = {{colname}}, fill = .data[[colname]])) +
+          ggiraph::geom_tile_interactive(mapping = aes_interactive, width = width, na.rm = TRUE) +
+          ggplot2::scale_x_discrete(drop = drop_unused_id_levels) +
+          theme_numeric_heatmap(
+            show_legend_titles = show_legend_titles,
+            show_legend = show_legend,
+            legend_position = legend_position,
+            legend_title_size = legend_title_size,
+            legend_text_size = legend_text_size,
+            legend_key_size = legend_key_size,
+            vertical_spacing = vertical_spacing,
+            fontsize_y_text = fontsize_y_text
+          ) +
+          ggplot2::scale_fill_continuous(
+            guide = ggplot2::guide_colorbar(
+              direction = if(legend_orientation_heatmap == "horizontal") "horizontal" else "vertical",
+              title.position = "top", #if(legend_orientation_heatmap == "horizontal") "top" else "left",
+              title.hjust = 0
+              )
+            )
+      }
+      else {
         cli::cli_abort("Unsure how to plot coltype: {coltype}")
       }
       return(gg)
@@ -466,10 +496,6 @@ theme_categorical <- function(fontsize_y_text = 12, show_legend = TRUE,show_lege
       axis.text.x = element_blank(),
       axis.title.x = element_blank(),
       axis.title.y = element_blank(),
-      # axis.title.y = element_text(
-      #   angle = 0, vjust = 0.5,
-      #   margin = ggplot2::margin(0, -2, 0, 0)
-      #   ),
       legend.key.size = ggplot2::unit(legend_key_size, "line"),
       legend.title = if(show_legend_titles) element_text(size = legend_title_size, face = "bold", hjust = 0) else element_blank(),
       legend.justification = "left",
@@ -479,7 +505,7 @@ theme_categorical <- function(fontsize_y_text = 12, show_legend = TRUE,show_lege
     )
 }
 
-theme_numeric <- function(vertical_spacing = 0, nudge_numeric_ylab = 2, fontsize_y_text = 12) {
+theme_numeric_bar <- function(vertical_spacing = 0, nudge_numeric_ylab = 2, fontsize_y_text = 12) {
   ggplot2::theme_minimal() %+replace%
 
 
@@ -499,6 +525,23 @@ theme_numeric <- function(vertical_spacing = 0, nudge_numeric_ylab = 2, fontsize
       axis.text.y.left = element_text(size = 8),
       axis.ticks.y = element_line(),
       plot.margin = ggplot2::margin(t = 0, r = 0, b = vertical_spacing, l = 0, unit = "pt")
+    )
+}
+
+theme_numeric_heatmap <- function(fontsize_y_text = 12, show_legend = TRUE, legend_position = "right", show_legend_titles = FALSE, legend_title_size = NULL, legend_text_size = NULL, legend_key_size = 0.3, vertical_spacing = 0) {
+  ggplot2::theme_minimal() %+replace%
+
+    theme(
+      panel.grid = element_blank(),
+      axis.text.y.left = element_text(size = fontsize_y_text),
+      axis.text.x = element_blank(),
+      axis.title.x = element_blank(),
+      axis.title.y = element_blank(),
+      legend.title = if (show_legend_titles) element_text(size = legend_title_size, face = "bold", hjust = 0) else element_blank(),
+      legend.justification = "left",
+      legend.text = element_text(size = legend_text_size),
+      legend.position = if(show_legend) legend_position else "none",
+      plot.margin = ggplot2::margin(t = 0, r = 0, b = vertical_spacing, l = 0, unit = "pt"),
     )
 }
 

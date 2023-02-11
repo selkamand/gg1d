@@ -31,6 +31,7 @@ gg1d_plot(
   legend_position = c("right", "left", "bottom", "top"),
   legend_title_position = c("top", "bottom", "left", "right"),
   legend_title_beautify = TRUE,
+  numeric_plot_type = c("bar", "heatmap"),
   legend_nrow = 4,
   legend_ncol = NULL,
   legend_title_size = NULL,
@@ -41,7 +42,8 @@ gg1d_plot(
   na_marker_size = 4,
   fontsize_y_text = 12,
   nudge_numeric_ylab = -2,
-  y_axis_position = c("left", "right")
+  y_axis_position = c("left", "right"),
+  legend_orientation_heatmap = c("horizontal", "vertical")
 )
 }
 \arguments{
@@ -81,7 +83,7 @@ Options are \code{alphabetical} or \code{frequency}}
 
 \item{width}{controls how much space is present between bars and tiles within each plot. Can be 0-1 where values of 1 makes bars/tiles take up 100\% of available space (no gaps between bars)}
 
-\item{relative_height_numeric}{how many times taller should numeric plots be relative to categorical tile plots (number)}
+\item{relative_height_numeric}{how many times taller should numeric plots be relative to categorical tile plots. Only taken into account if numeric_plot_type == "bar" (number)}
 
 \item{tooltip_column_suffix}{the suffix added to a column name that indicates column should be used as a tooltip (string)}
 
@@ -96,6 +98,8 @@ Options are \code{alphabetical} or \code{frequency}}
 \item{legend_title_position}{position of the title of the legend on the plot (string, options are "top", "bottom", "left", "right")}
 
 \item{legend_title_beautify}{beautify legend title (add spaces to snake_case / camelCase & capitalise each word) (flag)}
+
+\item{numeric_plot_type}{visual representation of numeric properties. One of 'bar', for bar charts, or 'heatmap' for heatmaps.}
 
 \item{legend_nrow}{the number of rows in the legend (number)}
 
@@ -115,9 +119,11 @@ Options are \code{alphabetical} or \code{frequency}}
 
 \item{fontsize_y_text}{size of y axis text (number)}
 
-\item{nudge_numeric_ylab}{margin between numeric ylab and plot. remove (number)}
+\item{nudge_numeric_ylab}{margin between numeric ylab and plot - only valid if numeric_plot_type = "bar" (number)}
 
 \item{y_axis_position}{whether y axis should be on left or right side (either 'left' or 'right')}
+
+\item{legend_orientation_heatmap}{should legend orientation be "horizontal" or "vertical"}
 }
 \value{
 ggiraph interactive visualisation

@@ -212,11 +212,16 @@ gg1d_plot <- function(
     numeric_plot_type = c('bar', "heatmap"),
     legend_nrow = 4, legend_ncol = NULL,
     legend_title_size = NULL, legend_text_size = NULL, legend_key_size = 0.3,
-    vertical_spacing = 0, na_marker = "!", na_marker_size = 4,
+    vertical_spacing = 0, na_marker = "!", na_marker_size = 8,
+    show_na_marker_categorical = FALSE,
     fontsize_y_text = 12,
     nudge_numeric_ylab = -2,
     y_axis_position = c("left", "right"),
-    legend_orientation_heatmap = c("horizontal", "vertical")
+    legend_orientation_heatmap = c("horizontal", "vertical"),
+    colours_heatmap_low = "purple",
+    #colours_heatmap_mid = "blue",
+    colours_heatmap_high = "seagreen",
+    transform_heatmap = c("identity", "log10", "log2")
     ) {
 
   # Assertions --------------------------------------------------------------
@@ -239,7 +244,9 @@ gg1d_plot <- function(
   assertions::assert_flag(legend_title_beautify)
   assertions::assert_number(vertical_spacing)
   assertions::assert_string(ignore_column_regex)
-
+  assertions::assert_string(colours_heatmap_low)
+  #if (!is.null(colours_heatmap_mid)) assertions::assert_string(colours_heatmap_mid)
+  assertions::assert_string(colours_heatmap_high)
 
   # Conditional Assertions
   if (!is.null(legend_nrow)) assertions::assert_number(legend_nrow)
@@ -258,6 +265,7 @@ gg1d_plot <- function(
   y_axis_position <- rlang::arg_match(y_axis_position)
   numeric_plot_type <- rlang::arg_match(numeric_plot_type)
   legend_orientation_heatmap <- rlang::arg_match(legend_orientation_heatmap)
+  transform_heatmap <- rlang::arg_match(transform_heatmap)
 
   # Ignore relative_height_numeric if plot type is numeric
   if(numeric_plot_type == "heatmap") relative_height_numeric = 1
@@ -381,8 +389,9 @@ gg1d_plot <- function(
       }
 
 
-
       # Draw the actual plot
+
+      ## Categorical -------------------------------------------------------------
       if (coltype == "categorical") {
         gg <- ggplot(
           .data,
@@ -393,6 +402,11 @@ gg1d_plot <- function(
             )
           ) +
           ggiraph::geom_tile_interactive(mapping = aes_interactive, width = width, na.rm = TRUE) +
+          {if(show_na_marker_categorical) {
+            ggplot2::geom_text(
+            data = function(x){x[is.na(x[[colname]]), ,drop=FALSE]},  #only add text where value is NA
+            aes(label = na_marker), size = na_marker_size, na.rm = TRUE, vjust=0.5
+            ) }} +
           ggplot2::scale_x_discrete(drop = drop_unused_id_levels) +
           #ggplot2::ylab(if(legend_title_beautify) beautify(colname) else colname) +
           theme_categorical(
@@ -415,7 +429,6 @@ gg1d_plot <- function(
           ggplot2::scale_y_discrete(position = y_axis_position)
 
       } else if (coltype == "numeric" && numeric_plot_type == "bar") {
-        #browser()
         gg <- ggplot2::ggplot(.data, aes(x = .data[[col_id]], y = .data[[colname]])) +
           ggiraph::geom_col_interactive(mapping = aes_interactive, width = width, na.rm = TRUE) +
           ggplot2::geom_text(
@@ -428,7 +441,6 @@ gg1d_plot <- function(
           theme_numeric_bar(vertical_spacing = vertical_spacing, fontsize_y_text = fontsize_y_text, nudge_numeric_ylab = nudge_numeric_ylab)
       }
       else if (coltype == "numeric" && numeric_plot_type == "heatmap") {
-        #browser()
         gg <- ggplot2::ggplot(.data, aes(x = .data[[col_id]], y = {{colname}}, fill = .data[[colname]])) +
           ggiraph::geom_tile_interactive(mapping = aes_interactive, width = width, na.rm = TRUE) +
           ggplot2::scale_x_discrete(drop = drop_unused_id_levels) +
@@ -442,10 +454,14 @@ gg1d_plot <- function(
             vertical_spacing = vertical_spacing,
             fontsize_y_text = fontsize_y_text
           ) +
-          ggplot2::scale_fill_continuous(
+          ggplot2::scale_fill_gradient(
+            low = colours_heatmap_low,
+            high = colours_heatmap_high,
+            na.value = colours_missing,
+            trans = transform_heatmap,
             guide = ggplot2::guide_colorbar(
               direction = if(legend_orientation_heatmap == "horizontal") "horizontal" else "vertical",
-              title.position = "top", #if(legend_orientation_heatmap == "horizontal") "top" else "left",
+              title.position = "top",
               title.hjust = 0
               )
             )

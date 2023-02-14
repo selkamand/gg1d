@@ -44,7 +44,6 @@ gg1d_plot(
   show_na_marker_heatmap = FALSE,
   show_values_heatmap = TRUE,
   fontsize_y_text = 12,
-  nudge_numeric_ylab = -2,
   y_axis_position = c("left", "right"),
   legend_orientation_heatmap = c("horizontal", "vertical"),
   colours_heatmap_low = "purple",
@@ -133,8 +132,6 @@ Options are \code{alphabetical} or \code{frequency}}
 \item{show_values_heatmap}{should quantitative values be displayed on heatmap tiles (flag)}
 
 \item{fontsize_y_text}{size of y axis text (number)}
-
-\item{nudge_numeric_ylab}{margin between numeric ylab and plot - only valid if numeric_plot_type = "bar" (number)}
 
 \item{y_axis_position}{whether y axis should be on left or right side (either 'left' or 'right')}
 

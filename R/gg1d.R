@@ -181,7 +181,6 @@ choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colour
 #' @param vertical_spacing how large should the gap between each data row be (unit = pt) (number)
 #' @param ignore_column_regex a regex string that, if matches a column name,  will cause that  column to be exclude from plotting (string)  (default: "_ignore$")
 #' @param fontsize_y_text size of y axis text (number)
-#' @param nudge_numeric_ylab margin between numeric ylab and plot - only valid if numeric_plot_type = "bar" (number)
 #' @param y_axis_position whether y axis should be on left or right side (either 'left' or 'right')
 #' @param numeric_plot_type visual representation of numeric properties. One of 'bar', for bar charts, or 'heatmap' for heatmaps.
 #' @param show_na_marker_categorical should a text marker of NA values (e.g. '!') be rendered on tiles with NA values (flag)
@@ -226,7 +225,6 @@ gg1d_plot <- function(
     show_na_marker_heatmap = FALSE,
     show_values_heatmap = TRUE,
     fontsize_y_text = 12,
-    nudge_numeric_ylab = -2,
     y_axis_position = c("left", "right"),
     legend_orientation_heatmap = c("horizontal", "vertical"),
     colours_heatmap_low = "purple",
@@ -350,6 +348,7 @@ gg1d_plot <- function(
   }
 
 
+  #browser()
   # Plot --------------------------------------------------------------------
   if (verbose) cli::cli_h1("Generating Plot")
   plottable_cols <- sum(df_col_info$plottable == TRUE)
@@ -465,7 +464,7 @@ gg1d_plot <- function(
             expand = c(0,0)
           ) +
           #ggplot2::ylab(if(legend_title_beautify) beautify(colname) else colname) +
-          theme_numeric_bar(vertical_spacing = vertical_spacing, fontsize_y_text = fontsize_y_text, nudge_numeric_ylab = nudge_numeric_ylab)
+          theme_numeric_bar(vertical_spacing = vertical_spacing, fontsize_y_text = fontsize_y_text)
       }
       # Numeric Heatmap -------------------------------------------------------------------------
       else if (coltype == "numeric" && numeric_plot_type == "heatmap") {
@@ -559,7 +558,7 @@ theme_categorical <- function(fontsize_y_text = 12, show_legend = TRUE,show_lege
     )
 }
 
-theme_numeric_bar <- function(vertical_spacing = 0, nudge_numeric_ylab = 2, fontsize_y_text = 12) {
+theme_numeric_bar <- function(vertical_spacing = 0, fontsize_y_text = 12) {
   ggplot2::theme_minimal() %+replace%
 
 
@@ -567,7 +566,7 @@ theme_numeric_bar <- function(vertical_spacing = 0, nudge_numeric_ylab = 2, font
       panel.grid = element_blank(),
       axis.title.y.right = element_text(
         angle = 0, vjust = 0.5, size = fontsize_y_text,
-        margin = ggplot2::margin(0, 0, 0, -nudge_numeric_ylab)
+        margin = ggplot2::margin(0, 0, 0, 0)
         ),
       axis.title.y = element_blank(),
       axis.text.x = element_blank(),

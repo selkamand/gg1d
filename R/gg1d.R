@@ -181,7 +181,6 @@ choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colour
 #' @param vertical_spacing how large should the gap between each data row be (unit = pt) (number)
 #' @param ignore_column_regex a regex string that, if matches a column name,  will cause that  column to be exclude from plotting (string)  (default: "_ignore$")
 #' @param fontsize_y_text size of y axis text (number)
-#' @param nudge_numeric_ylab margin between numeric ylab and plot - only valid if numeric_plot_type = "bar" (number)
 #' @param y_axis_position whether y axis should be on left or right side (either 'left' or 'right')
 #' @param numeric_plot_type visual representation of numeric properties. One of 'bar', for bar charts, or 'heatmap' for heatmaps.
 #' @param show_na_marker_categorical should a text marker of NA values (e.g. '!') be rendered on tiles with NA values (flag)
@@ -193,7 +192,7 @@ choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colour
 #' @param fontsize_values_heatmap font size of text describing values in heatmap (number)
 #' @param colours_values_heatmap colour of text describing values in heatmap (string)
 #' @param legend_orientation_heatmap should legend orientation be "horizontal" or "vertical"
-#'
+#' @param fontsize_barplot_y_numbers fontsize of the text describing numeric barplot max & min values (number)
 #' @return ggiraph interactive visualisation
 #'
 #' @examples
@@ -226,14 +225,14 @@ gg1d_plot <- function(
     show_na_marker_heatmap = FALSE,
     show_values_heatmap = TRUE,
     fontsize_y_text = 12,
-    nudge_numeric_ylab = -2,
     y_axis_position = c("left", "right"),
     legend_orientation_heatmap = c("horizontal", "vertical"),
     colours_heatmap_low = "purple",
     colours_heatmap_high = "seagreen",
     transform_heatmap = c("identity", "log10", "log2"),
     fontsize_values_heatmap = 3,
-    colours_values_heatmap = "white"
+    colours_values_heatmap = "white",
+    fontsize_barplot_y_numbers = 8
     ) {
 
   # Assertions --------------------------------------------------------------
@@ -257,13 +256,13 @@ gg1d_plot <- function(
   assertions::assert_number(vertical_spacing)
   assertions::assert_string(ignore_column_regex)
   assertions::assert_string(colours_heatmap_low)
-  #if (!is.null(colours_heatmap_mid)) assertions::assert_string(colours_heatmap_mid)
   assertions::assert_string(colours_heatmap_high)
   assertions::assert_logical(show_values_heatmap)
   assertions::assert_number(fontsize_values_heatmap)
   assertions::assert_string(colours_values_heatmap)
   assertions::assert_logical(show_na_marker_categorical)
   assertions::assert_logical(show_na_marker_heatmap)
+  assertions::assert_number(fontsize_barplot_y_numbers)
 
   # Conditional Assertions
   if (!is.null(legend_nrow)) assertions::assert_number(legend_nrow)
@@ -347,6 +346,7 @@ gg1d_plot <- function(
     }
     .data[[col_id]] <- forcats::fct_reorder(.data[[col_id]], rank::smartrank(.data[[col_sort]], sort_by = sort_type, desc = desc, verbose = FALSE))
   }
+
 
 
   # Plot --------------------------------------------------------------------
@@ -448,6 +448,7 @@ gg1d_plot <- function(
 
       # Numeric Bar -------------------------------------------------------------------------
       else if (coltype == "numeric" && numeric_plot_type == "bar") {
+        breaks <- sensible_3_breaks(.data[[colname]])
         gg <- ggplot2::ggplot(.data, aes(x = .data[[col_id]], y = .data[[colname]])) +
           ggiraph::geom_col_interactive(mapping = aes_interactive, width = width, na.rm = TRUE) +
           ggplot2::geom_text(
@@ -455,9 +456,15 @@ gg1d_plot <- function(
             aes(label = na_marker, y = 0), size = na_marker_size, na.rm = TRUE, vjust=0
             ) +
           ggplot2::scale_x_discrete(drop = drop_unused_id_levels) +
-          ggplot2::scale_y_continuous(breaks = sensible_2_breaks(.data[[colname]]), position = y_axis_position) +
-          ggplot2::ylab(if(legend_title_beautify) beautify(colname) else colname) +
-          theme_numeric_bar(vertical_spacing = vertical_spacing, fontsize_y_text = fontsize_y_text, nudge_numeric_ylab = nudge_numeric_ylab)
+          ggplot2::scale_y_continuous(
+            breaks = sensible_3_breaks(.data[[colname]]),
+            minor_breaks = mean(sensible_3_breaks(.data[[colname]])),
+            labels = sensible_3_labels(.data[[colname]], axis_label = colname, fontsize_numbers = fontsize_barplot_y_numbers),
+            position = y_axis_position,
+            expand = c(0,0)
+          ) +
+          #ggplot2::ylab(if(legend_title_beautify) beautify(colname) else colname) +
+          theme_numeric_bar(vertical_spacing = vertical_spacing, fontsize_y_text = fontsize_y_text)
       }
       # Numeric Heatmap -------------------------------------------------------------------------
       else if (coltype == "numeric" && numeric_plot_type == "heatmap") {
@@ -551,7 +558,7 @@ theme_categorical <- function(fontsize_y_text = 12, show_legend = TRUE,show_lege
     )
 }
 
-theme_numeric_bar <- function(vertical_spacing = 0, nudge_numeric_ylab = 2, fontsize_y_text = 12) {
+theme_numeric_bar <- function(vertical_spacing = 0, fontsize_y_text = 12) {
   ggplot2::theme_minimal() %+replace%
 
 
@@ -559,18 +566,16 @@ theme_numeric_bar <- function(vertical_spacing = 0, nudge_numeric_ylab = 2, font
       panel.grid = element_blank(),
       axis.title.y.right = element_text(
         angle = 0, vjust = 0.5, size = fontsize_y_text,
-        margin = ggplot2::margin(0, 0, 0, -nudge_numeric_ylab)
+        margin = ggplot2::margin(0, 0, 0, 0)
         ),
-      axis.title.y.left = element_text(
-        angle = 0, vjust = 0.5, size = fontsize_y_text,
-        margin = ggplot2::margin(0, -nudge_numeric_ylab, 0, 0)
-      ),
+      axis.title.y = element_blank(),
       axis.text.x = element_blank(),
       axis.title.x = element_blank(),
       axis.line.y = element_line(linewidth = 0.3),
-      axis.text.y.left = element_text(size = 8),
-      axis.ticks.y = element_line(),
-      plot.margin = ggplot2::margin(t = 0, r = 0, b = vertical_spacing, l = 0, unit = "pt")
+      axis.line.x = element_blank(),
+      axis.text.y.left = ggtext::element_markdown(size = fontsize_y_text),
+      axis.ticks.y = element_blank(),
+      plot.margin = ggplot2::margin(t = 5, r = 0, b = vertical_spacing + 5, l = 0, unit = "pt")
     )
 }
 
@@ -608,6 +613,22 @@ sensible_2_breaks <- function(vector){
   upper <- max(vector, na.rm = TRUE)
   lower <- min(0, min(vector, na.rm = TRUE), na.rm = TRUE)
   c(upper, lower)
+}
+
+sensible_3_breaks <- function(vector){
+  upper <- max(vector, na.rm = TRUE)
+  lower <- min(0, min(vector, na.rm = TRUE), na.rm = TRUE)
+  middle = mean(c(upper, lower))
+  c(upper, middle, lower)
+}
+
+sensible_3_labels <- function(vector, axis_label, fontsize_numbers = 7){
+  upper <- max(vector, na.rm = TRUE)
+  lower <- min(0, min(vector, na.rm = TRUE), na.rm = TRUE)
+  upper <- paste0("<span style = 'font-size: ",fontsize_numbers,"pt'>",upper, "</span>")
+  lower <- paste0("<span style = 'font-size: ",fontsize_numbers,"pt'>",lower, "</span>")
+  #middle = mean(c(upper, lower)
+  as.character(c(upper, axis_label, lower))
 }
 
 

@@ -348,7 +348,7 @@ gg1d_plot <- function(
   }
 
 
-  #browser()
+
   # Plot --------------------------------------------------------------------
   if (verbose) cli::cli_h1("Generating Plot")
   plottable_cols <- sum(df_col_info$plottable == TRUE)

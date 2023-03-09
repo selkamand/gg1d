@@ -449,6 +449,8 @@ gg1d_plot <- function(
       # Numeric Bar -------------------------------------------------------------------------
       else if (coltype == "numeric" && numeric_plot_type == "bar") {
         breaks <- sensible_3_breaks(.data[[colname]])
+        labels <- sensible_3_labels(.data[[colname]], axis_label = colname, fontsize_numbers = fontsize_barplot_y_numbers)
+
         gg <- ggplot2::ggplot(.data, aes(x = .data[[col_id]], y = .data[[colname]])) +
           ggiraph::geom_col_interactive(mapping = aes_interactive, width = width, na.rm = TRUE) +
           ggplot2::geom_text(
@@ -457,9 +459,9 @@ gg1d_plot <- function(
             ) +
           ggplot2::scale_x_discrete(drop = drop_unused_id_levels) +
           ggplot2::scale_y_continuous(
-            breaks = sensible_3_breaks(.data[[colname]]),
-            minor_breaks = mean(sensible_3_breaks(.data[[colname]])),
-            labels = sensible_3_labels(.data[[colname]], axis_label = colname, fontsize_numbers = fontsize_barplot_y_numbers),
+            breaks = breaks,
+            #minor_breaks = mean(sensible_3_breaks(.data[[colname]])),
+            labels = labels,
             position = y_axis_position,
             expand = c(0,0)
           ) +
@@ -619,14 +621,24 @@ sensible_3_breaks <- function(vector){
   upper <- max(vector, na.rm = TRUE)
   lower <- min(0, min(vector, na.rm = TRUE), na.rm = TRUE)
   middle = mean(c(upper, lower))
-  c(upper, middle, lower)
+
+  breaks <- c(upper, middle, lower)
+
+  if(upper == lower){
+    return(lower)
+  }
+
+  return(breaks)
 }
 
 sensible_3_labels <- function(vector, axis_label, fontsize_numbers = 7){
   upper <- max(vector, na.rm = TRUE)
   lower <- min(0, min(vector, na.rm = TRUE), na.rm = TRUE)
+  if (lower == upper)
+    return(axis_label)
   upper <- paste0("<span style = 'font-size: ",fontsize_numbers,"pt'>",upper, "</span>")
   lower <- paste0("<span style = 'font-size: ",fontsize_numbers,"pt'>",lower, "</span>")
+
   #middle = mean(c(upper, lower)
   as.character(c(upper, axis_label, lower))
 }

@@ -640,6 +640,10 @@ sensible_3_labels <- function(vector, axis_label, fontsize_numbers = 7){
   upper <- paste0("<span style = 'font-size: ",fontsize_numbers,"pt'>",upper, "</span>")
   lower <- paste0("<span style = 'font-size: ",fontsize_numbers,"pt'>",lower, "</span>")
 
+  # Empty upper and lower
+  upper <- ""
+  lower <- ""
+
   #middle = mean(c(upper, lower)
   as.character(c(upper, axis_label, lower))
 }

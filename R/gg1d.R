@@ -576,6 +576,7 @@ theme_numeric_bar <- function(vertical_spacing = 0, fontsize_y_text = 12) {
       axis.line.y = element_line(linewidth = 0.3),
       axis.line.x = element_blank(),
       axis.text.y.left = ggtext::element_markdown(size = fontsize_y_text),
+      axis.text.y.right = ggtext::element_markdown(size = fontsize_y_text),
       axis.ticks.y = element_blank(),
       plot.margin = ggplot2::margin(t = 5, r = 0, b = vertical_spacing + 5, l = 0, unit = "pt")
     )

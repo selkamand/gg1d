@@ -451,7 +451,6 @@ gg1d_plot <- function(
         breaks <- sensible_3_breaks(.data[[colname]])
         labels <- sensible_3_labels(.data[[colname]], axis_label = colname, fontsize_numbers = fontsize_barplot_y_numbers)
 
-        #browser()
         gg <- ggplot2::ggplot(.data, aes(x = .data[[col_id]], y = .data[[colname]])) +
           ggiraph::geom_col_interactive(mapping = aes_interactive, width = width, na.rm = TRUE) +
           ggplot2::geom_text(

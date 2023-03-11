@@ -548,6 +548,7 @@ theme_categorical <- function(fontsize_y_text = 12, show_legend = TRUE,show_lege
     theme(
       panel.grid = element_blank(),
       axis.text.y.left = element_text(size = fontsize_y_text),
+      axis.text.y.right = element_text(size = fontsize_y_text),
       axis.text.x = element_blank(),
       axis.title.x = element_blank(),
       axis.title.y = element_blank(),
@@ -556,6 +557,7 @@ theme_categorical <- function(fontsize_y_text = 12, show_legend = TRUE,show_lege
       legend.justification = "left",
       legend.text = element_text(size = legend_text_size),
       legend.position = if(show_legend) legend_position else "none",
+      strip.placement = "outside",
       plot.margin = ggplot2::margin(t = 0, r = 0, b = vertical_spacing, l = 0, unit = "pt"),
     )
 }
@@ -563,13 +565,8 @@ theme_categorical <- function(fontsize_y_text = 12, show_legend = TRUE,show_lege
 theme_numeric_bar <- function(vertical_spacing = 0, fontsize_y_text = 12) {
   ggplot2::theme_minimal() %+replace%
 
-
     theme(
       panel.grid = element_blank(),
-      # axis.title.y.right = element_text(
-      #   angle = 0, vjust = 0.5, size = fontsize_y_text,
-      #   margin = ggplot2::margin(0, 0, 0, 0)
-      #   ),
       axis.title.y = element_blank(),
       axis.title.y.right = element_blank(),
       axis.text.x = element_blank(),
@@ -579,6 +576,7 @@ theme_numeric_bar <- function(vertical_spacing = 0, fontsize_y_text = 12) {
       axis.text.y.left = ggtext::element_markdown(size = fontsize_y_text),
       axis.text.y.right = ggtext::element_markdown(size = fontsize_y_text, hjust = 0),
       axis.ticks.y = element_blank(),
+      strip.placement = "outside",
       plot.margin = ggplot2::margin(t = 5, r = 0, b = vertical_spacing + 5, l = 0, unit = "pt")
     )
 }
@@ -596,7 +594,8 @@ theme_numeric_heatmap <- function(fontsize_y_text = 12, show_legend = TRUE, lege
       legend.justification = "left",
       legend.text = element_text(size = legend_text_size),
       legend.position = if(show_legend) legend_position else "none",
-      plot.margin = ggplot2::margin(t = 0, r = 0, b = vertical_spacing, l = 0, unit = "pt"),
+      strip.placement = "outside",
+      plot.margin = ggplot2::margin(t = 0, r = 0, b = vertical_spacing, l = 0, unit = "pt")
     )
 }
 

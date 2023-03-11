@@ -347,8 +347,6 @@ gg1d_plot <- function(
     .data[[col_id]] <- forcats::fct_reorder(.data[[col_id]], rank::smartrank(.data[[col_sort]], sort_by = sort_type, desc = desc, verbose = FALSE))
   }
 
-
-
   # Plot --------------------------------------------------------------------
   if (verbose) cli::cli_h1("Generating Plot")
   plottable_cols <- sum(df_col_info$plottable == TRUE)
@@ -361,6 +359,12 @@ gg1d_plot <- function(
   if (limit_plots && plottable_cols > max_plottable_cols) {
     cli::cli_abort("Autoplotting > 15 fields by `gg1d_plot` is not recommended (visualisation ends up very squished). If you're certain you want to proceed, set limit_plots = `FALSE`. Alternatively, use `cols_to_plot` to specify <=15 columns within your dataset.")
   }
+
+  # Make sure theres at least 1 plottable column
+  if(plottable_cols == 0){
+   cli::cli_abort("No plottable columns found")
+  }
+
 
   gglist <- lapply(
     X = seq_len(nrow(df_col_info)),
@@ -380,8 +384,6 @@ gg1d_plot <- function(
       } else {
         if (verbose) cli::cli_alert_success("{.success Plotting} column {.strong {colname}}")
       }
-
-
 
       # Create interactive geom aesthetics
       if(is.na(coltooltip)){
@@ -404,7 +406,6 @@ gg1d_plot <- function(
           tooltip = .data[[coltooltip]]
         )
       }
-
 
       # Draw the actual plot
 
@@ -445,7 +446,6 @@ gg1d_plot <- function(
           ggplot2::scale_fill_manual(values = palette, na.value = colours_missing) +
           ggplot2::scale_y_discrete(position = y_axis_position)
       }
-
       # Numeric Bar -------------------------------------------------------------------------
       else if (coltype == "numeric" && numeric_plot_type == "bar") {
         breaks <- sensible_3_breaks(.data[[colname]])

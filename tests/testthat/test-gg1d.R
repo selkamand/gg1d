@@ -6,3 +6,10 @@ test_that("gg1d works even if col only has 1 valid numeric column", {
   expect_error(suppressWarnings(suppressMessages(gg1d_plot(df, cols_to_plot="col1"))), NA)
   expect_error(suppressMessages(gg1d_plot(df, cols_to_plot="col2")), NA)
 })
+
+
+test_that("gg1d throws error if no plottable coluns  even if col only has 1 valid numeric column", {
+  expect_error(gg1d_plot(data.frame(), verbose = FALSE), "No plottable columns found")
+})
+
+

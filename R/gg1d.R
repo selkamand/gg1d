@@ -566,17 +566,18 @@ theme_numeric_bar <- function(vertical_spacing = 0, fontsize_y_text = 12) {
 
     theme(
       panel.grid = element_blank(),
-      axis.title.y.right = element_text(
-        angle = 0, vjust = 0.5, size = fontsize_y_text,
-        margin = ggplot2::margin(0, 0, 0, 0)
-        ),
+      # axis.title.y.right = element_text(
+      #   angle = 0, vjust = 0.5, size = fontsize_y_text,
+      #   margin = ggplot2::margin(0, 0, 0, 0)
+      #   ),
       axis.title.y = element_blank(),
+      axis.title.y.right = element_blank(),
       axis.text.x = element_blank(),
       axis.title.x = element_blank(),
       axis.line.y = element_line(linewidth = 0.3),
       axis.line.x = element_blank(),
       axis.text.y.left = ggtext::element_markdown(size = fontsize_y_text),
-      axis.text.y.right = ggtext::element_markdown(size = fontsize_y_text),
+      axis.text.y.right = ggtext::element_markdown(size = fontsize_y_text, hjust = 0),
       axis.ticks.y = element_blank(),
       plot.margin = ggplot2::margin(t = 5, r = 0, b = vertical_spacing + 5, l = 0, unit = "pt")
     )
@@ -639,10 +640,6 @@ sensible_3_labels <- function(vector, axis_label, fontsize_numbers = 7){
     return(axis_label)
   upper <- paste0("<span style = 'font-size: ",fontsize_numbers,"pt'>",upper, "</span>")
   lower <- paste0("<span style = 'font-size: ",fontsize_numbers,"pt'>",lower, "</span>")
-
-  # Empty upper and lower
-  upper <- ""
-  lower <- ""
 
   #middle = mean(c(upper, lower)
   as.character(c(upper, axis_label, lower))

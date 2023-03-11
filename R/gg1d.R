@@ -449,7 +449,11 @@ gg1d_plot <- function(
       # Numeric Bar -------------------------------------------------------------------------
       else if (coltype == "numeric" && numeric_plot_type == "bar") {
         breaks <- sensible_3_breaks(.data[[colname]])
-        labels <- sensible_3_labels(.data[[colname]], axis_label = colname, fontsize_numbers = fontsize_barplot_y_numbers)
+        labels <- sensible_3_labels(
+          .data[[colname]],
+          axis_label = if(legend_title_beautify) beautify(colname) else colname,
+          fontsize_numbers = fontsize_barplot_y_numbers
+          )
 
         gg <- ggplot2::ggplot(.data, aes(x = .data[[col_id]], y = .data[[colname]])) +
           ggiraph::geom_col_interactive(mapping = aes_interactive, width = width, na.rm = TRUE) +
@@ -470,9 +474,14 @@ gg1d_plot <- function(
       }
       # Numeric Heatmap -------------------------------------------------------------------------
       else if (coltype == "numeric" && numeric_plot_type == "heatmap") {
-        gg <- ggplot2::ggplot(.data, aes(x = .data[[col_id]], y = {{colname}}, fill = .data[[colname]])) +
+        gg <- ggplot2::ggplot(.data, aes(
+            x = .data[[col_id]],
+            y = if(legend_title_beautify) beautify(colname) else colname,
+            fill = .data[[colname]])
+          ) +
           ggiraph::geom_tile_interactive(mapping = aes_interactive, width = width, na.rm = TRUE) +
           ggplot2::scale_x_discrete(drop = drop_unused_id_levels) +
+          ggplot2::scale_y_discrete(position = y_axis_position) +
           {if(show_na_marker_heatmap) {
             ggplot2::geom_text(
               data = function(x){x[is.na(x[[colname]]), ,drop=FALSE]},  #only add text where value is NA
@@ -586,7 +595,7 @@ theme_numeric_heatmap <- function(fontsize_y_text = 12, show_legend = TRUE, lege
 
     theme(
       panel.grid = element_blank(),
-      axis.text.y.left = element_text(size = fontsize_y_text),
+      axis.text.y = element_text(size = fontsize_y_text),
       axis.text.x = element_blank(),
       axis.title.x = element_blank(),
       axis.title.y = element_blank(),

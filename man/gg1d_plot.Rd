@@ -51,7 +51,8 @@ gg1d_plot(
   transform_heatmap = c("identity", "log10", "log2"),
   fontsize_values_heatmap = 3,
   colours_values_heatmap = "white",
-  fontsize_barplot_y_numbers = 8
+  fontsize_barplot_y_numbers = 8,
+  add_constant_invisible_facet = FALSE
 )
 }
 \arguments{
@@ -148,6 +149,8 @@ Options are \code{alphabetical} or \code{frequency}}
 \item{colours_values_heatmap}{colour of text describing values in heatmap (string)}
 
 \item{fontsize_barplot_y_numbers}{fontsize of the text describing numeric barplot max & min values (number)}
+
+\item{add_constant_invisible_facet}{add invisible y axis constant facet (flag)}
 }
 \value{
 ggiraph interactive visualisation

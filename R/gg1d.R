@@ -180,7 +180,7 @@ choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colour
 #' @param na_marker_size how large should the na_marker be (number)
 #' @param vertical_spacing how large should the gap between each data row be (unit = pt) (number)
 #' @param ignore_column_regex a regex string that, if matches a column name,  will cause that  column to be exclude from plotting (string)  (default: "_ignore$")
-#' @param fontsize_y_title size of y axis titles (number)
+#' @param fontsize_y_text size of y axis text (number)
 #' @param y_axis_position whether y axis should be on left or right side (either 'left' or 'right')
 #' @param numeric_plot_type visual representation of numeric properties. One of 'bar', for bar charts, or 'heatmap' for heatmaps.
 #' @param show_na_marker_categorical should a text marker of NA values (e.g. '!') be rendered on tiles with NA values (flag)
@@ -193,8 +193,6 @@ choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colour
 #' @param colours_values_heatmap colour of text describing values in heatmap (string)
 #' @param legend_orientation_heatmap should legend orientation be "horizontal" or "vertical"
 #' @param fontsize_barplot_y_numbers fontsize of the text describing numeric barplot max & min values (number)
-#' @param add_constant_invisible_facet add invisible y axis constant facet (flag)
-#' @param return_gglist Instead of returning pre-rendered grobs, return a list containing a 'plotlist' comprising of each plot as a gg objects, and 'legendlist' containing the legends of these plots (flag)
 #' @return ggiraph interactive visualisation
 #'
 #' @examples
@@ -226,7 +224,7 @@ gg1d_plot <- function(
     show_na_marker_categorical = FALSE,
     show_na_marker_heatmap = FALSE,
     show_values_heatmap = TRUE,
-    fontsize_y_title = 12,
+    fontsize_y_text = 12,
     y_axis_position = c("left", "right"),
     legend_orientation_heatmap = c("horizontal", "vertical"),
     colours_heatmap_low = "purple",
@@ -234,10 +232,9 @@ gg1d_plot <- function(
     transform_heatmap = c("identity", "log10", "log2"),
     fontsize_values_heatmap = 3,
     colours_values_heatmap = "white",
-    fontsize_barplot_y_numbers = 8,
-    add_constant_invisible_facet = FALSE,
-    return_gglist = FALSE
+    fontsize_barplot_y_numbers = 8
     ) {
+
   # Assertions --------------------------------------------------------------
   assertions::assert_dataframe(.data)
   assertions::assert_number(maxlevels)
@@ -266,9 +263,6 @@ gg1d_plot <- function(
   assertions::assert_logical(show_na_marker_categorical)
   assertions::assert_logical(show_na_marker_heatmap)
   assertions::assert_number(fontsize_barplot_y_numbers)
-  assertions::assert_flag(add_constant_invisible_facet)
-  assertions::assert_number(fontsize_y_title)
-  assertions::assert_flag(return_gglist)
 
   # Conditional Assertions
   if (!is.null(legend_nrow)) assertions::assert_number(legend_nrow)
@@ -432,7 +426,7 @@ gg1d_plot <- function(
             aes(label = na_marker), size = na_marker_size, na.rm = TRUE, vjust=0.5
             ) }} +
           ggplot2::scale_x_discrete(drop = drop_unused_id_levels) +
-          ggplot2::ylab(if(legend_title_beautify) beautify(colname) else colname) +
+          #ggplot2::ylab(if(legend_title_beautify) beautify(colname) else colname) +
           theme_categorical(
             show_legend_titles = show_legend_titles,
             show_legend = show_legend,
@@ -441,7 +435,7 @@ gg1d_plot <- function(
             legend_text_size = legend_text_size,
             legend_key_size = legend_key_size,
             vertical_spacing = vertical_spacing,
-            fontsize_y_title = fontsize_y_title
+            fontsize_y_text = fontsize_y_text
             ) +
           ggplot2::guides(fill = ggplot2::guide_legend(
             title.position = legend_title_position,
@@ -454,8 +448,12 @@ gg1d_plot <- function(
       }
       # Numeric Bar -------------------------------------------------------------------------
       else if (coltype == "numeric" && numeric_plot_type == "bar") {
-        breaks <- sensible_2_breaks(.data[[colname]])
-        #labels <- sensible_3_labels(.data[[colname]])
+        breaks <- sensible_3_breaks(.data[[colname]])
+        labels <- sensible_3_labels(
+          .data[[colname]],
+          axis_label = if(legend_title_beautify) beautify(colname) else colname,
+          fontsize_numbers = fontsize_barplot_y_numbers
+          )
 
         gg <- ggplot2::ggplot(.data, aes(x = .data[[col_id]], y = .data[[colname]])) +
           ggiraph::geom_col_interactive(mapping = aes_interactive, width = width, na.rm = TRUE) +
@@ -467,13 +465,12 @@ gg1d_plot <- function(
           ggplot2::scale_y_continuous(
             breaks = breaks,
             #minor_breaks = mean(sensible_3_breaks(.data[[colname]])),
-            #labels = labels,
+            labels = labels,
             position = y_axis_position,
             expand = c(0,0)
           ) +
-          ggplot2::ylab(if(legend_title_beautify) beautify(colname) else colname) +
           #ggplot2::ylab(if(legend_title_beautify) beautify(colname) else colname) +
-          theme_numeric_bar(vertical_spacing = vertical_spacing, fontsize_y_text = fontsize_barplot_y_numbers, fontsize_y_title = fontsize_y_title)
+          theme_numeric_bar(vertical_spacing = vertical_spacing, fontsize_y_text = fontsize_y_text)
       }
       # Numeric Heatmap -------------------------------------------------------------------------
       else if (coltype == "numeric" && numeric_plot_type == "heatmap") {
@@ -495,7 +492,6 @@ gg1d_plot <- function(
               aes(label = .data[[colname]]),
               size = fontsize_values_heatmap, color = colours_values_heatmap, na.rm = TRUE, vjust=0.5
             ) }} +
-          ggplot2::ylab(if(legend_title_beautify) beautify(colname) else colname) +
           theme_numeric_heatmap(
             show_legend_titles = show_legend_titles,
             show_legend = show_legend,
@@ -504,7 +500,7 @@ gg1d_plot <- function(
             legend_text_size = legend_text_size,
             legend_key_size = legend_key_size,
             vertical_spacing = vertical_spacing,
-            fontsize_y_title = fontsize_y_title
+            fontsize_y_text = fontsize_y_text
           ) +
           ggplot2::scale_fill_gradient(
             low = colours_heatmap_low,
@@ -524,13 +520,6 @@ gg1d_plot <- function(
       return(gg)
     }
   )
-
-
-  # Add Invisible Facet -----------------------------------------------------
-  if(add_constant_invisible_facet){
-    gglist <- lapply(gglist, function(gg){ gg + ggplot2::facet_wrap(~1, ncol = 1, scales = "free", strip.position = "left") + ggplot2::theme(strip.placement = "outside", strip.text = element_blank())})
-  }
-
   names(gglist) <- df_col_info[["colnames"]]
 
   # Remove null columns
@@ -539,22 +528,10 @@ gg1d_plot <- function(
   # Get relative heights for plots (make numeric variables taller)
   relheights = ifelse(df_col_info$coltype[df_col_info$plottable] == "numeric", yes = relative_height_numeric, no = 1)
 
-  # If return_gglist = TRUE, early return a list of plots + a list of legends
-  if(return_gglist){
-    plotlist <- lapply(gglist, FUN = function(x) { x + ggplot2::theme(legend.position = 'none')})
-    legendlist <- lapply(gglist, FUN = function(x) { cowplot::get_legend(x) })
-    return(list("plotlist" = plotlist, "legendlist" = legendlist))
-  }
-
   # Align plots vertically
   if (verbose) cli::cli_alert_info("Stacking plots vertically")
-  #ggpatch <- patchwork::wrap_plots(gglist, ncol = 1, heights = relheights)
+  ggpatch <- patchwork::wrap_plots(gglist, ncol = 1, heights = relheights)
 
-  ggpatch <- cowplot::plot_grid(
-    plotlist = gglist,
-    ncol = 1,
-    rel_heights = relheights,
-    align = "v", axis="lr")
 
   # Interactivity -----------------------------------------------------------
   if(interactive){
@@ -574,17 +551,16 @@ gg1d_plot <- function(
 }
 
 
-theme_categorical <- function(fontsize_y_title = 12, show_legend = TRUE,show_legend_titles = FALSE, legend_position = "right", legend_title_size = NULL, legend_text_size = NULL, legend_key_size = 0.3, vertical_spacing = 0) {
+theme_categorical <- function(fontsize_y_text = 12, show_legend = TRUE,show_legend_titles = FALSE, legend_position = "right", legend_title_size = NULL, legend_text_size = NULL, legend_key_size = 0.3, vertical_spacing = 0) {
   ggplot2::theme_minimal() %+replace%
 
     theme(
       panel.grid = element_blank(),
-      axis.text.y.left = element_blank(),
-      axis.text.y.right = element_blank(),
+      axis.text.y.left = element_text(size = fontsize_y_text),
+      axis.text.y.right = element_text(size = fontsize_y_text),
       axis.text.x = element_blank(),
       axis.title.x = element_blank(),
-      axis.title.y = element_text(size = fontsize_y_title),
-      axis.title.y.right = element_text(size = fontsize_y_title, hjust = 1),
+      axis.title.y = element_blank(),
       legend.key.size = ggplot2::unit(legend_key_size, "line"),
       legend.title = if(show_legend_titles) element_text(size = legend_title_size, face = "bold", hjust = 0) else element_blank(),
       legend.justification = "left",
@@ -595,36 +571,34 @@ theme_categorical <- function(fontsize_y_title = 12, show_legend = TRUE,show_leg
     )
 }
 
-theme_numeric_bar <- function(vertical_spacing = 0, fontsize_y_title = 12, fontsize_y_text = 7) {
+theme_numeric_bar <- function(vertical_spacing = 0, fontsize_y_text = 12) {
   ggplot2::theme_minimal() %+replace%
 
     theme(
       panel.grid = element_blank(),
-      axis.title.y = element_text(size = fontsize_y_title, hjust = 1),
-      axis.title.y.right = element_text(size = fontsize_y_title),
+      axis.title.y = element_blank(),
+      axis.title.y.right = element_blank(),
       axis.text.x = element_blank(),
       axis.title.x = element_blank(),
       axis.line.y = element_line(linewidth = 0.3),
       axis.line.x = element_blank(),
-      axis.text.y.left = element_text(size = fontsize_y_text),
-      axis.text.y.right = element_text(size = fontsize_y_text, hjust = 0),
+      axis.text.y.left = ggtext::element_markdown(size = fontsize_y_text),
+      axis.text.y.right = ggtext::element_markdown(size = fontsize_y_text, hjust = 0),
       axis.ticks.y = element_blank(),
       strip.placement = "outside",
       plot.margin = ggplot2::margin(t = 5, r = 0, b = vertical_spacing + 5, l = 0, unit = "pt")
     )
 }
 
-theme_numeric_heatmap <- function(fontsize_y_title = 12, show_legend = TRUE, legend_position = "right", show_legend_titles = FALSE, legend_title_size = NULL, legend_text_size = NULL, legend_key_size = 0.3, vertical_spacing = 0) {
+theme_numeric_heatmap <- function(fontsize_y_text = 12, show_legend = TRUE, legend_position = "right", show_legend_titles = FALSE, legend_title_size = NULL, legend_text_size = NULL, legend_key_size = 0.3, vertical_spacing = 0) {
   ggplot2::theme_minimal() %+replace%
 
     theme(
       panel.grid = element_blank(),
-      axis.text.y.left = element_blank(),
-      axis.text.y.right = element_blank(),
+      axis.text.y = element_text(size = fontsize_y_text),
       axis.text.x = element_blank(),
       axis.title.x = element_blank(),
-      axis.title.y = element_text(size = fontsize_y_title),
-      axis.title.y.right = element_text(size = fontsize_y_title, hjust = 1),
+      axis.title.y = element_blank(),
       legend.title = if (show_legend_titles) element_text(size = legend_title_size, face = "bold", hjust = 0) else element_blank(),
       legend.justification = "left",
       legend.text = element_text(size = legend_text_size),
@@ -665,6 +639,18 @@ sensible_3_breaks <- function(vector){
   }
 
   return(breaks)
+}
+
+sensible_3_labels <- function(vector, axis_label, fontsize_numbers = 7){
+  upper <- max(vector, na.rm = TRUE)
+  lower <- min(0, min(vector, na.rm = TRUE), na.rm = TRUE)
+  if (lower == upper)
+    return(axis_label)
+  upper <- paste0("<span style = 'font-size: ",fontsize_numbers,"pt'>",upper, "</span>")
+  lower <- paste0("<span style = 'font-size: ",fontsize_numbers,"pt'>",lower, "</span>")
+
+  #middle = mean(c(upper, lower)
+  as.character(c(upper, axis_label, lower))
 }
 
 

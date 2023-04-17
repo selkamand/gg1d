@@ -194,6 +194,7 @@ choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colour
 #' @param legend_orientation_heatmap should legend orientation be "horizontal" or "vertical"
 #' @param fontsize_barplot_y_numbers fontsize of the text describing numeric barplot max & min values (number)
 #' @param add_constant_invisible_facet add invisible y axis constant facet (flag)
+#' @param return_gglist Instead of returning pre-rendered grobs, return a list containing a 'plotlist' comprising of each plot as a gg objects, and 'legendlist' containing the legends of these plots (flag)
 #' @return ggiraph interactive visualisation
 #'
 #' @examples
@@ -234,7 +235,8 @@ gg1d_plot <- function(
     fontsize_values_heatmap = 3,
     colours_values_heatmap = "white",
     fontsize_barplot_y_numbers = 8,
-    add_constant_invisible_facet = FALSE
+    add_constant_invisible_facet = FALSE,
+    return_gglist = FALSE
     ) {
   # Assertions --------------------------------------------------------------
   assertions::assert_dataframe(.data)
@@ -266,6 +268,7 @@ gg1d_plot <- function(
   assertions::assert_number(fontsize_barplot_y_numbers)
   assertions::assert_flag(add_constant_invisible_facet)
   assertions::assert_number(fontsize_y_title)
+  assertions::assert_flag(return_gglist)
 
   # Conditional Assertions
   if (!is.null(legend_nrow)) assertions::assert_number(legend_nrow)
@@ -536,9 +539,17 @@ gg1d_plot <- function(
   # Get relative heights for plots (make numeric variables taller)
   relheights = ifelse(df_col_info$coltype[df_col_info$plottable] == "numeric", yes = relative_height_numeric, no = 1)
 
+  # If return_gglist = TRUE, early return a list of plots + a list of legends
+  if(return_gglist){
+    plotlist <- lapply(gglist, FUN = function(x) { x + ggplot2::theme(legend.position = 'none')})
+    legendlist <- lapply(gglist, FUN = function(x) { cowplot::get_legend(x) })
+    return(list("plotlist" = plotlist, "legendlist" = legendlist))
+  }
+
   # Align plots vertically
   if (verbose) cli::cli_alert_info("Stacking plots vertically")
   #ggpatch <- patchwork::wrap_plots(gglist, ncol = 1, heights = relheights)
+
   ggpatch <- cowplot::plot_grid(
     plotlist = gglist,
     ncol = 1,

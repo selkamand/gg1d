@@ -52,7 +52,8 @@ gg1d_plot(
   fontsize_values_heatmap = 3,
   colours_values_heatmap = "white",
   fontsize_barplot_y_numbers = 8,
-  add_constant_invisible_facet = FALSE
+  add_constant_invisible_facet = FALSE,
+  return_gglist = FALSE
 )
 }
 \arguments{
@@ -151,6 +152,8 @@ Options are \code{alphabetical} or \code{frequency}}
 \item{fontsize_barplot_y_numbers}{fontsize of the text describing numeric barplot max & min values (number)}
 
 \item{add_constant_invisible_facet}{add invisible y axis constant facet (flag)}
+
+\item{return_gglist}{Instead of returning pre-rendered grobs, return a list containing a 'plotlist' comprising of each plot as a gg objects, and 'legendlist' containing the legends of these plots (flag)}
 }
 \value{
 ggiraph interactive visualisation

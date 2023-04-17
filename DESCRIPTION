@@ -17,8 +17,7 @@ Imports:
     forcats,
     ggiraph,
     ggplot2,
-    ggtext,
-    patchwork,
+    cowplot,
     rank (>= 0.0.0.9000),
     rlang
 Remotes: 

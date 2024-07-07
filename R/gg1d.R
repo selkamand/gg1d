@@ -183,6 +183,7 @@ choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colour
 #' @param colours_missing colour to use for values of NA (string)
 #' @param na_marker what text should be added to NA values for numeric variables to indicate the value is NA, not 0 (string)
 #' @param na_marker_size how large should the na_marker be (number)
+#' @param na_marker_colour colour of the \strong{na_marker} (string)
 #' @param vertical_spacing how large should the gap between each data row be (unit = pt) (number)
 #' @param ignore_column_regex a regex string that, if matches a column name,  will cause that  column to be exclude from plotting (string)  (default: "_ignore$")
 #' @param fontsize_y_text size of y axis text (number)
@@ -226,7 +227,7 @@ gg1d <- function(
     numeric_plot_type = c('bar', "heatmap"),
     legend_nrow = 4, legend_ncol = NULL,
     legend_title_size = NULL, legend_text_size = NULL, legend_key_size = 0.3,
-    vertical_spacing = 0, na_marker = "!", na_marker_size = 8,
+    vertical_spacing = 0, na_marker = "!", na_marker_size = 8, na_marker_colour = "black",
     show_na_marker_categorical = FALSE,
     show_na_marker_heatmap = FALSE,
     show_values_heatmap = TRUE,
@@ -269,6 +270,7 @@ gg1d <- function(
   assertions::assert_logical(show_na_marker_categorical)
   assertions::assert_logical(show_na_marker_heatmap)
   assertions::assert_number(fontsize_barplot_y_numbers)
+  assertions::assert_string(na_marker_colour)
 
   # Conditional Assertions
   if (!is.null(legend_nrow)) assertions::assert_number(legend_nrow)
@@ -436,7 +438,7 @@ gg1d <- function(
           {if(show_na_marker_categorical) {
             ggplot2::geom_text(
             data = function(x){x[is.na(x[[colname]]), ,drop=FALSE]},  #only add text where value is NA
-            aes(label = na_marker), size = na_marker_size, na.rm = TRUE, vjust=0.5
+            aes(label = na_marker), size = na_marker_size, na.rm = TRUE, vjust=0.5, color = na_marker_colour,
             ) }} +
           ggplot2::scale_x_discrete(drop = drop_unused_id_levels) +
           #ggplot2::ylab(if(legend_title_beautify) beautify(colname) else colname) +
@@ -472,7 +474,7 @@ gg1d <- function(
           ggiraph::geom_col_interactive(mapping = aes_interactive, width = width, na.rm = TRUE) +
           ggplot2::geom_text(
             data = function(x){x[is.na(x[[colname]]), ,drop=FALSE]},  #only add text where value is NA
-            aes(label = na_marker, y = 0), size = na_marker_size, na.rm = TRUE, vjust=0
+            aes(label = na_marker, y = 0), size = na_marker_size, na.rm = TRUE, vjust=0, color = na_marker_colour
             ) +
           ggplot2::scale_x_discrete(drop = drop_unused_id_levels) +
           ggplot2::scale_y_continuous(

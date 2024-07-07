@@ -40,6 +40,7 @@ gg1d(
   vertical_spacing = 0,
   na_marker = "!",
   na_marker_size = 8,
+  na_marker_colour = "black",
   show_na_marker_categorical = FALSE,
   show_na_marker_heatmap = FALSE,
   show_values_heatmap = TRUE,
@@ -130,6 +131,8 @@ Options are \code{alphabetical} or \code{frequency}}
 \item{na_marker}{what text should be added to NA values for numeric variables to indicate the value is NA, not 0 (string)}
 
 \item{na_marker_size}{how large should the na_marker be (number)}
+
+\item{na_marker_colour}{colour of the \strong{na_marker} (string)}
 
 \item{show_na_marker_categorical}{should a text marker of NA values (e.g. '!') be rendered on tiles with NA values (flag)}
 

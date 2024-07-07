@@ -158,7 +158,7 @@ Options are \code{alphabetical} or \code{frequency}}
 
 \item{fontsize_barplot_y_numbers}{fontsize of the text describing numeric barplot max & min values (number)}
 
-\item{cli_header}{Text used for h1 header. Included so it can be tweaked by packages like \link{ggoncoplot} that use gg1d, so they can customise how the info messages appear.}
+\item{cli_header}{Text used for h1 header. Included so it can be tweaked by packages that use gg1d, so they can customise how the info messages appear.}
 }
 \value{
 ggiraph interactive visualisation

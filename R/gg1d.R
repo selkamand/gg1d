@@ -199,7 +199,7 @@ choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colour
 #' @param colours_values_heatmap colour of text describing values in heatmap (string)
 #' @param legend_orientation_heatmap should legend orientation be "horizontal" or "vertical"
 #' @param fontsize_barplot_y_numbers fontsize of the text describing numeric barplot max & min values (number)
-#' @param cli_header Text used for h1 header. Included so it can be tweaked by packages like [ggoncoplot] that use gg1d, so they can customise how the info messages appear.
+#' @param cli_header Text used for h1 header. Included so it can be tweaked by packages that use gg1d, so they can customise how the info messages appear.
 #' @return ggiraph interactive visualisation
 #'
 #' @examples

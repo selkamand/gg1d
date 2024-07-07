@@ -24,8 +24,6 @@ column_info_table <- function(data, maxlevels = 6, col_id = NULL, cols_to_plot, 
     coltooltip = coltooltip(data, tooltip_column_suffix),
     ndistinct = colvalues(data)
   )
-  # df_column_info <- dplyr::as_tibble(df_column_info)
-
 
   # Warn if unknown file type in table
   if (c("invalid") %in% df_column_info[["coltype"]]) cli::cli_warn('The following columns will not be plotted due to invalid column types: {df_column_info$colnames[df_column_info$coltype=="invalid"]}')
@@ -154,7 +152,7 @@ choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colour
 #' @param interactive produce interactive ggiraph visualiastion (flag)
 #' @param debug_return_col_info return column info instead of plots. Helpful when debugging (logical)
 #' @param limit_plots throw an error when there are > 15 plottable columns in table (logical)
-#' @param cols_to_plot names of columns in `data` that should be plotted. By default plots all valid columns (character)
+#' @param cols_to_plot names of columns in \strong{data} that should be plotted. By default plots all valid columns (character)
 #' @param sort_type controls how categorical variables are sorted.
 #' Numerical variables are always sorted in numerical order irrespective of the value given here.
 #' Options are `alphabetical` or `frequency`
@@ -173,7 +171,7 @@ choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colour
 #' @param legend_title_beautify beautify legend title (add spaces to snake_case / camelCase & capitalise each word) (flag)
 #' @param legend_text_size the size of the text in the legend (number)
 #' @param legend_key_size the size of the key in the legend (number)
-#' @param palettes A list of named vectors. List names correspond to data column names (categorical only). Vector names to levels of columns. Vector values are colours, the vector names are used to map values in data to a colour.
+#' @param palettes A list of named vectors. List names correspond to \strong{data} column names (categorical only). Vector names to levels of columns. Vector values are colours, the vector names are used to map values in data to a colour.
 #' @param colours_default default colours to use for variables. will be used to colour variables with no palette supplied.
 #' @param colours_default_logical colours for binary variables (vector of 3 colors where elements represent colours of TRUE, FALSE, and NA respectively) (character)
 #' @param colours_missing colour to use for values of NA (string)

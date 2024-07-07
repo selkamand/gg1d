@@ -71,7 +71,7 @@ gg1d_plot(
 
 \item{debug_return_col_info}{return column info instead of plots. Helpful when debugging (logical)}
 
-\item{palettes}{A list of named vectors. List names correspond to data column names (categorical only). Vector names to levels of columns. Vector values are colours, the vector names are used to map values in data to a colour.}
+\item{palettes}{A list of named vectors. List names correspond to \strong{data} column names (categorical only). Vector names to levels of columns. Vector values are colours, the vector names are used to map values in data to a colour.}
 
 \item{colours_default}{default colours to use for variables. will be used to colour variables with no palette supplied.}
 
@@ -81,7 +81,7 @@ gg1d_plot(
 
 \item{limit_plots}{throw an error when there are > 15 plottable columns in table (logical)}
 
-\item{cols_to_plot}{names of columns in \code{data} that should be plotted. By default plots all valid columns (character)}
+\item{cols_to_plot}{names of columns in \strong{data} that should be plotted. By default plots all valid columns (character)}
 
 \item{sort_type}{controls how categorical variables are sorted.
 Numerical variables are always sorted in numerical order irrespective of the value given here.

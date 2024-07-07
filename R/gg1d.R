@@ -1,3 +1,4 @@
+utils::globalVariables(".data")
 
 #' Parse a tibble and ensure it meets standards
 #'

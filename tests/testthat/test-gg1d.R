@@ -1,3 +1,9 @@
+test_that("gg1d works as expected", {
+  expect_error(suppressMessages(gg1d_plot(mtcars)), NA)
+})
+
+
+
 test_that("gg1d works even if col only has 1 valid numeric column", {
   df <- data.frame(
     col1 = c(0, 0, NA, NA, NA, NA, NA, NA, 0, NA),
@@ -8,8 +14,10 @@ test_that("gg1d works even if col only has 1 valid numeric column", {
 })
 
 
-test_that("gg1d throws error if no plottable coluns  even if col only has 1 valid numeric column", {
+test_that("gg1d throws error if no plottable columns", {
   expect_error(gg1d_plot(data.frame(), verbose = FALSE), "No plottable columns found")
 })
+
+
 
 

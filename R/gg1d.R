@@ -193,6 +193,7 @@ choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colour
 #' @param colours_values_heatmap colour of text describing values in heatmap (string)
 #' @param legend_orientation_heatmap should legend orientation be "horizontal" or "vertical"
 #' @param fontsize_barplot_y_numbers fontsize of the text describing numeric barplot max & min values (number)
+#' @param cli_header Header of gg1d CLI verbose error messages. Included so can be tweaked by packages like [ggoncoplot] that use gg1d can customise how the info messages appear.
 #' @return ggiraph interactive visualisation
 #'
 #' @examples
@@ -232,7 +233,8 @@ gg1d <- function(
     transform_heatmap = c("identity", "log10", "log2"),
     fontsize_values_heatmap = 3,
     colours_values_heatmap = "white",
-    fontsize_barplot_y_numbers = 8
+    fontsize_barplot_y_numbers = 8,
+    cli_header = "Running gg1d"
     ) {
 
   # Assertions --------------------------------------------------------------
@@ -294,6 +296,9 @@ gg1d <- function(
   cli::cli_div(theme = list(span.warn = list(color = "yellow", "font-weight" = "bold")))
   cli::cli_div(theme = list(span.success = list(color = "darkgreen", "font-weight" = "bold")))
 
+  # Add a title message
+  if (verbose) cli::cli_h1(cli_header)
+
   # Preprocessing -----------------------------------------------------------
   # Add col_id column if it user hasn't supplied one
   if (is.null(col_id)) {
@@ -305,7 +310,7 @@ gg1d <- function(
   }
 
 
-  # Identify Plottable Columns Columns ------------------------------------------------------------
+  # Identify Plottable Columns  ------------------------------------------------------------
   df_col_info <- column_info_table(
     data, maxlevels = maxlevels,
     col_id = col_id,
@@ -330,7 +335,7 @@ gg1d <- function(
     data[[col_id]] <- as.factor(data[[col_id]])
   }
 
-  if (verbose) cli::cli_h1("Sorting")
+  if (verbose) cli::cli_h3("Sorting")
 
   if (is.null(col_sort)) {
     if (verbose) cli::cli_alert_info("Sorting X axis by: Order of appearance")
@@ -348,7 +353,7 @@ gg1d <- function(
   }
 
   # Plot --------------------------------------------------------------------
-  if (verbose) cli::cli_h1("Generating Plot")
+  if (verbose) cli::cli_h3("Generating Plot")
   plottable_cols <- sum(df_col_info$plottable == TRUE)
 
   if (verbose) {

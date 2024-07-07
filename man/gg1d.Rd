@@ -51,7 +51,8 @@ gg1d(
   transform_heatmap = c("identity", "log10", "log2"),
   fontsize_values_heatmap = 3,
   colours_values_heatmap = "white",
-  fontsize_barplot_y_numbers = 8
+  fontsize_barplot_y_numbers = 8,
+  cli_header = "Running gg1d"
 )
 }
 \arguments{
@@ -148,6 +149,8 @@ Options are \code{alphabetical} or \code{frequency}}
 \item{colours_values_heatmap}{colour of text describing values in heatmap (string)}
 
 \item{fontsize_barplot_y_numbers}{fontsize of the text describing numeric barplot max & min values (number)}
+
+\item{cli_header}{Header of gg1d CLI verbose error messages. Included so can be tweaked by packages like \link{ggoncoplot} that use gg1d can customise how the info messages appear.}
 }
 \value{
 ggiraph interactive visualisation

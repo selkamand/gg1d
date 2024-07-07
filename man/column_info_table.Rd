@@ -5,7 +5,7 @@
 \title{Parse a tibble and ensure it meets standards}
 \usage{
 column_info_table(
-  .data,
+  data,
   maxlevels = 6,
   col_id = NULL,
   cols_to_plot,
@@ -18,25 +18,30 @@ column_info_table(
 )
 }
 \arguments{
-\item{.data}{data.frame to autoplot (data.frame)}
+\item{data}{data.frame to autoplot (data.frame)}
 
 \item{maxlevels}{for categorical variables, what is the maximum number of distinct values to allow (too many will make it hard to find a palette that suits). (number)}
 
 \item{col_id}{name of column to use for}
 
-\item{cols_to_plot}{names of columns in \code{.data} that should be plotted. By default plots all valid columns (character)}
+\item{cols_to_plot}{names of columns in \strong{data} that should be plotted. By default plots all valid columns (character)}
 
 \item{tooltip_column_suffix}{the suffix added to a column name that indicates column should be used as a tooltip (string)}
 
 \item{ignore_column_regex}{a regex string that, if matches a column name,  will cause that  column to be exclude from plotting (string)  (default: "_ignore$")}
 
-\item{palettes}{A list of named vectors. List names correspond to .data column names (categorical only). Vector names to levels of columns. Vector values are colours, the vector names are used to map values in .data to a colour.}
+\item{palettes}{A list of named vectors. List names correspond to \strong{data} column names (categorical only). Vector names to levels of columns. Vector values are colours, the vector names are used to map values in data to a colour.}
 
 \item{colours_default}{default colours to use for variables. will be used to colour variables with no palette supplied.}
 
 \item{colours_default_logical}{colours for binary variables (vector of 3 colors where elements represent colours of TRUE, FALSE, and NA respectively) (character)}
 
-\item{verbose}{verbosity level}
+\item{verbose}{Numeric value indicating the verbosity level:
+\itemize{
+\item \strong{2}: Highly verbose, all messages.
+\item \strong{1}: Key messages only.
+\item \strong{0}: Silent, no messages.
+}}
 }
 \value{
 tibble with the following columns:

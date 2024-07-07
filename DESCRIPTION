@@ -8,11 +8,11 @@ Description: What the package does (one paragraph).
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 URL: https://github.com/selkamand/gg1d
 BugReports: https://github.com/selkamand/gg1d/issues
 Imports: 
-    assertions (>= 0.0.0.9000),
+    assertions,
     cli,
     forcats,
     ggiraph,
@@ -22,7 +22,6 @@ Imports:
     rank (>= 0.0.0.9000),
     rlang
 Remotes: 
-    selkamand/assertions,
     selkamand/rank
 Suggests: 
     covr,

@@ -1,7 +1,8 @@
+utils::globalVariables(".data")
 
 #' Parse a tibble and ensure it meets standards
 #'
-#' @inheritParams gg1d_plot
+#' @inheritParams gg1d
 #'
 #' @return tibble with the following columns:
 #' 1) colnames
@@ -11,20 +12,18 @@
 #' 4) tooltip_col (the name of the column to use as the tooltip) or NA if no obvious tooltip column found
 #'
 #'
-column_info_table <- function(.data, maxlevels = 6, col_id = NULL, cols_to_plot, tooltip_column_suffix = "_tooltip", ignore_column_regex = "_ignore$" ,palettes, colours_default, colours_default_logical, verbose) {
+column_info_table <- function(data, maxlevels = 6, col_id = NULL, cols_to_plot, tooltip_column_suffix = "_tooltip", ignore_column_regex = "_ignore$" ,palettes, colours_default, colours_default_logical, verbose) {
   # Assertions
   assertions::assert_string(col_id)
-  assertions::assert_names_include(.data, col_id)
+  assertions::assert_names_include(data, col_id)
 
   # Create Column Info Data
   df_column_info <- data.frame(
-    colnames = colnames(.data),
-    coltype = coltypes(.data, col_id),
-    coltooltip = coltooltip(.data, tooltip_column_suffix),
-    ndistinct = colvalues(.data)
+    colnames = colnames(data),
+    coltype = coltypes(data, col_id),
+    coltooltip = coltooltip(data, tooltip_column_suffix),
+    ndistinct = colvalues(data)
   )
-  # df_column_info <- dplyr::as_tibble(df_column_info)
-
 
   # Warn if unknown file type in table
   if (c("invalid") %in% df_column_info[["coltype"]]) cli::cli_warn('The following columns will not be plotted due to invalid column types: {df_column_info$colnames[df_column_info$coltype=="invalid"]}')
@@ -41,16 +40,17 @@ column_info_table <- function(.data, maxlevels = 6, col_id = NULL, cols_to_plot,
     (!grepl(x=df_column_info$colnames, pattern = ignore_column_regex))
 
 
-
   if (sum(lgl_too_many_levels) > 0) {
     char_cols_with_too_many_levels <- df_column_info$colnames[lgl_too_many_levels]
-    char_cols_with_too_many_levels <- paste0(char_cols_with_too_many_levels, " (", df_column_info$ndistinct[lgl_too_many_levels], ")")
-    if(verbose) cli::cli_alert_warning("{.strong Categorical columns} must have {.strong <= {maxlevels} unique values} to be visualised. Columns with too many unique values: {.strong {char_cols_with_too_many_levels}}")
+    # Only comment about those columns the user wants to plot
+    if(!is.null(cols_to_plot)) char_cols_with_too_many_levels <- char_cols_with_too_many_levels[char_cols_with_too_many_levels %in% cols_to_plot]
+    char_cols_with_too_many_levels_formatted <- paste0(char_cols_with_too_many_levels, " (", df_column_info$ndistinct[lgl_too_many_levels], ")")
+    if(verbose) cli::cli_alert_warning("{.strong Categorical columns} must have {.strong <= {maxlevels} unique values} to be visualised. Columns with too many unique values: {.strong {char_cols_with_too_many_levels_formatted}}")
   }
 
   # Add palette colours
   df_column_info$palette <- choose_colours(
-    .data,
+    data,
     palettes = palettes,
     plottable = df_column_info$plottable,
     ndistinct = df_column_info$ndistinct,
@@ -64,18 +64,18 @@ column_info_table <- function(.data, maxlevels = 6, col_id = NULL, cols_to_plot,
 }
 
 
-coltooltip <- function(.data, tooltip_column_suffix){
+coltooltip <- function(data, tooltip_column_suffix){
    vapply(
-     colnames(.data),
-     function(name) { colnames(.data)[match(paste0(name, tooltip_column_suffix), colnames(.data))]},
+     colnames(data),
+     function(name) { colnames(data)[match(paste0(name, tooltip_column_suffix), colnames(data))]},
      character(1)
    )
 
 }
 
-coltypes <- function(.data, col_id) {
+coltypes <- function(data, col_id) {
   # First Pass of coltypes
-  char_coltypes <- vapply(.data, FUN = function(vec) {
+  char_coltypes <- vapply(data, FUN = function(vec) {
     if (is.character(vec) | is.factor(vec) | is.logical(vec)) {
       return("categorical")
     } else if (is.numeric(vec)) {
@@ -86,7 +86,7 @@ coltypes <- function(.data, col_id) {
   }, FUN.VALUE = character(1))
 
   # Overwrite coltype to tooltip if `_tooltip` suffix is found
-  char_colnames <- colnames(.data)
+  char_colnames <- colnames(data)
   tooltip_suffix <- "_tooltip"
   has_tooltip_in_name <- grepl(x = char_colnames, pattern = tooltip_suffix, ignore.case = TRUE)
   without_tooltip_has_matched_name <- gsub(x = char_colnames, pattern = tooltip_suffix, replacement = "") %in% char_colnames
@@ -100,8 +100,8 @@ coltypes <- function(.data, col_id) {
   return(char_coltypes)
 }
 
-colvalues <- function(.data) {
-  vapply(.data, FUN = function(vec) {
+colvalues <- function(data) {
+  vapply(data, FUN = function(vec) {
     length(stats::na.omit(unique(vec)))
   }, FUN.VALUE = numeric(1))
 }
@@ -144,16 +144,21 @@ choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colour
 #' and automatic plot selection based on variable type.
 #' Plots are fully interactive, and custom tooltips can be added.
 #'
-#' @param .data data.frame to autoplot (data.frame)
+#' @param data data.frame to autoplot (data.frame)
 #' @param maxlevels for categorical variables, what is the maximum number of distinct values to allow (too many will make it hard to find a palette that suits). (number)
-#' @param verbose verbosity level
+#' @param verbose Numeric value indicating the verbosity level:
+#'   \itemize{
+#'     \item \strong{2}: Highly verbose, all messages.
+#'     \item \strong{1}: Key messages only.
+#'     \item \strong{0}: Silent, no messages.
+#'   }
 #' @param col_id name of column to use for
 #' @param col_sort name of column to sort on
 #' @param drop_unused_id_levels if col_id is a factor with unused levels, should these be dropped or included in visualisation
 #' @param interactive produce interactive ggiraph visualiastion (flag)
 #' @param debug_return_col_info return column info instead of plots. Helpful when debugging (logical)
 #' @param limit_plots throw an error when there are > 15 plottable columns in table (logical)
-#' @param cols_to_plot names of columns in `.data` that should be plotted. By default plots all valid columns (character)
+#' @param cols_to_plot names of columns in \strong{data} that should be plotted. By default plots all valid columns (character)
 #' @param sort_type controls how categorical variables are sorted.
 #' Numerical variables are always sorted in numerical order irrespective of the value given here.
 #' Options are `alphabetical` or `frequency`
@@ -172,12 +177,13 @@ choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colour
 #' @param legend_title_beautify beautify legend title (add spaces to snake_case / camelCase & capitalise each word) (flag)
 #' @param legend_text_size the size of the text in the legend (number)
 #' @param legend_key_size the size of the key in the legend (number)
-#' @param palettes A list of named vectors. List names correspond to .data column names (categorical only). Vector names to levels of columns. Vector values are colours, the vector names are used to map values in .data to a colour.
+#' @param palettes A list of named vectors. List names correspond to \strong{data} column names (categorical only). Vector names to levels of columns. Vector values are colours, the vector names are used to map values in data to a colour.
 #' @param colours_default default colours to use for variables. will be used to colour variables with no palette supplied.
 #' @param colours_default_logical colours for binary variables (vector of 3 colors where elements represent colours of TRUE, FALSE, and NA respectively) (character)
 #' @param colours_missing colour to use for values of NA (string)
 #' @param na_marker what text should be added to NA values for numeric variables to indicate the value is NA, not 0 (string)
 #' @param na_marker_size how large should the na_marker be (number)
+#' @param na_marker_colour colour of the \strong{na_marker} (string)
 #' @param vertical_spacing how large should the gap between each data row be (unit = pt) (number)
 #' @param ignore_column_regex a regex string that, if matches a column name,  will cause that  column to be exclude from plotting (string)  (default: "_ignore$")
 #' @param fontsize_y_text size of y axis text (number)
@@ -193,18 +199,19 @@ choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colour
 #' @param colours_values_heatmap colour of text describing values in heatmap (string)
 #' @param legend_orientation_heatmap should legend orientation be "horizontal" or "vertical"
 #' @param fontsize_barplot_y_numbers fontsize of the text describing numeric barplot max & min values (number)
+#' @param cli_header Text used for h1 header. Included so it can be tweaked by packages that use gg1d, so they can customise how the info messages appear.
 #' @return ggiraph interactive visualisation
 #'
 #' @examples
 #' path_gg1d <- system.file("testdata/testinput.csv", package = "gg1d")
 #' df <- read.csv(path_gg1d, header = TRUE, na.strings = "")
-#' gg1d_plot(df, col_id = "ID", col_sort = "Glasses")
+#' gg1d(df, col_id = "ID", col_sort = "Glasses")
 #'
 #' @importFrom ggplot2 ggplot aes geom_col geom_tile theme %+replace% element_blank element_text element_line
 #' @export
 #'
-gg1d_plot <- function(
-    .data, col_id = NULL, col_sort = NULL, maxlevels = 6, verbose = TRUE,
+gg1d <- function(
+    data, col_id = NULL, col_sort = NULL, maxlevels = 6, verbose = 2,
     drop_unused_id_levels = FALSE, interactive = TRUE, debug_return_col_info = FALSE,
     palettes = NULL,
     colours_default = c("#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F","#E5C494"),
@@ -220,7 +227,7 @@ gg1d_plot <- function(
     numeric_plot_type = c('bar', "heatmap"),
     legend_nrow = 4, legend_ncol = NULL,
     legend_title_size = NULL, legend_text_size = NULL, legend_key_size = 0.3,
-    vertical_spacing = 0, na_marker = "!", na_marker_size = 8,
+    vertical_spacing = 0, na_marker = "!", na_marker_size = 8, na_marker_colour = "black",
     show_na_marker_categorical = FALSE,
     show_na_marker_heatmap = FALSE,
     show_values_heatmap = TRUE,
@@ -232,18 +239,18 @@ gg1d_plot <- function(
     transform_heatmap = c("identity", "log10", "log2"),
     fontsize_values_heatmap = 3,
     colours_values_heatmap = "white",
-    fontsize_barplot_y_numbers = 8
+    fontsize_barplot_y_numbers = 8,
+    cli_header = "Running gg1d"
     ) {
 
   # Assertions --------------------------------------------------------------
-  assertions::assert_dataframe(.data)
+  assertions::assert_dataframe(data)
   assertions::assert_number(maxlevels)
   assertions::assert_flag(drop_unused_id_levels)
   assertions::assert_flag(drop_unused_id_levels)
   assertions::assert_flag(interactive)
   assertions::assert_flag(limit_plots)
   assertions::assert_flag(desc)
-  assertions::assert_flag(verbose)
   assertions::assert_number(relative_height_numeric)
   assertions::assert_string(tooltip_column_suffix)
   assertions::assert_flag(show_legend)
@@ -263,16 +270,22 @@ gg1d_plot <- function(
   assertions::assert_logical(show_na_marker_categorical)
   assertions::assert_logical(show_na_marker_heatmap)
   assertions::assert_number(fontsize_barplot_y_numbers)
+  assertions::assert_string(na_marker_colour)
 
   # Conditional Assertions
   if (!is.null(legend_nrow)) assertions::assert_number(legend_nrow)
-  if (!is.null(cols_to_plot)) assertions::assert_names_include(.data, names = cols_to_plot)
+  if (!is.null(cols_to_plot)) assertions::assert_names_include(data, names = cols_to_plot)
   if (!is.null(legend_title_size)) assertions::assert_number(legend_title_size)
   if (!is.null(palettes)) assertions::assert_list(palettes)
-  if(!all(colnames(.data) %in% names(palettes))) assertions::assert_greater_than_or_equal_to(length(colours_default), minimum = maxlevels)
+  if(!all(colnames(data) %in% names(palettes))) assertions::assert_greater_than_or_equal_to(length(colours_default), minimum = maxlevels)
   if(!is.null(legend_nrow)) assertions::assert_number(legend_nrow)
   if(!is.null(legend_ncol)) assertions::assert_number(legend_ncol)
   if(!is.null(legend_nrow) & !is.null(legend_ncol)) cli::cli_abort("You've set both {.strong legend_nrow = {legend_nrow}} and {.strong legend_ncol = {legend_ncol}}. Please choose one or the other, and set whichever you don't use to NULL")
+
+  # Verbosity (allow TRUE/FALSE OR a whole number)
+  if(is.logical(verbose) & length(verbose == 1))
+    verbose <- if(verbose == "FALSE") 0 else 2
+  assertions::assert_whole_number(verbose)
 
   # Argument Matching
   sort_type <- rlang::arg_match(sort_type)
@@ -294,20 +307,23 @@ gg1d_plot <- function(
   cli::cli_div(theme = list(span.warn = list(color = "yellow", "font-weight" = "bold")))
   cli::cli_div(theme = list(span.success = list(color = "darkgreen", "font-weight" = "bold")))
 
+  # Add a title message
+  if (verbose >= 1) cli::cli_h1(cli_header)
+
   # Preprocessing -----------------------------------------------------------
   # Add col_id column if it user hasn't supplied one
   if (is.null(col_id)) {
     col_id <- "DefaultID"
-    .data[[col_id]] <- seq_len(nrow(.data))
+    data[[col_id]] <- seq_len(nrow(data))
   } else {
     assertions::assert_string(col_id)
-    assertions::assert_names_include(.data, names = col_id)
+    assertions::assert_names_include(data, names = col_id)
   }
 
 
-  # Identify Plottable Columns Columns ------------------------------------------------------------
+  # Identify Plottable Columns  ------------------------------------------------------------
   df_col_info <- column_info_table(
-    .data, maxlevels = maxlevels,
+    data, maxlevels = maxlevels,
     col_id = col_id,
     cols_to_plot = cols_to_plot,
     tooltip_column_suffix = tooltip_column_suffix,
@@ -326,45 +342,44 @@ gg1d_plot <- function(
 
   # Sort Order -------------------------------------------------------------------
   # convert ID col to factor if not already
-  if (!is.factor(.data[[col_id]])) {
-    .data[[col_id]] <- as.factor(.data[[col_id]])
+  if (!is.factor(data[[col_id]])) {
+    data[[col_id]] <- as.factor(data[[col_id]])
   }
 
-  if (verbose) cli::cli_h1("Sorting")
+  if (verbose) cli::cli_h3("Sorting")
 
   if (is.null(col_sort)) {
-    if (verbose) cli::cli_alert_info("Sorting X axis by: Order of appearance")
+    if (verbose >=1) cli::cli_alert_info("Sorting X axis by: Order of appearance")
   } else {
     assertions::assert_string(col_sort)
-    assertions::assert_names_include(.data, names = col_sort)
+    assertions::assert_names_include(data, names = col_sort)
 
-    if(verbose){ cli::cli_bullets(c(
+    if(verbose >=1){ cli::cli_bullets(c(
       "*" = "Sorting X axis by: {.strong {col_sort}}",
       "*" = "Order type: {.strong {sort_type}}",
       "*" = "Sort order: {.strong {ifelse(desc, 'descending', 'ascending')}}"
     ))
     }
-    .data[[col_id]] <- forcats::fct_reorder(.data[[col_id]], rank::smartrank(.data[[col_sort]], sort_by = sort_type, desc = desc, verbose = FALSE))
+    data[[col_id]] <- forcats::fct_reorder(data[[col_id]], rank::smartrank(data[[col_sort]], sort_by = sort_type, desc = desc, verbose = FALSE))
   }
 
   # Plot --------------------------------------------------------------------
-  if (verbose) cli::cli_h1("Generating Plot")
+  if (verbose) cli::cli_h3("Generating Plot")
   plottable_cols <- sum(df_col_info$plottable == TRUE)
 
-  if (verbose) {
-    cli::cli_alert_info("Found {.strong {plottable_cols}} plottable columns in {.strong .data}")
+  if (verbose >= 1) {
+    cli::cli_alert_info("Found {.strong {plottable_cols}} plottable columns in {.strong data}")
   }
 
   # Make sure theres not too many plottable cols
   if (limit_plots && plottable_cols > max_plottable_cols) {
-    cli::cli_abort("Autoplotting > 15 fields by `gg1d_plot` is not recommended (visualisation ends up very squished). If you're certain you want to proceed, set limit_plots = `FALSE`. Alternatively, use `cols_to_plot` to specify <=15 columns within your dataset.")
+    cli::cli_abort("Autoplotting > 15 fields by `gg1d` is not recommended (visualisation ends up very squished). If you're certain you want to proceed, set limit_plots = `FALSE`. Alternatively, use `cols_to_plot` to specify <=15 columns within your dataset.")
   }
 
   # Make sure theres at least 1 plottable column
   if(plottable_cols == 0){
    cli::cli_abort("No plottable columns found")
   }
-
 
   gglist <- lapply(
     X = seq_len(nrow(df_col_info)),
@@ -379,10 +394,10 @@ gg1d_plot <- function(
 
       # Don't plot if not plottable
       if (!plottable) {
-        if (verbose) cli::cli_alert_warning("{.warn Skipping} column {.strong {colname}}")
+        if (verbose >= 2) cli::cli_alert_warning("{.warn Skipping} column {.strong {colname}}")
         return(NULL)
       } else {
-        if (verbose) cli::cli_alert_success("{.success Plotting} column {.strong {colname}}")
+        if (verbose >= 2) cli::cli_alert_success("{.success Plotting} column {.strong {colname}}")
       }
 
       # Create interactive geom aesthetics
@@ -399,7 +414,7 @@ gg1d_plot <- function(
       else
       {
         # replace values of NA with ""
-        .data[[coltooltip]] <- ifelse(is.na(.data[[coltooltip]]), "",.data[[coltooltip]])
+        data[[coltooltip]] <- ifelse(is.na(data[[coltooltip]]), "",data[[coltooltip]])
 
         aes_interactive <- aes(
           data_id = .data[[col_id]],
@@ -412,7 +427,7 @@ gg1d_plot <- function(
       ## Categorical -------------------------------------------------------------
       if (coltype == "categorical") {
         gg <- ggplot(
-          .data,
+          data,
           aes(
             x = .data[[col_id]],
             y = if(legend_title_beautify) beautify(colname) else colname,
@@ -423,7 +438,7 @@ gg1d_plot <- function(
           {if(show_na_marker_categorical) {
             ggplot2::geom_text(
             data = function(x){x[is.na(x[[colname]]), ,drop=FALSE]},  #only add text where value is NA
-            aes(label = na_marker), size = na_marker_size, na.rm = TRUE, vjust=0.5
+            aes(label = na_marker), size = na_marker_size, na.rm = TRUE, vjust=0.5, color = na_marker_colour,
             ) }} +
           ggplot2::scale_x_discrete(drop = drop_unused_id_levels) +
           #ggplot2::ylab(if(legend_title_beautify) beautify(colname) else colname) +
@@ -448,18 +463,18 @@ gg1d_plot <- function(
       }
       # Numeric Bar -------------------------------------------------------------------------
       else if (coltype == "numeric" && numeric_plot_type == "bar") {
-        breaks <- sensible_3_breaks(.data[[colname]])
+        breaks <- sensible_3_breaks(data[[colname]])
         labels <- sensible_3_labels(
-          .data[[colname]],
+          data[[colname]],
           axis_label = if(legend_title_beautify) beautify(colname) else colname,
           fontsize_numbers = fontsize_barplot_y_numbers
           )
 
-        gg <- ggplot2::ggplot(.data, aes(x = .data[[col_id]], y = .data[[colname]])) +
+        gg <- ggplot2::ggplot(data, aes(x = .data[[col_id]], y = .data[[colname]])) +
           ggiraph::geom_col_interactive(mapping = aes_interactive, width = width, na.rm = TRUE) +
           ggplot2::geom_text(
             data = function(x){x[is.na(x[[colname]]), ,drop=FALSE]},  #only add text where value is NA
-            aes(label = na_marker, y = 0), size = na_marker_size, na.rm = TRUE, vjust=0
+            aes(label = na_marker, y = 0), size = na_marker_size, na.rm = TRUE, vjust=0, color = na_marker_colour
             ) +
           ggplot2::scale_x_discrete(drop = drop_unused_id_levels) +
           ggplot2::scale_y_continuous(
@@ -474,7 +489,7 @@ gg1d_plot <- function(
       }
       # Numeric Heatmap -------------------------------------------------------------------------
       else if (coltype == "numeric" && numeric_plot_type == "heatmap") {
-        gg <- ggplot2::ggplot(.data, aes(
+        gg <- ggplot2::ggplot(data, aes(
             x = .data[[col_id]],
             y = if(legend_title_beautify) beautify(colname) else colname,
             fill = .data[[colname]])
@@ -529,13 +544,13 @@ gg1d_plot <- function(
   relheights = ifelse(df_col_info$coltype[df_col_info$plottable] == "numeric", yes = relative_height_numeric, no = 1)
 
   # Align plots vertically
-  if (verbose) cli::cli_alert_info("Stacking plots vertically")
+  if (verbose >= 2) cli::cli_alert_info("Stacking plots vertically")
   ggpatch <- patchwork::wrap_plots(gglist, ncol = 1, heights = relheights)
 
 
   # Interactivity -----------------------------------------------------------
   if(interactive){
-    if(verbose) cli::cli_alert_info("Making plot interactive since `interactive = TRUE`")
+    if(verbose >= 2) cli::cli_alert_info("Making plot interactive since `interactive = TRUE`")
     ggpatch <- ggiraph::girafe(
       ggobj = ggpatch,
       options =  list(
@@ -543,7 +558,7 @@ gg1d_plot <- function(
       )
     )}
   else{
-    if(verbose) cli::cli_alert_info("Rendering static plot. For interactive version set `interactive = TRUE`")
+    if(verbose >= 2) cli::cli_alert_info("Rendering static plot. For interactive version set `interactive = TRUE`")
   }
 
   # Return -----------------------------------------------------------

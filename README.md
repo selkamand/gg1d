@@ -55,13 +55,12 @@ path_gg1d <- system.file("testdata/testinput.csv", package = "gg1d")
 df <- read.csv(path_gg1d, header = TRUE, na.strings = "")
 
 # Plot data, sort by Glasses
-gg1d_plot(
+gg1d(
   df, 
   col_id = "ID", 
   col_sort = "Glasses", 
   interactive = FALSE, legend_nrow = 2, verbose = FALSE
 )
-#> Warning: Removed 2 rows containing missing values (`position_stack()`).
 ```
 
 <img src="man/figures/README-example-1.png" width="100%" />
@@ -71,7 +70,7 @@ gg1d_plot(
 Customise colours by supplying a named list to the `palettes` argument
 
 ``` r
-gg1d_plot(
+gg1d(
   df, 
   col_id = "ID", 
   col_sort = "Glasses", 
@@ -82,7 +81,6 @@ gg1d_plot(
     )),
   interactive = FALSE, legend_nrow = 2, verbose = FALSE
 )
-#> Warning: Removed 2 rows containing missing values (`position_stack()`).
 ```
 
 <img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />

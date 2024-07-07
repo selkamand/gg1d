@@ -15,7 +15,7 @@ test_that("gg1d works even if col only has 1 valid numeric column", {
 
 
 test_that("gg1d throws error if no plottable columns", {
-  expect_error(gg1d(data.frame(), verbose = FALSE), "No plottable columns found")
+  expect_error(gg1d(data.frame(), verbose = 0), "No plottable columns found")
 })
 
 
@@ -34,10 +34,10 @@ cli::test_that_cli("gg1d doesn't warn about columns the user isn't interested in
   )
 
   # Check the appropriate warning is thrown
-  suppressMessages(expect_message(gg1d(df, verbose = TRUE), "Columns with too many unique values: Letters"))
+  suppressMessages(expect_message(gg1d(df, verbose = 2), "Columns with too many unique values: Letters"))
 
   # If user only wants to plot glasses, there's no reason to warn about Letters
-  suppressMessages(expect_no_message(gg1d(df, cols_to_plot = c("Glasses"), verbose = TRUE), message = "Columns with too many unique values: Letters"))
+  suppressMessages(expect_no_message(gg1d(df, cols_to_plot = c("Glasses"), verbose = 2), message = "Columns with too many unique values: Letters"))
 })
 
 

@@ -36,7 +36,12 @@ column_info_table(
 
 \item{colours_default_logical}{colours for binary variables (vector of 3 colors where elements represent colours of TRUE, FALSE, and NA respectively) (character)}
 
-\item{verbose}{verbosity level}
+\item{verbose}{Numeric value indicating the verbosity level:
+\itemize{
+\item \strong{2}: Highly verbose, all messages.
+\item \strong{1}: Key messages only.
+\item \strong{0}: Silent, no messages.
+}}
 }
 \value{
 tibble with the following columns:

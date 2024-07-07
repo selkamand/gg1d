@@ -9,7 +9,7 @@ gg1d(
   col_id = NULL,
   col_sort = NULL,
   maxlevels = 6,
-  verbose = TRUE,
+  verbose = 2,
   drop_unused_id_levels = FALSE,
   interactive = TRUE,
   debug_return_col_info = FALSE,
@@ -64,7 +64,12 @@ gg1d(
 
 \item{maxlevels}{for categorical variables, what is the maximum number of distinct values to allow (too many will make it hard to find a palette that suits). (number)}
 
-\item{verbose}{verbosity level}
+\item{verbose}{Numeric value indicating the verbosity level:
+\itemize{
+\item \strong{2}: Highly verbose, all messages.
+\item \strong{1}: Key messages only.
+\item \strong{0}: Silent, no messages.
+}}
 
 \item{drop_unused_id_levels}{if col_id is a factor with unused levels, should these be dropped or included in visualisation}
 
@@ -150,7 +155,7 @@ Options are \code{alphabetical} or \code{frequency}}
 
 \item{fontsize_barplot_y_numbers}{fontsize of the text describing numeric barplot max & min values (number)}
 
-\item{cli_header}{Header of gg1d CLI verbose error messages. Included so can be tweaked by packages like \link{ggoncoplot} that use gg1d can customise how the info messages appear.}
+\item{cli_header}{Text used for h1 header. Included so it can be tweaked by packages like \link{ggoncoplot} that use gg1d, so they can customise how the info messages appear.}
 }
 \value{
 ggiraph interactive visualisation

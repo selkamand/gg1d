@@ -146,7 +146,12 @@ choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colour
 #'
 #' @param data data.frame to autoplot (data.frame)
 #' @param maxlevels for categorical variables, what is the maximum number of distinct values to allow (too many will make it hard to find a palette that suits). (number)
-#' @param verbose verbosity level
+#' @param verbose Numeric value indicating the verbosity level:
+#'   \itemize{
+#'     \item \strong{2}: Highly verbose, all messages.
+#'     \item \strong{1}: Key messages only.
+#'     \item \strong{0}: Silent, no messages.
+#'   }
 #' @param col_id name of column to use for
 #' @param col_sort name of column to sort on
 #' @param drop_unused_id_levels if col_id is a factor with unused levels, should these be dropped or included in visualisation
@@ -193,7 +198,7 @@ choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colour
 #' @param colours_values_heatmap colour of text describing values in heatmap (string)
 #' @param legend_orientation_heatmap should legend orientation be "horizontal" or "vertical"
 #' @param fontsize_barplot_y_numbers fontsize of the text describing numeric barplot max & min values (number)
-#' @param cli_header Header of gg1d CLI verbose error messages. Included so can be tweaked by packages like [ggoncoplot] that use gg1d can customise how the info messages appear.
+#' @param cli_header Text used for h1 header. Included so it can be tweaked by packages like [ggoncoplot] that use gg1d, so they can customise how the info messages appear.
 #' @return ggiraph interactive visualisation
 #'
 #' @examples
@@ -205,7 +210,7 @@ choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colour
 #' @export
 #'
 gg1d <- function(
-    data, col_id = NULL, col_sort = NULL, maxlevels = 6, verbose = TRUE,
+    data, col_id = NULL, col_sort = NULL, maxlevels = 6, verbose = 2,
     drop_unused_id_levels = FALSE, interactive = TRUE, debug_return_col_info = FALSE,
     palettes = NULL,
     colours_default = c("#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F","#E5C494"),
@@ -245,7 +250,6 @@ gg1d <- function(
   assertions::assert_flag(interactive)
   assertions::assert_flag(limit_plots)
   assertions::assert_flag(desc)
-  assertions::assert_flag(verbose)
   assertions::assert_number(relative_height_numeric)
   assertions::assert_string(tooltip_column_suffix)
   assertions::assert_flag(show_legend)
@@ -276,6 +280,11 @@ gg1d <- function(
   if(!is.null(legend_ncol)) assertions::assert_number(legend_ncol)
   if(!is.null(legend_nrow) & !is.null(legend_ncol)) cli::cli_abort("You've set both {.strong legend_nrow = {legend_nrow}} and {.strong legend_ncol = {legend_ncol}}. Please choose one or the other, and set whichever you don't use to NULL")
 
+  # Verbosity (allow TRUE/FALSE OR a whole number)
+  if(is.logical(verbose) & length(verbose == 1))
+    verbose <- if(verbose == "FALSE") 0 else 2
+  assertions::assert_whole_number(verbose)
+
   # Argument Matching
   sort_type <- rlang::arg_match(sort_type)
   legend_position <- rlang::arg_match(legend_position)
@@ -297,7 +306,7 @@ gg1d <- function(
   cli::cli_div(theme = list(span.success = list(color = "darkgreen", "font-weight" = "bold")))
 
   # Add a title message
-  if (verbose) cli::cli_h1(cli_header)
+  if (verbose >= 1) cli::cli_h1(cli_header)
 
   # Preprocessing -----------------------------------------------------------
   # Add col_id column if it user hasn't supplied one
@@ -338,12 +347,12 @@ gg1d <- function(
   if (verbose) cli::cli_h3("Sorting")
 
   if (is.null(col_sort)) {
-    if (verbose) cli::cli_alert_info("Sorting X axis by: Order of appearance")
+    if (verbose >=1) cli::cli_alert_info("Sorting X axis by: Order of appearance")
   } else {
     assertions::assert_string(col_sort)
     assertions::assert_names_include(data, names = col_sort)
 
-    if(verbose){ cli::cli_bullets(c(
+    if(verbose >=1){ cli::cli_bullets(c(
       "*" = "Sorting X axis by: {.strong {col_sort}}",
       "*" = "Order type: {.strong {sort_type}}",
       "*" = "Sort order: {.strong {ifelse(desc, 'descending', 'ascending')}}"
@@ -356,7 +365,7 @@ gg1d <- function(
   if (verbose) cli::cli_h3("Generating Plot")
   plottable_cols <- sum(df_col_info$plottable == TRUE)
 
-  if (verbose) {
+  if (verbose >= 1) {
     cli::cli_alert_info("Found {.strong {plottable_cols}} plottable columns in {.strong data}")
   }
 
@@ -383,10 +392,10 @@ gg1d <- function(
 
       # Don't plot if not plottable
       if (!plottable) {
-        if (verbose) cli::cli_alert_warning("{.warn Skipping} column {.strong {colname}}")
+        if (verbose >= 2) cli::cli_alert_warning("{.warn Skipping} column {.strong {colname}}")
         return(NULL)
       } else {
-        if (verbose) cli::cli_alert_success("{.success Plotting} column {.strong {colname}}")
+        if (verbose >= 2) cli::cli_alert_success("{.success Plotting} column {.strong {colname}}")
       }
 
       # Create interactive geom aesthetics
@@ -533,13 +542,13 @@ gg1d <- function(
   relheights = ifelse(df_col_info$coltype[df_col_info$plottable] == "numeric", yes = relative_height_numeric, no = 1)
 
   # Align plots vertically
-  if (verbose) cli::cli_alert_info("Stacking plots vertically")
+  if (verbose >= 2) cli::cli_alert_info("Stacking plots vertically")
   ggpatch <- patchwork::wrap_plots(gglist, ncol = 1, heights = relheights)
 
 
   # Interactivity -----------------------------------------------------------
   if(interactive){
-    if(verbose) cli::cli_alert_info("Making plot interactive since `interactive = TRUE`")
+    if(verbose >= 2) cli::cli_alert_info("Making plot interactive since `interactive = TRUE`")
     ggpatch <- ggiraph::girafe(
       ggobj = ggpatch,
       options =  list(
@@ -547,7 +556,7 @@ gg1d <- function(
       )
     )}
   else{
-    if(verbose) cli::cli_alert_info("Rendering static plot. For interactive version set `interactive = TRUE`")
+    if(verbose >= 2) cli::cli_alert_info("Rendering static plot. For interactive version set `interactive = TRUE`")
   }
 
   # Return -----------------------------------------------------------

@@ -2,7 +2,7 @@ utils::globalVariables(".data")
 
 #' Parse a tibble and ensure it meets standards
 #'
-#' @inheritParams gg1d_plot
+#' @inheritParams gg1d
 #'
 #' @return tibble with the following columns:
 #' 1) colnames
@@ -197,12 +197,12 @@ choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colour
 #' @examples
 #' path_gg1d <- system.file("testdata/testinput.csv", package = "gg1d")
 #' df <- read.csv(path_gg1d, header = TRUE, na.strings = "")
-#' gg1d_plot(df, col_id = "ID", col_sort = "Glasses")
+#' gg1d(df, col_id = "ID", col_sort = "Glasses")
 #'
 #' @importFrom ggplot2 ggplot aes geom_col geom_tile theme %+replace% element_blank element_text element_line
 #' @export
 #'
-gg1d_plot <- function(
+gg1d <- function(
     data, col_id = NULL, col_sort = NULL, maxlevels = 6, verbose = TRUE,
     drop_unused_id_levels = FALSE, interactive = TRUE, debug_return_col_info = FALSE,
     palettes = NULL,
@@ -356,7 +356,7 @@ gg1d_plot <- function(
 
   # Make sure theres not too many plottable cols
   if (limit_plots && plottable_cols > max_plottable_cols) {
-    cli::cli_abort("Autoplotting > 15 fields by `gg1d_plot` is not recommended (visualisation ends up very squished). If you're certain you want to proceed, set limit_plots = `FALSE`. Alternatively, use `cols_to_plot` to specify <=15 columns within your dataset.")
+    cli::cli_abort("Autoplotting > 15 fields by `gg1d` is not recommended (visualisation ends up very squished). If you're certain you want to proceed, set limit_plots = `FALSE`. Alternatively, use `cols_to_plot` to specify <=15 columns within your dataset.")
   }
 
   # Make sure theres at least 1 plottable column

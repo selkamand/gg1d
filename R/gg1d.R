@@ -394,6 +394,10 @@ gg1d <- function(
 
       # Don't plot if not plottable
       if (!plottable) {
+
+        # If column is the sorting Identifier - don't info about it
+        if(colname == col_id)
+          return(NULL)
         if (verbose >= 2) cli::cli_alert_warning("{.warn Skipping} column {.strong {colname}}")
         return(NULL)
       } else {

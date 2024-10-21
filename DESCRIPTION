@@ -25,7 +25,9 @@ Remotes:
     selkamand/rank
 Suggests: 
     covr,
+    datarium,
     knitr,
+    palmerpenguins,
     rmarkdown,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3

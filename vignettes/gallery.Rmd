@@ -1,0 +1,53 @@
+---
+title: "Gallery"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Gallery}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width =  13,
+  fig.height = 9 
+)
+```
+
+```{r setup}
+library(gg1d)
+```
+
+
+## Examples with common datasets
+
+### GG1D simulated data
+
+```{r message=FALSE}
+# Read data
+path_gg1d <- system.file("testdata/testinput.csv", package = "gg1d")
+df <- read.csv(path_gg1d, header = TRUE, na.strings = "")
+
+# Plot data, sort by Glasses
+gg1d(
+  df, 
+  col_id = "ID", 
+  col_sort = "Glasses", 
+  legend_nrow = 2
+)
+```
+
+
+### Iris
+
+```{r message=FALSE}
+gg1d(iris)
+```
+
+### Chicken Weights by Feed Type
+
+```{r message=FALSE}
+gg1d(chickwts)
+```

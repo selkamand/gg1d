@@ -82,10 +82,4 @@ gg1d(
 )
 ```
 
-## Common Datasets
-
-```{r iris, fig.width = 7, fig.height = 5, dpi=300}
-# Iris
-gg1d(iris, interactive = FALSE)
-```
-
+For more examples see the [gg1d gallery](https://selkamand.github.io/gg1d/articles/gallery.html)

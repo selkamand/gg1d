@@ -83,4 +83,7 @@ gg1d(
 )
 ```
 
-<img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
+<img src="man/figures/README-customise_colours-1.png" width="100%" />
+
+For more examples see the [gg1d
+gallery](https://selkamand.github.io/gg1d/articles/gallery.html)

@@ -13,11 +13,11 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 [![Codecov test
 coverage](https://codecov.io/gh/selkamand/gg1d/branch/master/graph/badge.svg)](https://app.codecov.io/gh/selkamand/gg1d?branch=master)
 ![GitHub Issues or Pull
-Requests](https://img.shields.io/github/issues-closed/user/package)
+Requests](https://img.shields.io/github/issues-closed/selkamand/gg1d)
 [![code
-size](https://img.shields.io/github/languages/code-size/user/package.svg)](https://github.com/selkamand/package)
+size](https://img.shields.io/github/languages/code-size/selkamand/gg1d.svg)](https://github.com/selkamand/gg1d)
 ![GitHub last
-commit](https://img.shields.io/github/last-commit/user/package)
+commit](https://img.shields.io/github/last-commit/selkamand/gg1d)
 <!-- badges: end -->
 
 Effortlessly visualize all columns in a data frame with gg1d’s

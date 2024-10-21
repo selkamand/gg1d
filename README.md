@@ -83,4 +83,28 @@ gg1d(
 )
 ```
 
-<img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
+<img src="man/figures/README-customise_colours-1.png" width="100%" />
+
+## Common Datasets
+
+``` r
+# Iris
+gg1d(iris, interactive = FALSE)
+#> 
+#> ── Running gg1d ────────────────────────────────────────────────────────────────
+#> 
+#> ── Sorting
+#> ℹ Sorting X axis by: Order of appearance
+#> 
+#> ── Generating Plot
+#> ℹ Found 5 plottable columns in data
+#> ✔ Plotting column Sepal.Length
+#> ✔ Plotting column Sepal.Width
+#> ✔ Plotting column Petal.Length
+#> ✔ Plotting column Petal.Width
+#> ✔ Plotting column Species
+#> ℹ Stacking plots vertically
+#> ℹ Rendering static plot. For interactive version set `interactive = TRUE`
+```
+
+<img src="man/figures/README-iris-1.png" width="100%" />

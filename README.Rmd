@@ -47,7 +47,7 @@ devtools::install_github("selkamand/gg1d")
 
 ## Quick Start
 
-```{r, example}
+```{r, example, fig.width = 7, fig.height = 5}
 # Load library
 library(gg1d)
 
@@ -68,7 +68,7 @@ gg1d(
 
 Customise colours by supplying a named list to the `palettes` argument
 
-```{r}
+```{r customise_colours, fig.width = 7, fig.height = 5}
 gg1d(
   df, 
   col_id = "ID", 
@@ -80,5 +80,12 @@ gg1d(
     )),
   interactive = FALSE, legend_nrow = 2, verbose = FALSE
 )
+```
+
+## Common Datasets
+
+```{r iris, fig.width = 7, fig.height = 5}
+# Iris
+gg1d(iris, interactive = FALSE)
 ```
 

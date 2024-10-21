@@ -12,6 +12,12 @@ status](https://www.r-pkg.org/badges/version/gg1d)](https://CRAN.R-project.org/p
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![Codecov test
 coverage](https://codecov.io/gh/selkamand/gg1d/branch/master/graph/badge.svg)](https://app.codecov.io/gh/selkamand/gg1d?branch=master)
+![GitHub Issues or Pull
+Requests](https://img.shields.io/github/issues-closed/user/package)
+[![code
+size](https://img.shields.io/github/languages/code-size/user/package.svg)](https://github.com/selkamand/package)
+![GitHub last
+commit](https://img.shields.io/github/last-commit/user/package)
 <!-- badges: end -->
 
 Effortlessly visualize all columns in a data frame with gg1d’s
@@ -45,6 +51,9 @@ devtools::install_github("selkamand/gg1d")
 ```
 
 ## Quick Start
+
+For examples of interactive gg1d plots see the [gg1d
+gallery](https://selkamand.github.io/gg1d/articles/gallery.html)
 
 ``` r
 # Load library
@@ -84,6 +93,3 @@ gg1d(
 ```
 
 <img src="man/figures/README-customise_colours-1.png" width="100%" />
-
-For more examples see the [gg1d
-gallery](https://selkamand.github.io/gg1d/articles/gallery.html)

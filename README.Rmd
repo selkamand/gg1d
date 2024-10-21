@@ -84,7 +84,7 @@ gg1d(
 
 ## Common Datasets
 
-```{r iris, fig.width = 7, fig.height = 5}
+```{r iris, fig.width = 7, fig.height = 5, dpi=300}
 # Iris
 gg1d(iris, interactive = FALSE)
 ```

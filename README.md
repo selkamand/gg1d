@@ -60,7 +60,7 @@ gallery](https://selkamand.github.io/gg1d/articles/gallery.html)
 library(gg1d)
 
 # Read data
-path_gg1d <- system.file("testdata/testinput.csv", package = "gg1d")
+path_gg1d <- system.file("example.csv", package = "gg1d")
 df <- read.csv(path_gg1d, header = TRUE, na.strings = "")
 
 # Plot data, sort by Glasses

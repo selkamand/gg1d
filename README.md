@@ -11,7 +11,7 @@ status](https://www.r-pkg.org/badges/version/gg1d)](https://CRAN.R-project.org/p
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![Codecov test
-coverage](https://codecov.io/gh/selkamand/gg1d/branch/master/graph/badge.svg)](https://app.codecov.io/gh/selkamand/gg1d?branch=master)
+coverage](https://codecov.io/gh/selkamand/gg1d/branch/main/graph/badge.svg)](https://app.codecov.io/gh/selkamand/gg1d?branch=main)
 ![GitHub Issues or Pull
 Requests](https://img.shields.io/github/issues-closed/selkamand/gg1d)
 [![code

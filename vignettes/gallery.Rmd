@@ -117,6 +117,11 @@ gg1d(
   df_lazy_birdatcher,
   col_sort = "Magpies", 
   show_legend = TRUE,
+  fontsize_y_text = 18,
+  fontsize_barplot_y_numbers = 12, 
+  legend_text_size = 16, 
+  legend_key_size = 1,
+  legend_nrow = 1,
   palettes = list(
     Birdwatcher = c(Robert = "#E69F00", Catherine = "#999999"),
     Day = c(Weekday = "#999999" ,Weekend = "#009E73")

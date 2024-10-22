@@ -200,6 +200,7 @@ choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colour
 #' @param legend_orientation_heatmap should legend orientation be "horizontal" or "vertical"
 #' @param fontsize_barplot_y_numbers fontsize of the text describing numeric barplot max & min values (number)
 #' @param cli_header Text used for h1 header. Included so it can be tweaked by packages that use gg1d, so they can customise how the info messages appear.
+#' @param interactive_svg_width,interactive_svg_height width and height of the interactive graphic region (in inches). Only used when `interactive = TRUE`.
 #' @return ggiraph interactive visualisation
 #'
 #' @examples
@@ -240,6 +241,8 @@ gg1d <- function(
     fontsize_values_heatmap = 3,
     colours_values_heatmap = "white",
     fontsize_barplot_y_numbers = 8,
+    interactive_svg_width = NULL,
+    interactive_svg_height = NULL,
     cli_header = "Running gg1d"
     ) {
 
@@ -557,6 +560,8 @@ gg1d <- function(
     if(verbose >= 2) cli::cli_alert_info("Making plot interactive since `interactive = TRUE`")
     ggpatch <- ggiraph::girafe(
       ggobj = ggpatch,
+      width_svg = interactive_svg_width,
+      height_svg = interactive_svg_height,
       options =  list(
         opts_hover = ggiraph::opts_hover(css = "stroke:black;cursor:pointer;r:5px;")
       )

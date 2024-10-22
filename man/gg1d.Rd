@@ -53,6 +53,8 @@ gg1d(
   fontsize_values_heatmap = 3,
   colours_values_heatmap = "white",
   fontsize_barplot_y_numbers = 8,
+  interactive_svg_width = NULL,
+  interactive_svg_height = NULL,
   cli_header = "Running gg1d"
 )
 }
@@ -157,6 +159,8 @@ Options are \code{alphabetical} or \code{frequency}}
 \item{colours_values_heatmap}{colour of text describing values in heatmap (string)}
 
 \item{fontsize_barplot_y_numbers}{fontsize of the text describing numeric barplot max & min values (number)}
+
+\item{interactive_svg_width, interactive_svg_height}{width and height of the interactive graphic region (in inches). Only used when \code{interactive = TRUE}.}
 
 \item{cli_header}{Text used for h1 header. Included so it can be tweaked by packages that use gg1d, so they can customise how the info messages appear.}
 }

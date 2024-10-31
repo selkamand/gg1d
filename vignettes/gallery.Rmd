@@ -108,13 +108,10 @@ gg1d(
 The simulated "Lazy Birdwatcher" dataset records magpie observations by Robert and Catherine. Robert doesn't birdwatch on weekends, resulting in missing data for him on those days. This pattern of missingness, dependent on both person and day, is hard to detect using one-dimensional EDA tools like skimr or two-dimensional tools like ggpairs from the GGally package, as they don't capture multi-variable interactions contributing to the missingness.
 
 ```{r message=FALSE, fig.height = 4}
-# Read Data
-path_lazy_birdwatcher <- system.file("birdwatching.csv", package = "gg1d")
-df_lazy_birdatcher <- read.csv(path_lazy_birdwatcher)
 
-# Plot Dataset by Number of Magpies Observed
+# Plot lazy birdwatcher dataset by Number of Magpies Observed
 gg1d(
-  df_lazy_birdatcher,
+  lazy_birdwatcher,
   col_sort = "Magpies", 
   show_legend = TRUE,
   fontsize_y_text = 18,

@@ -3,7 +3,7 @@ pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   gallery: gallery.html
-last_built: 2024-10-22T04:38Z
+last_built: 2024-10-31T23:42Z
 urls:
   reference: https://selkamand.github.io/gg1d/reference
   article: https://selkamand.github.io/gg1d/articles

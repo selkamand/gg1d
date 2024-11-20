@@ -174,7 +174,7 @@ choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colour
 #' @param legend_nrow the number of rows in the legend (number)
 #' @param legend_ncol the number of columns in the legend. Set `legend_nrow = NULL` when using legend_ncol (number)
 #' @param legend_title_size the size of the title of the legend (number)
-#' @param legend_title_beautify beautify legend title (add spaces to snake_case / camelCase & capitalise each word) (flag)
+#' @param beautify_text beautify y axis text and legend titles (add spaces to snake_case / camelCase & capitalise each word) (flag)
 #' @param legend_text_size the size of the text in the legend (number)
 #' @param legend_key_size the size of the key in the legend (number)
 #' @param palettes A list of named vectors. List names correspond to \strong{data} column names (categorical only). Vector names to levels of columns. Vector values are colours, the vector names are used to map values in data to a colour.
@@ -224,7 +224,7 @@ gg1d <- function(
     ignore_column_regex = "_ignore$",
     show_legend_titles = FALSE, show_legend = !interactive, legend_position = c("right", "left", "bottom", "top"),
     legend_title_position = c("top", "bottom", "left", "right"),
-    legend_title_beautify = TRUE,
+    beautify_text = TRUE,
     numeric_plot_type = c('bar', "heatmap"),
     legend_nrow = 4, legend_ncol = NULL,
     legend_title_size = NULL, legend_text_size = NULL, legend_key_size = 0.3,
@@ -262,7 +262,7 @@ gg1d <- function(
   assertions::assert_equal(length(colours_default_logical), 2)
   assertions::assert_names_include(colours_default_logical, c("TRUE", "FALSE"))
   assertions::assert_string(colours_missing)
-  assertions::assert_flag(legend_title_beautify)
+  assertions::assert_flag(beautify_text)
   assertions::assert_number(vertical_spacing)
   assertions::assert_string(ignore_column_regex)
   assertions::assert_string(colours_heatmap_low)
@@ -437,7 +437,7 @@ gg1d <- function(
           data,
           aes(
             x = .data[[col_id]],
-            y = if(legend_title_beautify) beautify(colname) else colname,
+            y = if(beautify_text) beautify(colname) else colname,
             fill = .data[[colname]]
             )
           ) +
@@ -448,7 +448,7 @@ gg1d <- function(
             aes(label = na_marker), size = na_marker_size, na.rm = TRUE, vjust=0.5, color = na_marker_colour,
             ) }} +
           ggplot2::scale_x_discrete(drop = drop_unused_id_levels) +
-          #ggplot2::ylab(if(legend_title_beautify) beautify(colname) else colname) +
+          #ggplot2::ylab(if(beautify_text) beautify(colname) else colname) +
           theme_categorical(
             show_legend_titles = show_legend_titles,
             show_legend = show_legend,
@@ -461,7 +461,7 @@ gg1d <- function(
             ) +
           ggplot2::guides(fill = ggplot2::guide_legend(
             title.position = legend_title_position,
-            title = if(legend_title_beautify) beautify(colname) else colname,
+            title = if(beautify_text) beautify(colname) else colname,
             nrow = legend_nrow,
             ncol = legend_ncol
             )) +
@@ -473,7 +473,7 @@ gg1d <- function(
         breaks <- sensible_3_breaks(data[[colname]])
         labels <- sensible_3_labels(
           data[[colname]],
-          axis_label = if(legend_title_beautify) beautify(colname) else colname,
+          axis_label = if(beautify_text) beautify(colname) else colname,
           fontsize_numbers = fontsize_barplot_y_numbers
           )
 
@@ -491,14 +491,14 @@ gg1d <- function(
             position = y_axis_position,
             expand = c(0,0)
           ) +
-          #ggplot2::ylab(if(legend_title_beautify) beautify(colname) else colname) +
+          #ggplot2::ylab(if(beautify_text) beautify(colname) else colname) +
           theme_numeric_bar(vertical_spacing = vertical_spacing, fontsize_y_text = fontsize_y_text)
       }
       # Numeric Heatmap -------------------------------------------------------------------------
       else if (coltype == "numeric" && numeric_plot_type == "heatmap") {
         gg <- ggplot2::ggplot(data, aes(
             x = .data[[col_id]],
-            y = if(legend_title_beautify) beautify(colname) else colname,
+            y = if(beautify_text) beautify(colname) else colname,
             fill = .data[[colname]])
           ) +
           ggiraph::geom_tile_interactive(mapping = aes_interactive, width = width, na.rm = TRUE) +

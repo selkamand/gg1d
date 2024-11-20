@@ -683,10 +683,11 @@ sensible_3_labels <- function(vector, axis_label, fontsize_numbers = 7){
 #' Takes an input string and 'beautify' by converting underscores to spaces and
 #'
 #' @param string input string
+#' @param autodetect_units automatically detect units (e.g. mm, kg, etc) and wrap in brackets.
 #'
 #' @return string
 #'
-beautify <- function(string){
+beautify <- function(string, autodetect_units = TRUE){
   # underscores to spaces
   string <- gsub(x=string, pattern = "_", replacement = " ")
 
@@ -696,7 +697,27 @@ beautify <- function(string){
   # camelCase to camel Case
   string <- gsub(x=string, pattern = "([a-z])([A-Z])", replacement = "\\1 \\2")
 
+  # Autodetect units (and move to brackets)
+  if(autodetect_units){
+    string <- sub("\\bm\\b", "(m)", string)
+    string <- sub("\\bmm\\b", "(mm)", string)
+    string <- sub("\\cm\\b", "(cm)", string)
+    string <- sub("\\km\\b", "(km)", string)
+    string <- sub("\\bg\\b", "(g)", string)
+    string <- sub("\\bkg\\b", "(kg)", string)
+    string <- sub("\\bmg\\b", "(mm)", string)
+    string <- sub("\\boz\\b", "(oz)", string)
+    string <- sub("\\blb\\b", "(lb)", string)
+    string <- sub("\\bin\\b", "(in)", string)
+    string <- sub("\\bft\\b", "(ft)", string)
+    string <- sub("\\byd\\b", "(yd)", string)
+    string <- sub("\\bmi\\b", "(mi)", string)
+  }
+
+
   # Capitalise Each Word
   string <- gsub(x=string, pattern = "^([a-z])",  perl = TRUE, replacement = ("\\U\\1"))
   string <- gsub(x=string, pattern = " ([a-z])",  perl = TRUE, replacement = (" \\U\\1"))
+
+  return(string)
 }

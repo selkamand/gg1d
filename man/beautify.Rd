@@ -4,10 +4,12 @@
 \alias{beautify}
 \title{Make strings prettier for printing}
 \usage{
-beautify(string)
+beautify(string, autodetect_units = TRUE)
 }
 \arguments{
 \item{string}{input string}
+
+\item{autodetect_units}{automatically detect units (e.g. mm, kg, etc) and wrap in brackets.}
 }
 \value{
 string

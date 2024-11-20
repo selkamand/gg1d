@@ -30,7 +30,7 @@ gg1d(
   show_legend = !interactive,
   legend_position = c("right", "left", "bottom", "top"),
   legend_title_position = c("top", "bottom", "left", "right"),
-  legend_title_beautify = TRUE,
+  beautify_text = TRUE,
   numeric_plot_type = c("bar", "heatmap"),
   legend_nrow = 4,
   legend_ncol = NULL,
@@ -114,7 +114,7 @@ Options are \code{alphabetical} or \code{frequency}}
 
 \item{legend_title_position}{position of the title of the legend on the plot (string, options are "top", "bottom", "left", "right")}
 
-\item{legend_title_beautify}{beautify legend title (add spaces to snake_case / camelCase & capitalise each word) (flag)}
+\item{beautify_text}{beautify y axis text and legend titles (add spaces to snake_case / camelCase & capitalise each word) (flag)}
 
 \item{numeric_plot_type}{visual representation of numeric properties. One of 'bar', for bar charts, or 'heatmap' for heatmaps.}
 

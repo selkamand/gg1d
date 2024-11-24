@@ -96,7 +96,7 @@ figure1c <- gg1d(
 
 figure1c
 
-# ggsaves::ggisaves(figure1c, prefix = "figure1c", outfolder = here("paper/"), dpi = 300, title = "PalmerPenguins")
+ggsaves::ggisaves(figure1c, prefix = "figure1c", outfolder = here("paper/"), dpi = 300, title = "PalmerPenguins")
 ```
 
 ## Figure 2

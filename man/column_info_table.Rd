@@ -32,10 +32,6 @@ column_info_table(
 
 \item{palettes}{A list of named vectors. List names correspond to \strong{data} column names (categorical only). Vector names to levels of columns. Vector values are colours, the vector names are used to map values in data to a colour.}
 
-\item{colours_default}{default colours to use for variables. will be used to colour variables with no palette supplied.}
-
-\item{colours_default_logical}{colours for binary variables (vector of 3 colors where elements represent colours of TRUE, FALSE, and NA respectively) (character)}
-
 \item{verbose}{Numeric value indicating the verbosity level:
 \itemize{
 \item \strong{2}: Highly verbose, all messages.

@@ -68,7 +68,9 @@ gg1d(
   df, 
   col_id = "ID", 
   col_sort = "Glasses", 
-  interactive = FALSE, legend_nrow = 2, verbose = FALSE
+  interactive = FALSE, 
+  verbose = FALSE,
+  options = gg1d_options(legend_nrow = 2)
 )
 ```
 
@@ -88,7 +90,9 @@ gg1d(
     Blue = "steelblue",
     Green = "seagreen"
     )),
-  interactive = FALSE, legend_nrow = 2, verbose = FALSE
+  interactive = FALSE, 
+  verbose = FALSE,
+  options = gg1d_options(legend_nrow = 2)
 )
 ```
 

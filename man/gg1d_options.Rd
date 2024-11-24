@@ -33,13 +33,13 @@ gg1d_options(
   vertical_spacing = 0,
   numeric_plot_type = c("bar", "heatmap"),
   y_axis_position = c("left", "right"),
-  fontsize_barplot_y_numbers = 8,
   width = 0.9,
   relative_height_numeric = 4,
   cli_header = "Running gg1d",
   interactive_svg_width = NULL,
   interactive_svg_height = NULL,
-  fontsize_y_text = 12,
+  fontsize_barplot_y_numbers = 8,
+  fontsize_y_title = 12,
   beautify_text = TRUE
 )
 }
@@ -98,8 +98,6 @@ gg1d_options(
 
 \item{y_axis_position}{Position of the y-axis ("left" or "right").}
 
-\item{fontsize_barplot_y_numbers}{fontsize of the text describing numeric barplot max & min values (number).}
-
 \item{width}{controls how much space is present between bars and tiles within each plot. Can be 0-1 where values of 1 makes bars/tiles take up 100\% of available space (no gaps between bars).}
 
 \item{relative_height_numeric}{how many times taller should numeric plots be relative to categorical tile plots. Only taken into account if numeric_plot_type == "bar" (number)}
@@ -108,7 +106,9 @@ gg1d_options(
 
 \item{interactive_svg_width, interactive_svg_height}{width and height of the interactive graphic region (in inches). Only used when \code{interactive = TRUE}.}
 
-\item{fontsize_y_text}{Font size for y-axis text (number).}
+\item{fontsize_barplot_y_numbers}{fontsize of the text describing numeric barplot max & min values (number).}
+
+\item{fontsize_y_title}{fontsize of the y axis titles (a.k.a the data.frame column names) (number).}
 
 \item{beautify_text}{Beautify y-axis text and legend titles by capitalizing words and adding spaces (flag).}
 }
@@ -135,7 +135,6 @@ gg1d(
   ),
   options = gg1d_options(
     show_legend = TRUE,
-    fontsize_y_text = 18,
     fontsize_barplot_y_numbers = 12,
     legend_text_size = 16,
     legend_key_size = 1,

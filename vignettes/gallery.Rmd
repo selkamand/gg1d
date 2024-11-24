@@ -128,7 +128,6 @@ gg1d(
   ),
   options = gg1d_options(
     show_legend = TRUE,
-    fontsize_y_text = 18,
     fontsize_barplot_y_numbers = 12, 
     legend_text_size = 16, 
     legend_key_size = 1,

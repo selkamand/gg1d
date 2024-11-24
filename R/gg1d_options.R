@@ -13,7 +13,8 @@
 #' @param legend_key_size Size of the legend key symbols (number).
 #' @param beautify_text Beautify y-axis text and legend titles by capitalizing words and adding spaces (flag).
 #' @param vertical_spacing Space between each data row in points (number).
-#' @param fontsize_y_text Font size for y-axis text (number).
+#' @param fontsize_barplot_y_numbers fontsize of the text describing numeric barplot max & min values (number).
+#' @param fontsize_y_title fontsize of the y axis titles (a.k.a the data.frame column names) (number).
 #' @param y_axis_position Position of the y-axis ("left" or "right").
 #' @param numeric_plot_type Type of visualization for numeric data: "bar" or "heatmap".
 #' @param colours_default Default colors for categorical variables without a custom palette.
@@ -30,13 +31,11 @@
 #' @param show_values_heatmap Display numerical values on heatmap tiles (flag).
 #' @param fontsize_values_heatmap Font size for heatmap values (number).
 #' @param legend_orientation_heatmap should legend orientation be "horizontal" or "vertical".
-#' @param fontsize_barplot_y_numbers fontsize of the text describing numeric barplot max & min values (number).
 #' @param width controls how much space is present between bars and tiles within each plot. Can be 0-1 where values of 1 makes bars/tiles take up 100% of available space (no gaps between bars).
 #' @param relative_height_numeric how many times taller should numeric plots be relative to categorical tile plots. Only taken into account if numeric_plot_type == "bar" (number)
 #' @param cli_header Text used for h1 header. Included so it can be tweaked by packages that use gg1d, so they can customise how the info messages appear.
 #' @param interactive_svg_width,interactive_svg_height width and height of the interactive graphic region (in inches). Only used when `interactive = TRUE`.
 #' @param colours_values_heatmap Color for heatmap values (string).
-#'
 #' @return A list of visualization parameters for `gg1d`.
 #' @export
 #' @inherit gg1d examples
@@ -66,14 +65,13 @@ gg1d_options <- function(
     colours_heatmap_high = "seagreen",
     transform_heatmap = c("identity", "log10", "log2"),
     fontsize_values_heatmap = 3,
-    show_values_heatmap = TRUE,
+    show_values_heatmap = FALSE,
     colours_values_heatmap = "white",
 
     # Global Paramaters
     vertical_spacing = 0,
     numeric_plot_type = c('bar', "heatmap"),
     y_axis_position = c("left", "right"),
-    fontsize_barplot_y_numbers = 8,
     width = 0.9,
     relative_height_numeric = 4,
     cli_header = "Running gg1d",
@@ -83,7 +81,8 @@ gg1d_options <- function(
     interactive_svg_height = NULL,
 
     # Text
-    fontsize_y_text = 12,
+    fontsize_barplot_y_numbers = 8,
+    fontsize_y_title = 12,
     beautify_text = TRUE
   ){
 
@@ -113,7 +112,6 @@ gg1d_options <- function(
   assertions::assert_flag(beautify_text)
   assertions::assert_number(vertical_spacing)
   assertions::assert_number(fontsize_values_heatmap)
-  assertions::assert_number(fontsize_barplot_y_numbers)
   assertions::assert_number(relative_height_numeric)
 
   # Argument matching (these check the allowed values for these parameters)
@@ -145,7 +143,8 @@ gg1d_options <- function(
     legend_orientation_heatmap = legend_orientation_heatmap,
     beautify_text = beautify_text,
     vertical_spacing = vertical_spacing,
-    fontsize_y_text = fontsize_y_text,
+    fontsize_barplot_y_numbers = fontsize_barplot_y_numbers,
+    fontsize_y_title = fontsize_y_title,
     y_axis_position = y_axis_position,
     numeric_plot_type = numeric_plot_type,
     colours_default = colours_default,
@@ -165,7 +164,6 @@ gg1d_options <- function(
     colours_values_heatmap = colours_values_heatmap,
     relative_height_numeric = relative_height_numeric,
     width = width,
-    fontsize_barplot_y_numbers = fontsize_barplot_y_numbers,
     interactive_svg_width = interactive_svg_width,
     interactive_svg_height = interactive_svg_height
   )

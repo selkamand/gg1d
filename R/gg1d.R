@@ -49,7 +49,6 @@ utils::globalVariables(".data")
 #'   ),
 #'   options = gg1d_options(
 #'     show_legend = TRUE,
-#'     fontsize_y_text = 18,
 #'     fontsize_barplot_y_numbers = 12,
 #'     legend_text_size = 16,
 #'     legend_key_size = 1,
@@ -250,8 +249,9 @@ gg1d <- function(
             legend_text_size = options$legend_text_size,
             legend_key_size = options$legend_key_size,
             vertical_spacing = options$vertical_spacing,
-            fontsize_y_text = options$fontsize_y_text
+            fontsize_y_title = options$fontsize_y_title
           ) +
+          ggplot2::ylab(if(options$beautify_text) beautify(colname) else colname) +
           ggplot2::guides(fill = ggplot2::guide_legend(
             title.position = options$legend_title_position,
             title = if(options$beautify_text) beautify(colname) else colname,
@@ -267,8 +267,9 @@ gg1d <- function(
         labels <- sensible_3_labels(
           data[[colname]],
           axis_label = if(options$beautify_text) beautify(colname) else colname,
-          fontsize_numbers = options$fontsize_barplot_y_numbers
+          fontsize_y_title = options$fontsize_y_title
         )
+
 
         gg <- ggplot2::ggplot(data, aes(x = .data[[col_id]], y = .data[[colname]])) +
           ggiraph::geom_col_interactive(mapping = aes_interactive, width = options$width, na.rm = TRUE) +
@@ -283,13 +284,14 @@ gg1d <- function(
             position = options$y_axis_position,
             expand = c(0,0)
           ) +
-          theme_numeric_bar(vertical_spacing = options$vertical_spacing, fontsize_y_text = options$fontsize_y_text)
+          theme_numeric_bar(vertical_spacing = options$vertical_spacing, fontsize_barplot_y_numbers = options$fontsize_barplot_y_numbers)
       }
       # Numeric Heatmap -------------------------------------------------------------------------
       else if (coltype == "numeric" && options$numeric_plot_type == "heatmap") {
+        colname_formatted <- if(options$beautify_text) beautify(colname) else colname
         gg <- ggplot2::ggplot(data, aes(
           x = .data[[col_id]],
-          y = if(options$beautify_text) beautify(colname) else colname,
+          y = colname,
           fill = .data[[colname]])
         ) +
           ggiraph::geom_tile_interactive(mapping = aes_interactive, width = options$width, na.rm = TRUE) +
@@ -305,6 +307,7 @@ gg1d <- function(
               aes(label = .data[[colname]]),
               size = options$fontsize_values_heatmap, color = options$colours_values_heatmap, na.rm = TRUE, vjust=0.5
             ) }} +
+          ggplot2::ylab(colname_formatted) +
           theme_numeric_heatmap(
             show_legend_titles = options$show_legend_titles,
             show_legend = options$show_legend,
@@ -313,7 +316,7 @@ gg1d <- function(
             legend_text_size = options$legend_text_size,
             legend_key_size = options$legend_key_size,
             vertical_spacing = options$vertical_spacing,
-            fontsize_y_text = options$fontsize_y_text
+            fontsize_y_title  = options$fontsize_y_title
           ) +
           ggplot2::scale_fill_gradient(
             low = options$colours_heatmap_low,
@@ -323,6 +326,7 @@ gg1d <- function(
             guide = ggplot2::guide_colorbar(
               direction = if(options$legend_orientation_heatmap == "horizontal") "horizontal" else "vertical",
               title.position = "top",
+              title = if(!options$show_legend_title) NULL else colname_formatted,
               title.hjust = 0
             )
           )
@@ -337,6 +341,9 @@ gg1d <- function(
 
   # Remove null columns
   gglist <- gglist[!vapply(gglist, is.null, logical(1))]
+
+  # Align only axes (not labels)
+  gglist <- lapply(gglist, FUN = \(p){patchwork::free(p,type = "label")})
 
   # Get relative heights for plots (make numeric variables taller)
   relheights <- ifelse(
@@ -512,16 +519,16 @@ choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colour
 
 
 
-theme_categorical <- function(fontsize_y_text = 12, show_legend = TRUE,show_legend_titles = FALSE, legend_position = "right", legend_title_size = NULL, legend_text_size = NULL, legend_key_size = 0.3, vertical_spacing = 0) {
+theme_categorical <- function(fontsize_y_title = 12, show_legend = TRUE,show_legend_titles = FALSE, legend_position = "right", legend_title_size = NULL, legend_text_size = NULL, legend_key_size = 0.3, vertical_spacing = 0) {
   ggplot2::theme_minimal() %+replace%
 
     theme(
       panel.grid = element_blank(),
-      axis.text.y.left = element_text(size = fontsize_y_text),
-      axis.text.y.right = element_text(size = fontsize_y_text),
+      axis.text.y.left = element_blank(),
+      axis.text.y.right = element_blank(),
       axis.text.x = element_blank(),
       axis.title.x = element_blank(),
-      axis.title.y = element_blank(),
+      axis.title.y = element_text(size = fontsize_y_title, angle = 0),
       legend.key.size = ggplot2::unit(legend_key_size, "line"),
       legend.title = if(show_legend_titles) element_text(size = legend_title_size, face = "bold", hjust = 0) else element_blank(),
       legend.justification = "left",
@@ -532,34 +539,33 @@ theme_categorical <- function(fontsize_y_text = 12, show_legend = TRUE,show_lege
     )
 }
 
-theme_numeric_bar <- function(vertical_spacing = 0, fontsize_y_text = 12) {
+theme_numeric_bar <- function(vertical_spacing = 0, fontsize_barplot_y_numbers = 8) {
   ggplot2::theme_minimal() %+replace%
 
     theme(
       panel.grid = element_blank(),
-      axis.title.y = element_blank(),
       axis.title.y.right = element_blank(),
+      axis.title.y = element_blank(),
       axis.text.x = element_blank(),
       axis.title.x = element_blank(),
       axis.line.y = element_line(linewidth = 0.3),
       axis.line.x = element_blank(),
-      axis.text.y.left = ggtext::element_markdown(size = fontsize_y_text),
-      axis.text.y.right = ggtext::element_markdown(size = fontsize_y_text, hjust = 0),
+      axis.text.y.left = ggtext::element_markdown(size = fontsize_barplot_y_numbers, colour = "black"),
+      axis.text.y.right = ggtext::element_markdown(size = fontsize_barplot_y_numbers, hjust = 0),
       axis.ticks.y = element_blank(),
       strip.placement = "outside",
       plot.margin = ggplot2::margin(t = 5, r = 0, b = vertical_spacing + 5, l = 0, unit = "pt")
     )
 }
 
-theme_numeric_heatmap <- function(fontsize_y_text = 12, show_legend = TRUE, legend_position = "right", show_legend_titles = FALSE, legend_title_size = NULL, legend_text_size = NULL, legend_key_size = 0.3, vertical_spacing = 0) {
+theme_numeric_heatmap <- function(fontsize_y_title = 12, show_legend = TRUE, legend_position = "right", show_legend_titles = FALSE, legend_title_size = NULL, legend_text_size = NULL, legend_key_size = 0.3, vertical_spacing = 0) {
   ggplot2::theme_minimal() %+replace%
-
     theme(
       panel.grid = element_blank(),
-      axis.text.y = element_text(size = fontsize_y_text),
+      axis.text.y = element_blank(),
+      axis.title.y = element_text(size = fontsize_y_title, angle = 0, colour = "black"),
       axis.text.x = element_blank(),
       axis.title.x = element_blank(),
-      axis.title.y = element_blank(),
       legend.title = if (show_legend_titles) element_text(size = legend_title_size, face = "bold", hjust = 0) else element_blank(),
       legend.justification = "left",
       legend.text = element_text(size = legend_text_size),
@@ -602,15 +608,15 @@ sensible_3_breaks <- function(vector){
   return(breaks)
 }
 
-sensible_3_labels <- function(vector, axis_label, fontsize_numbers = 7){
+sensible_3_labels <- function(vector, axis_label, fontsize_y_title = 14){
   upper <- max(vector, na.rm = TRUE)
   lower <- min(0, min(vector, na.rm = TRUE), na.rm = TRUE)
+
+  axis_label <- paste0("<span style = 'font-size: ",fontsize_y_title,"pt'>",axis_label, "</span>")
+
   if (lower == upper)
     return(axis_label)
-  upper <- paste0("<span style = 'font-size: ",fontsize_numbers,"pt'>",upper, "</span>")
-  lower <- paste0("<span style = 'font-size: ",fontsize_numbers,"pt'>",lower, "</span>")
 
-  #middle = mean(c(upper, lower)
   as.character(c(upper, axis_label, lower))
 }
 

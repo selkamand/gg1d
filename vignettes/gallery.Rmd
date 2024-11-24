@@ -31,11 +31,14 @@ Horsebean feed consistently produces the lowest chicken weights.
 ```{r message=FALSE, fig.height=3}
 gg1d(
   chickwts, 
-  show_legend = TRUE, 
-  legend_position = "bottom", 
-  legend_nrow = 1, 
-  legend_text_size = 18, 
-  col_sort = "weight")
+  col_sort = "weight",
+  options = gg1d_options(
+    show_legend = TRUE, 
+    legend_position = "bottom", 
+    legend_nrow = 1, 
+    legend_text_size = 18
+  )
+)
 ```
 
 ### Iris
@@ -43,7 +46,10 @@ gg1d(
 The setosa species have drastically smaller petals then other iris species.
 
 ```{r message=FALSE, fig.height=7}
-gg1d(iris, show_legend = TRUE)
+gg1d(
+  iris, 
+  options = gg1d_options(show_legend = TRUE)
+)
 ```
 
 ### Titanic Survival by Class
@@ -58,8 +64,9 @@ gg1d(
     Survived = c(Yes = "#32A02D", No ="#E31A1C"),
     Class = c("Crew" =  "#F9F7EAFF", "1st" ="#006E37FF", "2nd" = "#8DB580FF", "3rd" =  "#D9E5BDFF"),
     Age = c(Child = "#35B779FF",  Adult = "#440154FF")
-    ), show_legend = TRUE
-  )
+    ), 
+  options = gg1d_options(show_legend = TRUE)
+)
 ```
 
 ### Palmer Penguins
@@ -74,14 +81,16 @@ library(palmerpenguins)
 penguins$year <- NULL
 
 gg1d(
-  penguins, 
-  relative_height_numeric = 1.2, 
-  show_legend = TRUE, 
+  penguins,
   palettes = list(
     species = c(Chinstrap = "#C55BCC", Adelie = "#FF7F02", Gentoo = "#047476"),
     sex = c(male = "#0072B2", female = "#CC79A7"),
     island = c(Biscoe = "#E69F00", Dream = "#56B4E9", Torgersen = "#009E73")
-    )
+    ),
+  options = gg1d_options(
+    relative_height_numeric = 1.2, 
+    show_legend = TRUE, 
+  )
 )
 ```
 
@@ -99,7 +108,7 @@ gg1d(
   df, 
   col_id = "ID", 
   col_sort = "Glasses", 
-  legend_nrow = 2
+  options = gg1d_options(legend_nrow = 2)
 )
 ```
 
@@ -113,15 +122,16 @@ The simulated "Lazy Birdwatcher" dataset records magpie observations by Robert a
 gg1d(
   lazy_birdwatcher,
   col_sort = "Magpies", 
-  show_legend = TRUE,
-  fontsize_y_text = 18,
-  fontsize_barplot_y_numbers = 12, 
-  legend_text_size = 16, 
-  legend_key_size = 1,
-  legend_nrow = 1,
   palettes = list(
     Birdwatcher = c(Robert = "#E69F00", Catherine = "#999999"),
     Day = c(Weekday = "#999999" ,Weekend = "#009E73")
+  ),
+  options = gg1d_options(
+    show_legend = TRUE,
+    fontsize_barplot_y_numbers = 12, 
+    legend_text_size = 16, 
+    legend_key_size = 1,
+    legend_nrow = 1,
   )
 )
 ```

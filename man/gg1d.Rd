@@ -14,48 +14,13 @@ gg1d(
   interactive = TRUE,
   debug_return_col_info = FALSE,
   palettes = NULL,
-  colours_default = c("#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F",
-    "#E5C494"),
-  colours_default_logical = c(`TRUE` = "#648fff", `FALSE` = "#dc267f"),
-  colours_missing = "grey90",
-  limit_plots = TRUE,
-  cols_to_plot = NULL,
   sort_type = c("frequency", "alphabetical"),
   desc = TRUE,
-  width = 0.9,
-  relative_height_numeric = 4,
+  limit_plots = TRUE,
+  cols_to_plot = NULL,
   tooltip_column_suffix = "_tooltip",
   ignore_column_regex = "_ignore$",
-  show_legend_titles = FALSE,
-  show_legend = !interactive,
-  legend_position = c("right", "left", "bottom", "top"),
-  legend_title_position = c("top", "bottom", "left", "right"),
-  beautify_text = TRUE,
-  numeric_plot_type = c("bar", "heatmap"),
-  legend_nrow = 4,
-  legend_ncol = NULL,
-  legend_title_size = NULL,
-  legend_text_size = NULL,
-  legend_key_size = 0.3,
-  vertical_spacing = 0,
-  na_marker = "!",
-  na_marker_size = 8,
-  na_marker_colour = "black",
-  show_na_marker_categorical = FALSE,
-  show_na_marker_heatmap = FALSE,
-  show_values_heatmap = TRUE,
-  fontsize_y_text = 12,
-  y_axis_position = c("left", "right"),
-  legend_orientation_heatmap = c("horizontal", "vertical"),
-  colours_heatmap_low = "purple",
-  colours_heatmap_high = "seagreen",
-  transform_heatmap = c("identity", "log10", "log2"),
-  fontsize_values_heatmap = 3,
-  colours_values_heatmap = "white",
-  fontsize_barplot_y_numbers = 8,
-  interactive_svg_width = NULL,
-  interactive_svg_height = NULL,
-  cli_header = "Running gg1d"
+  options = gg1d_options(show_legend = !interactive)
 )
 }
 \arguments{
@@ -63,7 +28,7 @@ gg1d(
 
 \item{col_id}{name of column to use for}
 
-\item{col_sort}{column to sort sample order by. By default uses the supplied order of levels in col_id (order of appearance if a character type)}
+\item{col_sort}{name of column to sort on}
 
 \item{maxlevels}{for categorical variables, what is the maximum number of distinct values to allow (too many will make it hard to find a palette that suits). (number)}
 
@@ -82,87 +47,21 @@ gg1d(
 
 \item{palettes}{A list of named vectors. List names correspond to \strong{data} column names (categorical only). Vector names to levels of columns. Vector values are colours, the vector names are used to map values in data to a colour.}
 
-\item{colours_default}{default colours to use for variables. will be used to colour variables with no palette supplied.}
-
-\item{colours_default_logical}{colours for binary variables (vector of 3 colors where elements represent colours of TRUE, FALSE, and NA respectively) (character)}
-
-\item{colours_missing}{colour to use for values of NA (string)}
-
-\item{limit_plots}{throw an error when there are > 15 plottable columns in table (logical)}
-
-\item{cols_to_plot}{names of columns in \strong{data} that should be plotted. By default plots all valid columns (character)}
-
 \item{sort_type}{controls how categorical variables are sorted.
 Numerical variables are always sorted in numerical order irrespective of the value given here.
 Options are \code{alphabetical} or \code{frequency}}
 
 \item{desc}{sort in descending order (flag)}
 
-\item{width}{controls how much space is present between bars and tiles within each plot. Can be 0-1 where values of 1 makes bars/tiles take up 100\% of available space (no gaps between bars)}
+\item{limit_plots}{throw an error when there are > 15 plottable columns in table (logical)}
 
-\item{relative_height_numeric}{how many times taller should numeric plots be relative to categorical tile plots. Only taken into account if numeric_plot_type == "bar" (number)}
+\item{cols_to_plot}{names of columns in \strong{data} that should be plotted. By default plots all valid columns (character)}
 
 \item{tooltip_column_suffix}{the suffix added to a column name that indicates column should be used as a tooltip (string)}
 
 \item{ignore_column_regex}{a regex string that, if matches a column name,  will cause that  column to be exclude from plotting (string)  (default: "_ignore$")}
 
-\item{show_legend_titles}{show legend titles (flag)}
-
-\item{show_legend}{show the legend (flag)}
-
-\item{legend_position}{position of the legend on the plot (string, options are "right", "left", "bottom", "top")}
-
-\item{legend_title_position}{position of the title of the legend on the plot (string, options are "top", "bottom", "left", "right")}
-
-\item{beautify_text}{beautify y axis text and legend titles (add spaces to snake_case / camelCase & capitalise each word) (flag)}
-
-\item{numeric_plot_type}{visual representation of numeric properties. One of 'bar', for bar charts, or 'heatmap' for heatmaps.}
-
-\item{legend_nrow}{the number of rows in the legend (number)}
-
-\item{legend_ncol}{the number of columns in the legend. Set \code{legend_nrow = NULL} when using legend_ncol (number)}
-
-\item{legend_title_size}{the size of the title of the legend (number)}
-
-\item{legend_text_size}{the size of the text in the legend (number)}
-
-\item{legend_key_size}{the size of the key in the legend (number)}
-
-\item{vertical_spacing}{how large should the gap between each data row be (unit = pt) (number)}
-
-\item{na_marker}{what text should be added to NA values for numeric variables to indicate the value is NA, not 0 (string)}
-
-\item{na_marker_size}{how large should the na_marker be (number)}
-
-\item{na_marker_colour}{colour of the \strong{na_marker} (string)}
-
-\item{show_na_marker_categorical}{should a text marker of NA values (e.g. '!') be rendered on tiles with NA values (flag)}
-
-\item{show_na_marker_heatmap}{should a text marker of NA values (e.g. '!') be rendered on tiles with NA values (flag)}
-
-\item{show_values_heatmap}{should quantitative values be displayed on heatmap tiles (flag)}
-
-\item{fontsize_y_text}{size of y axis text (number)}
-
-\item{y_axis_position}{whether y axis should be on left or right side (either 'left' or 'right')}
-
-\item{legend_orientation_heatmap}{should legend orientation be "horizontal" or "vertical"}
-
-\item{colours_heatmap_low}{colour of lowest value in heatmap (string)}
-
-\item{colours_heatmap_high}{colour of highest value in heatmap (string)}
-
-\item{transform_heatmap}{transformation to apply to values before heatmap visualisation. one of 'identity' (no transformation), 'log10', or 'log2'}
-
-\item{fontsize_values_heatmap}{font size of text describing values in heatmap (number)}
-
-\item{colours_values_heatmap}{colour of text describing values in heatmap (string)}
-
-\item{fontsize_barplot_y_numbers}{fontsize of the text describing numeric barplot max & min values (number)}
-
-\item{interactive_svg_width, interactive_svg_height}{width and height of the interactive graphic region (in inches). Only used when \code{interactive = TRUE}.}
-
-\item{cli_header}{Text used for h1 header. Included so it can be tweaked by packages that use gg1d, so they can customise how the info messages appear.}
+\item{options}{a list of additional visual parameters created by calling \code{\link[=gg1d_options]{gg1d_options()}}. See \code{\link{gg1d_options}} for details.}
 }
 \value{
 ggiraph interactive visualisation
@@ -175,6 +74,25 @@ Plots are fully interactive, and custom tooltips can be added.
 \examples{
 path_gg1d <- system.file("example.csv", package = "gg1d")
 df <- read.csv(path_gg1d, header = TRUE, na.strings = "")
+
+# Create Basic Plot
 gg1d(df, col_id = "ID", col_sort = "Glasses")
+
+# Configure plot gg1d_options()
+gg1d(
+  lazy_birdwatcher,
+  col_sort = "Magpies",
+  palettes = list(
+    Birdwatcher = c(Robert = "#E69F00", Catherine = "#999999"),
+    Day = c(Weekday = "#999999" ,Weekend = "#009E73")
+  ),
+  options = gg1d_options(
+    show_legend = TRUE,
+    fontsize_barplot_y_numbers = 12,
+    legend_text_size = 16,
+    legend_key_size = 1,
+    legend_nrow = 1,
+  )
+)
 
 }

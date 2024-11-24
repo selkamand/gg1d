@@ -35,7 +35,27 @@ utils::globalVariables(".data")
 #' @examples
 #' path_gg1d <- system.file("example.csv", package = "gg1d")
 #' df <- read.csv(path_gg1d, header = TRUE, na.strings = "")
+#'
+#' # Create Basic Plot
 #' gg1d(df, col_id = "ID", col_sort = "Glasses")
+#'
+#' # Configure plot gg1d_options()
+#' gg1d(
+#'   lazy_birdwatcher,
+#'   col_sort = "Magpies",
+#'   palettes = list(
+#'     Birdwatcher = c(Robert = "#E69F00", Catherine = "#999999"),
+#'     Day = c(Weekday = "#999999" ,Weekend = "#009E73")
+#'   ),
+#'   options = gg1d_options(
+#'     show_legend = TRUE,
+#'     fontsize_y_text = 18,
+#'     fontsize_barplot_y_numbers = 12,
+#'     legend_text_size = 16,
+#'     legend_key_size = 1,
+#'     legend_nrow = 1,
+#'   )
+#' )
 #'
 #' @importFrom ggplot2 ggplot aes geom_col geom_tile theme %+replace% element_blank element_text element_line
 #' @export
@@ -353,6 +373,7 @@ gg1d <- function(
 #' Parse a tibble and ensure it meets standards
 #'
 #' @inheritParams gg1d
+#' @inheritParams gg1d_options
 #'
 #' @return tibble with the following columns:
 #' 1) colnames

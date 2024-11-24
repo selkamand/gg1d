@@ -29,9 +29,17 @@
 #' @param show_na_marker_heatmap Show a marker for `NA` values on heatmap tiles (flag).
 #' @param show_values_heatmap Display numerical values on heatmap tiles (flag).
 #' @param fontsize_values_heatmap Font size for heatmap values (number).
+#' @param legend_orientation_heatmap should legend orientation be "horizontal" or "vertical".
+#' @param fontsize_barplot_y_numbers fontsize of the text describing numeric barplot max & min values (number).
+#' @param width controls how much space is present between bars and tiles within each plot. Can be 0-1 where values of 1 makes bars/tiles take up 100% of available space (no gaps between bars).
+#' @param relative_height_numeric how many times taller should numeric plots be relative to categorical tile plots. Only taken into account if numeric_plot_type == "bar" (number)
+#' @param cli_header Text used for h1 header. Included so it can be tweaked by packages that use gg1d, so they can customise how the info messages appear.
+#' @param interactive_svg_width,interactive_svg_height width and height of the interactive graphic region (in inches). Only used when `interactive = TRUE`.
 #' @param colours_values_heatmap Color for heatmap values (string).
+#'
 #' @return A list of visualization parameters for `gg1d`.
 #' @export
+#' @inherit gg1d examples
 gg1d_options <- function(
 
     # Default Colours

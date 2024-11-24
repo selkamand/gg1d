@@ -93,6 +93,10 @@ gg1d_options <- function(
   if (!is.null(legend_nrow)) assertions::assert_number(legend_nrow)
   if (!is.null(legend_ncol)) assertions::assert_number(legend_ncol)
   if (!is.null(legend_title_size)) assertions::assert_number(legend_title_size)
+  if(!is.null(legend_ncol) & !is.null(legend_nrow)) {
+    cli::cli_alert_warning("Both {.arg legend_ncol} and {.arg legend_nrow} were supplied. {.arg legend_nrow} will be ignored.  Explicitly set one of these arguments to NULL to avoid this warning message")
+    legend_nrow <- NULL
+  }
 
   # Colors and styling
   assertions::assert_string(colours_missing)

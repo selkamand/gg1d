@@ -263,13 +263,13 @@ gg1d <- function(
       }
       # Numeric Bar -------------------------------------------------------------------------
       else if (coltype == "numeric" && options$numeric_plot_type == "bar") {
-        breaks <- sensible_3_breaks(data[[colname]])
+        breaks <- sensible_3_breaks(data[[colname]], digits = options$max_digits_barplot_y_numbers)
         labels <- sensible_3_labels(
           data[[colname]],
           axis_label = if(options$beautify_text) beautify(colname) else colname,
-          fontsize_y_title = options$fontsize_y_title
+          fontsize_y_title = options$fontsize_y_title,
+          digits = options$max_digits_barplot_y_numbers
         )
-
 
         gg <- ggplot2::ggplot(data, aes(x = .data[[col_id]], y = .data[[colname]])) +
           ggiraph::geom_col_interactive(mapping = aes_interactive, width = options$width, na.rm = TRUE) +
@@ -278,13 +278,16 @@ gg1d <- function(
             aes(label = options$na_marker, y = 0), size = options$na_marker_size, na.rm = TRUE, vjust=0, color = options$na_marker_colour
           ) +
           ggplot2::scale_x_discrete(drop = drop_unused_id_levels) +
+          # ggplot2::geom_hline(yintercept = breaks[c(1, 3)]) +
           ggplot2::scale_y_continuous(
             breaks = breaks,
             labels = labels,
             position = options$y_axis_position,
-            expand = c(0,0)
+            limits = c(breaks[3], breaks[1]),
+            expand = c(0, 0)
           ) +
           theme_numeric_bar(vertical_spacing = options$vertical_spacing, fontsize_barplot_y_numbers = options$fontsize_barplot_y_numbers)
+
       }
       # Numeric Heatmap -------------------------------------------------------------------------
       else if (coltype == "numeric" && options$numeric_plot_type == "heatmap") {
@@ -609,9 +612,14 @@ sensible_2_breaks <- function(vector){
   c(upper, lower)
 }
 
-sensible_3_breaks <- function(vector){
+sensible_3_breaks <- function(vector, digits = 3){
   upper <- max(vector, na.rm = TRUE)
   lower <- min(0, min(vector, na.rm = TRUE), na.rm = TRUE)
+
+  # Round
+  if(!is.null(digits)) upper <- round_up(upper, digits)
+  if(!is.null(digits)) lower <- round_down(lower, digits)
+
   middle = mean(c(upper, lower))
 
   breaks <- c(upper, middle, lower)
@@ -623,9 +631,14 @@ sensible_3_breaks <- function(vector){
   return(breaks)
 }
 
-sensible_3_labels <- function(vector, axis_label, fontsize_y_title = 14){
+sensible_3_labels <- function(vector, axis_label, fontsize_y_title = 14,  digits = 3){
   upper <- max(vector, na.rm = TRUE)
   lower <- min(0, min(vector, na.rm = TRUE), na.rm = TRUE)
+
+
+  # Round
+  if(!is.null(digits)) upper <- round_up(upper, digits)
+  if(!is.null(digits)) lower <- round_down(lower, digits)
 
   axis_label <- paste0("<span style = 'font-size: ",fontsize_y_title,"pt'>",axis_label, "</span>")
 
@@ -679,3 +692,14 @@ beautify <- function(string, autodetect_units = TRUE){
 
   return(string)
 }
+
+round_up <- function(x, digits) {
+  multiplier <- 10^digits
+  ceiling(x * multiplier) / multiplier
+}
+
+round_down <- function(x, digits) {
+  multiplier <- 10^digits
+  floor(x * multiplier) / multiplier
+}
+

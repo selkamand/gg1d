@@ -14,6 +14,7 @@
 #' @param beautify_text Beautify y-axis text and legend titles by capitalizing words and adding spaces (flag).
 #' @param vertical_spacing Space between each data row in points (number).
 #' @param fontsize_barplot_y_numbers fontsize of the text describing numeric barplot max & min values (number).
+#' @param max_digits_barplot_y_numbers Number of digits to round the numeric barplot max and min values to (number).
 #' @param fontsize_y_title fontsize of the y axis titles (a.k.a the data.frame column names) (number).
 #' @param y_axis_position Position of the y-axis ("left" or "right").
 #' @param numeric_plot_type Type of visualization for numeric data: "bar" or "heatmap".
@@ -82,6 +83,7 @@ gg1d_options <- function(
 
     # Text
     fontsize_barplot_y_numbers = 8,
+    max_digits_barplot_y_numbers = 3,
     fontsize_y_title = 12,
     beautify_text = TRUE
   ){
@@ -148,6 +150,7 @@ gg1d_options <- function(
     beautify_text = beautify_text,
     vertical_spacing = vertical_spacing,
     fontsize_barplot_y_numbers = fontsize_barplot_y_numbers,
+    max_digits_barplot_y_numbers = max_digits_barplot_y_numbers,
     fontsize_y_title = fontsize_y_title,
     y_axis_position = y_axis_position,
     numeric_plot_type = numeric_plot_type,

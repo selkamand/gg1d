@@ -39,6 +39,7 @@ gg1d_options(
   interactive_svg_width = NULL,
   interactive_svg_height = NULL,
   fontsize_barplot_y_numbers = 8,
+  max_digits_barplot_y_numbers = 3,
   fontsize_y_title = 12,
   beautify_text = TRUE
 )
@@ -107,6 +108,8 @@ gg1d_options(
 \item{interactive_svg_width, interactive_svg_height}{width and height of the interactive graphic region (in inches). Only used when \code{interactive = TRUE}.}
 
 \item{fontsize_barplot_y_numbers}{fontsize of the text describing numeric barplot max & min values (number).}
+
+\item{max_digits_barplot_y_numbers}{Number of digits to round the numeric barplot max and min values to (number).}
 
 \item{fontsize_y_title}{fontsize of the y axis titles (a.k.a the data.frame column names) (number).}
 

@@ -1,5 +1,5 @@
 ---
-title: 'gg1d: interactive visualisation of '
+title: 'Advancing Exploratory Data Analysis in R: The **gg1d** Package for Multidimensional Data Visualization'
 tags:
 - R
 - cancer
@@ -45,7 +45,7 @@ The benefits of **gg1d** are exemplified when visualizing the artificial Lazy Bi
 
 ![Visualisation of the Lazy Birdwatcher dataset using the **gg1d** package reveals a pattern of missingness dependent on multiple variables, Birdwatcher and Day (A). This pattern is difficult to detect using one-dimensional EDA tools like **skimr** (B) or two-dimensional tools like **ggpairs** from the **GGally** package (C). \label{fig:figure3}](figure3.png)
 
-We developed gg1d for the visualisation of clinical and multiomics data and anticipate it will provide prove valuable for any exploratory EDA activities. Further examples of gg1d visualisations are available in the [gg1d gallery](https://selkamand.github.io/gg1d/articles/gallery.html).
+We developed gg1d for the visualisation of clinical and multiomics data and anticipate it will prove valuable for any exploratory EDA activities. Further examples of gg1d visualisations are available in the [gg1d gallery](https://selkamand.github.io/gg1d/articles/gallery.html).
 
 # Acknowledgements
 We thank the developers of the packages integral to gg1d, especially David Gohel for ggiraph [@gohel:2024], which enables its interactivity, and Thomas Lin Pedersen for patchwork [@pedersen:2024] and ggplot2 maintenance. We also acknowledge Hadley Wickham and all contributors to ggplot2 [@wickham:2016]. 

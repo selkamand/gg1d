@@ -6,8 +6,8 @@
            version="5.3.1"
            xsi:schemaLocation="http://www.crossref.org/schema/5.3.1 http://www.crossref.org/schemas/crossref5.3.1.xsd">
   <head>
-    <doi_batch_id>20241122073052-3148a57d1d46d2f158b6518c045bef5002b92f47</doi_batch_id>
-    <timestamp>20241122073052</timestamp>
+    <doi_batch_id>20241124204244-fd1e9c0b9d92bfe899d9161ee869cb0f345740d5</doi_batch_id>
+    <timestamp>20241124204244</timestamp>
     <depositor>
       <depositor_name>JOSS Admin</depositor_name>
       <email_address>admin@theoj.org</email_address>
@@ -37,7 +37,8 @@
       </journal_issue>
       <journal_article publication_type="full_text">
         <titles>
-          <title>gg1d: interactive visualisation of</title>
+          <title>Advancing Exploratory Data Analysis in R: The gg1d
+Package for Multidimensional Data Visualization</title>
         </titles>
         <contributors>
           <person_name sequence="first" contributor_role="author">

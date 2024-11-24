@@ -241,6 +241,12 @@ gg1d <- function(
               aes(label = options$na_marker), size = options$na_marker_size, na.rm = TRUE, vjust=0.5, color = options$na_marker_colour,
             ) }} +
           ggplot2::scale_x_discrete(drop = drop_unused_id_levels) +
+          ggplot2::guides(fill = ggplot2::guide_legend(
+            title.position = options$legend_title_position,
+            title = if(options$beautify_text) beautify(colname) else colname,
+            nrow = min(ndistinct, options$legend_nrow),
+            ncol = min(ndistinct, options$legend_ncol),
+          )) +
           theme_categorical(
             show_legend_titles = options$show_legend_titles,
             show_legend = options$show_legend,
@@ -252,12 +258,6 @@ gg1d <- function(
             fontsize_y_title = options$fontsize_y_title
           ) +
           ggplot2::ylab(if(options$beautify_text) beautify(colname) else colname) +
-          ggplot2::guides(fill = ggplot2::guide_legend(
-            title.position = options$legend_title_position,
-            title = if(options$beautify_text) beautify(colname) else colname,
-            nrow = options$legend_nrow,
-            ncol = options$legend_ncol
-          )) +
           ggplot2::scale_fill_manual(values = palette, na.value = options$colours_missing) +
           ggplot2::scale_y_discrete(position = options$y_axis_position)
       }
@@ -354,7 +354,13 @@ gg1d <- function(
 
   # Align plots vertically
   if (verbose >= 2) cli::cli_alert_info("Stacking plots vertically")
-  ggpatch <- patchwork::wrap_plots(gglist, ncol = 1, heights = relheights)
+
+  ggpatch <- patchwork::wrap_plots(
+    gglist, ncol = 1,
+    heights = relheights,
+    guides = if(options$legend_position %in% c("bottom", "top")) "collect" else NULL
+  )# &
+  #theme(legend.position =  options$legend_position)
 
 
   # Interactivity -----------------------------------------------------------
@@ -522,19 +528,27 @@ choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colour
 theme_categorical <- function(fontsize_y_title = 12, show_legend = TRUE,show_legend_titles = FALSE, legend_position = "right", legend_title_size = NULL, legend_text_size = NULL, legend_key_size = 0.3, vertical_spacing = 0) {
   ggplot2::theme_minimal() %+replace%
 
-    theme(
+    ggplot2::theme(
       panel.grid = element_blank(),
       axis.text.y.left = element_blank(),
       axis.text.y.right = element_blank(),
       axis.text.x = element_blank(),
       axis.title.x = element_blank(),
       axis.title.y = element_text(size = fontsize_y_title, angle = 0),
-      legend.key.size = ggplot2::unit(legend_key_size, "line"),
       legend.title = if(show_legend_titles) element_text(size = legend_title_size, face = "bold", hjust = 0) else element_blank(),
-      legend.justification = "left",
-      legend.text = element_text(size = legend_text_size),
+      legend.justification = c(0, 0.5),
+      legend.margin = ggplot2::margin(0, 0, 0, 0),
+      legend.location = "panel",
+      legend.text = element_text(size = legend_text_size, vjust=0.5),
       legend.position = if(show_legend) legend_position else "none",
       strip.placement = "outside",
+      # plot.background = ggplot2::element_rect(color = "red"),
+      # panel.background = ggplot2::element_rect(color = "black"),
+      # legend.box.background = ggplot2::element_rect(color = "green"),
+      # legend.key = ggplot2::element_rect(colour = "red"),
+      legend.key.size = ggplot2::unit(legend_key_size, "lines"),
+      legend.box.margin = ggplot2::margin(0, 0, 0, 0),
+      legend.key.spacing.y = ggplot2::unit(2, "pt"),
       plot.margin = ggplot2::margin(t = 0, r = 0, b = vertical_spacing, l = 0, unit = "pt"),
     )
 }
@@ -567,7 +581,8 @@ theme_numeric_heatmap <- function(fontsize_y_title = 12, show_legend = TRUE, leg
       axis.text.x = element_blank(),
       axis.title.x = element_blank(),
       legend.title = if (show_legend_titles) element_text(size = legend_title_size, face = "bold", hjust = 0) else element_blank(),
-      legend.justification = "left",
+      legend.justification = c(0, 0.5),
+      legend.margin = ggplot2::margin(0, 0, 0, 0),
       legend.text = element_text(size = legend_text_size),
       legend.position = if(show_legend) legend_position else "none",
       strip.placement = "outside",

@@ -28,7 +28,7 @@ gg1d_options(
   colours_heatmap_high = "seagreen",
   transform_heatmap = c("identity", "log10", "log2"),
   fontsize_values_heatmap = 3,
-  show_values_heatmap = TRUE,
+  show_values_heatmap = FALSE,
   colours_values_heatmap = "white",
   vertical_spacing = 0,
   numeric_plot_type = c("bar", "heatmap"),

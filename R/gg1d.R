@@ -433,7 +433,7 @@ column_info_table <- function(data, maxlevels = 6, col_id = NULL, cols_to_plot, 
     # Only comment about those columns the user wants to plot
     if(!is.null(cols_to_plot)) char_cols_with_too_many_levels <- char_cols_with_too_many_levels[char_cols_with_too_many_levels %in% cols_to_plot]
     char_cols_with_too_many_levels_formatted <- paste0(char_cols_with_too_many_levels, " (", df_column_info$ndistinct[lgl_too_many_levels], ")")
-    if(verbose) cli::cli_alert_warning("{.strong Categorical columns} must have {.strong <= {maxlevels} unique values} to be visualised. Columns with too many unique values: {.strong {char_cols_with_too_many_levels_formatted}}")
+    if(verbose & length(char_cols_with_too_many_levels > 0)) cli::cli_alert_warning("{.strong Categorical columns} must have {.strong <= {maxlevels} unique values} to be visualised. Columns with too many unique values: {.strong {char_cols_with_too_many_levels_formatted}}")
   }
 
   # Add palette colours

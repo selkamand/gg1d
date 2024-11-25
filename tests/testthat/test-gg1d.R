@@ -37,7 +37,7 @@ cli::test_that_cli("gg1d doesn't warn about columns the user isn't interested in
   suppressMessages(expect_message(gg1d(df, verbose = 2), "Columns with too many unique values: Letters"))
 
   # If user only wants to plot glasses, there's no reason to warn about Letters
-  suppressMessages(expect_no_message(gg1d(df, cols_to_plot = c("Glasses"), verbose = 2), message = "Columns with too many unique values: Letters"))
+  suppressMessages(expect_no_message(gg1d(df, cols_to_plot = c("Glasses"), verbose = 2), message = "Columns with too many unique values:"))
 })
 
 

@@ -14,7 +14,7 @@ utils::globalVariables(".data")
 #'     \item \strong{1}: Key messages only.
 #'     \item \strong{0}: Silent, no messages.
 #'   }
-#' @param col_id name of column to use as an identifier. If null, artificial IDs will be created based on rownumber.
+#' @param col_id name of column to use as an identifier. If null, artificial IDs will be created based on row-number.
 #' @param col_sort name of column to sort on
 #' @param drop_unused_id_levels if col_id is a factor with unused levels, should these be dropped or included in visualisation
 #' @param interactive produce interactive ggiraph visualiastion (flag)
@@ -170,7 +170,7 @@ gg1d <- function(
 
   # Make sure theres not too many plottable cols
   if (limit_plots && plottable_cols > max_plottable_cols) {
-    cli::cli_abort("Autoplotting > 15 fields by `gg1d` is not recommended (visualisation ends up very squished). If you're certain you want to proceed, set limit_plots = `FALSE`. Alternatively, use `cols_to_plot` to specify <=15 columns within your dataset.")
+    cli::cli_abort("Autoplotting > {max_plottable_cols} fields by `gg1d` is not recommended (visualisation ends up very squished). If you're certain you want to proceed, set limit_plots = `FALSE`. Alternatively, use `cols_to_plot` to specify <=15 columns within your dataset.")
   }
 
   # Make sure theres at least 1 plottable column

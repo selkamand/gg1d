@@ -22,7 +22,7 @@ column_info_table(
 
 \item{maxlevels}{for categorical variables, what is the maximum number of distinct values to allow (too many will make it hard to find a palette that suits). (number)}
 
-\item{col_id}{name of column to use as an identifier. If null, artificial IDs will be created based on rownumber.}
+\item{col_id}{name of column to use as an identifier. If null, artificial IDs will be created based on row-number.}
 
 \item{cols_to_plot}{names of columns in \strong{data} that should be plotted. By default plots all valid columns (character)}
 

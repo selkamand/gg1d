@@ -27,7 +27,7 @@ gg1d(
 \arguments{
 \item{data}{data.frame to autoplot (data.frame)}
 
-\item{col_id}{name of column to use as an identifier. If null, artificial IDs will be created based on rownumber.}
+\item{col_id}{name of column to use as an identifier. If null, artificial IDs will be created based on row-number.}
 
 \item{col_sort}{name of column to sort on}
 

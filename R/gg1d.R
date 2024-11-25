@@ -170,7 +170,7 @@ gg1d <- function(
 
   # Make sure theres not too many plottable cols
   if (limit_plots && plottable_cols > max_plottable_cols) {
-    cli::cli_abort("Autoplotting > {max_plottable_cols} fields by `gg1d` is not recommended (visualisation ends up very squished). If you're certain you want to proceed, set limit_plots = `FALSE`. Alternatively, use `cols_to_plot` to specify <=15 columns within your dataset.")
+    cli::cli_abort("Autoplotting > {max_plottable_cols} fields by `gg1d` is not recommended (visualisation ends up very squished). If you're certain you want to proceed, set limit_plots = `FALSE`. Alternatively, use `cols_to_plot` to specify <={max_plottable_cols} columns within your dataset.")
   }
 
   # Make sure theres at least 1 plottable column

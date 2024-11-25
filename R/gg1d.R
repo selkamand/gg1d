@@ -14,17 +14,18 @@ utils::globalVariables(".data")
 #'     \item \strong{1}: Key messages only.
 #'     \item \strong{0}: Silent, no messages.
 #'   }
-#' @param col_id name of column to use for
+#' @param col_id name of column to use as an identifier. If null, artificial IDs will be created based on rownumber.
 #' @param col_sort name of column to sort on
 #' @param drop_unused_id_levels if col_id is a factor with unused levels, should these be dropped or included in visualisation
 #' @param interactive produce interactive ggiraph visualiastion (flag)
-#' @param debug_return_col_info return column info instead of plots. Helpful when debugging (logical)
+#' @param debug_return_col_info return column info instead of plots. Helpful when debugging (flag)
 #' @param palettes A list of named vectors. List names correspond to \strong{data} column names (categorical only). Vector names to levels of columns. Vector values are colours, the vector names are used to map values in data to a colour.
 #' @param sort_type controls how categorical variables are sorted.
 #' Numerical variables are always sorted in numerical order irrespective of the value given here.
 #' Options are `alphabetical` or `frequency`
 #' @param desc sort in descending order (flag)
-#' @param limit_plots throw an error when there are > 15 plottable columns in table (logical)
+#' @param limit_plots throw an error when there are > \code{max_plottable_cols} in dataset (flag)
+#' @param max_plottable_cols maximum number of columns that can be plotted (default: 15) (number)
 #' @param cols_to_plot names of columns in \strong{data} that should be plotted. By default plots all valid columns (character)
 #' @param tooltip_column_suffix the suffix added to a column name that indicates column should be used as a tooltip (string)
 #' @param ignore_column_regex a regex string that, if matches a column name,  will cause that  column to be exclude from plotting (string)  (default: "_ignore$")
@@ -69,6 +70,7 @@ gg1d <- function(
     sort_type = c("frequency", "alphabetical"),
     desc = TRUE,
     limit_plots = TRUE,
+    max_plottable_cols = 15,
     cols_to_plot = NULL,
     tooltip_column_suffix = "_tooltip",
     ignore_column_regex = "_ignore$",
@@ -85,6 +87,8 @@ gg1d <- function(
   assertions::assert_string(tooltip_column_suffix)
   assertions::assert_string(ignore_column_regex)
   assertions::assert_class(options, "gg1d_options", msg = "The options argument must be created using {.code gg1d_options()}")
+  assertions::assert_number(max_plottable_cols)
+  assertions::assert_greater_than(max_plottable_cols, 0)
 
   # Conditional checks for non-gg1d_options parameters
   if (!is.null(cols_to_plot)) assertions::assert_names_include(data, names = cols_to_plot)
@@ -93,9 +97,6 @@ gg1d <- function(
 
   # Argument Matching
   sort_type <- rlang::arg_match(sort_type)
-
-  # Configuration -----------------------------------------------------------
-  max_plottable_cols <- 15
 
 
   # Formatting --------------------------------------------------------------

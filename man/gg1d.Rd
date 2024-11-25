@@ -17,6 +17,7 @@ gg1d(
   sort_type = c("frequency", "alphabetical"),
   desc = TRUE,
   limit_plots = TRUE,
+  max_plottable_cols = 15,
   cols_to_plot = NULL,
   tooltip_column_suffix = "_tooltip",
   ignore_column_regex = "_ignore$",
@@ -26,7 +27,7 @@ gg1d(
 \arguments{
 \item{data}{data.frame to autoplot (data.frame)}
 
-\item{col_id}{name of column to use for}
+\item{col_id}{name of column to use as an identifier. If null, artificial IDs will be created based on rownumber.}
 
 \item{col_sort}{name of column to sort on}
 
@@ -43,7 +44,7 @@ gg1d(
 
 \item{interactive}{produce interactive ggiraph visualiastion (flag)}
 
-\item{debug_return_col_info}{return column info instead of plots. Helpful when debugging (logical)}
+\item{debug_return_col_info}{return column info instead of plots. Helpful when debugging (flag)}
 
 \item{palettes}{A list of named vectors. List names correspond to \strong{data} column names (categorical only). Vector names to levels of columns. Vector values are colours, the vector names are used to map values in data to a colour.}
 
@@ -53,7 +54,9 @@ Options are \code{alphabetical} or \code{frequency}}
 
 \item{desc}{sort in descending order (flag)}
 
-\item{limit_plots}{throw an error when there are > 15 plottable columns in table (logical)}
+\item{limit_plots}{throw an error when there are > \code{max_plottable_cols} in dataset (flag)}
+
+\item{max_plottable_cols}{maximum number of columns that can be plotted (default: 15) (number)}
 
 \item{cols_to_plot}{names of columns in \strong{data} that should be plotted. By default plots all valid columns (character)}
 

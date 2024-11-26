@@ -8,9 +8,9 @@ test_that("gg1d works even if col only has 1 valid numeric column", {
   df <- data.frame(
     col1 = c(0, 0, NA, NA, NA, NA, NA, NA, 0, NA),
     col2 = c(0, 0, 0, 0, 0)
-    )
-  expect_error(suppressWarnings(suppressMessages(gg1d(df, cols_to_plot="col1"))), NA)
-  expect_error(suppressMessages(gg1d(df, cols_to_plot="col2")), NA)
+  )
+  expect_error(suppressWarnings(suppressMessages(gg1d(df, cols_to_plot = "col1"))), NA)
+  expect_error(suppressMessages(gg1d(df, cols_to_plot = "col2")), NA)
 })
 
 
@@ -20,7 +20,6 @@ test_that("gg1d throws error if no plottable columns", {
 
 
 cli::test_that_cli("gg1d doesn't warn about columns the user isn't interested in", configs = "plain", {
-
   # We first define a data-frame which includes a 'Letters' column that has way too many
   # levels for gg1d to plot. If we try it will warn that it drops
   df <- data.frame(
@@ -29,8 +28,10 @@ cli::test_that_cli("gg1d doesn't warn about columns the user isn't interested in
       TRUE, FALSE, FALSE, FALSE, FALSE, TRUE, TRUE, FALSE, FALSE, FALSE, TRUE,
       FALSE, FALSE, TRUE, TRUE, FALSE, NA, NA, FALSE
     ),
-    Letters = c("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L",
-                "M", "N", "O", "P", "Q", "R", "S")
+    Letters = c(
+      "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L",
+      "M", "N", "O", "P", "Q", "R", "S"
+    )
   )
 
   # Check the appropriate warning is thrown
@@ -90,17 +91,16 @@ test_that("gg1d limits the number of plottable columns", {
 
 test_that("gg1d validates palettes input", {
   palettes <- list(
-    Category = c(A = "red", B = "green", C="blue", D="black", E="purple")
+    Category = c(A = "red", B = "green", C = "blue", D = "black", E = "purple")
   )
   result <- gg1d(data = mock_data, palettes = palettes, debug_return_col_info = TRUE, verbose = FALSE)
   expect_equal(result$palette[[which(result$colnames == "Category")]], palettes$Category)
 
   # Throws error if missing colours for any values
   palettes_incomplete <- list(
-    Category = c(A = "red", B = "green", C="blue", D="black", "purple")
+    Category = c(A = "red", B = "green", C = "blue", D = "black", "purple")
   )
   expect_error(gg1d(data = mock_data, palettes = palettes_incomplete, verbose = FALSE), "missing 1 required name: `E`")
-
 })
 
 

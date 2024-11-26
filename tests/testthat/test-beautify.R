@@ -9,7 +9,7 @@ test_that("beautify works as expected", {
     "body_mass_g" = "Body Mass (g)",
     "kgtest_kg" = "Kgtest (kg)",
     "sex" = "Sex"
-    )
+  )
 
   expect_equal(examples, beautify(names(examples)), ignore_attr = TRUE)
 })

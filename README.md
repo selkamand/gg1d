@@ -20,25 +20,24 @@ size](https://img.shields.io/github/languages/code-size/selkamand/gg1d.svg)](htt
 commit](https://img.shields.io/github/last-commit/selkamand/gg1d)
 <!-- badges: end -->
 
-Effortlessly visualize all columns in a data frame with gg1d’s
-vertically aligned plots and automatic plot selection based on variable
-type. Plots are fully interactive, and custom tooltips can be added.
+Effortlessly visualize all columns in a data frame with vertically
+aligned plots and automatic plot selection based on variable type. Plots
+are fully interactive, and custom tooltips can be added.
 
 **Why 1 dimensional plots?**
 
-When trying to understand trends in your data, it’s often helpful to
-plot multiple 2D plots. However, there are many applications it’s
-extremely useful to densely stack visual representations of each
-property in your dataset on top of one another, regardless of data type.
-By unifying the x axis across each plot, gg1d allows you to turn a
-series of 1D plots into an n-dimensional visualization where n = number
-of columns in your data frame. This can be a very useful tool for
-various applications, and in my case was developed to annotate oncoplots
-with clinical metadata.
+To understand trends in your data, especially correlative relationships
+between 2 or more features, it can be useful to densely stack visual
+representations of each feature vertically, regardless of data type. By
+unifying the $x$-axis across each plot, **gg1d** turns a series of 1D
+plots into an $n\text{-dimensional}$ visualization where
+$n = \text{number of columns in dataset}$. Note the key idea of gg1d is
+to ‘preserve the individual.’ **gg1d** does **NOT** plot distributions
+of properties, but rather each value of a feature for each
+subject/observation in the dataset.
 
-Note the key to utility in this endeavour is to ‘preserve the
-individual.’ We don’t plot distributions of properties, we plot each
-value of a feature for each subject in the dataset.
+gg1d can be used for exploratory data analysis (EDA) or to produce
+publication quality graphics summarizing a dataset.
 
 ## Installation
 
@@ -46,8 +45,10 @@ You can install the development version of gg1d from
 [GitHub](https://github.com/) with:
 
 ``` r
-install.packages("remotes")
-devtools::install_github("selkamand/gg1d")
+if (!require("remotes"))
+    install.packages("remotes")
+
+remotes::install_github("selkamand/gg1d")
 ```
 
 ## Quick Start
@@ -97,3 +98,8 @@ gg1d(
 ```
 
 <img src="man/figures/README-customise_colours-1.png" width="100%" />
+
+## Community Contributions
+
+All types of contributions are encouraged and valued. See our [guide to
+community contributions](CONTRIBUTING.md) for different ways to help.

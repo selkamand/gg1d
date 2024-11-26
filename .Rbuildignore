@@ -9,3 +9,4 @@
 ^pkgdown$
 ^paper/
 inst/birdwatching.csv
+CONTRIBUTING.md

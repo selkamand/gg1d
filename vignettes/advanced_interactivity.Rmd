@@ -1,0 +1,116 @@
+---
+title: "advanced_interactivity"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{tooltips}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(gg1d)
+```
+
+## Adding Custom Tooltips
+
+Custom tooltips make your visualizations more interactive and insightful. You can easily add tooltips to any column in your dataset by creating a new column with the suffix `_tooltip`
+
+### Example: Adding Tooltips to the Magpies Barplot
+
+Let’s use the lazy_birdwatcher dataset to add custom tooltips for the Magpies column. By adding a Magpies_tooltip column, we can provide context for the values, such as highlighting when there are more than three magpies.
+
+```{r fig.height=6, message=FALSE}
+# No Custom Tooltip
+gg1d(lazy_birdwatcher)
+```
+
+```{r}
+# Add a custom tooltip column
+lazy_birdwatcher["Magpies_tooltip"] <- ifelse(
+  lazy_birdwatcher[["Magpies"]] > 3, 
+  yes = "More than 3 magpies!", 
+  no = paste0("How boring. Too few magpies (", lazy_birdwatcher[["Magpies"]], ")")
+)
+
+# Generate a gg1d plot with the custom tooltip
+gg1d(lazy_birdwatcher)
+```
+
+
+## Cross-linking gg1d plots with other visualisatios
+
+gg1d plots can be cross-linked with visualisations produced by custom scripts or other packages.  
+
+In this example we will produce both gg1d visualisation and a umap summarising the `palmer_penguins` and render them together so they can be coexplored.
+
+
+### Workflow
+
+1. Create your gg1d plot. Ensure you set `col_id` to embed a data-identifier required for cross-linking plots (in our case, we will use the unique name given to the penguins). Also set `interactive = FALSE` to force gg1 to returns a ggplot object instead of a htmlwidget (we'll add the interactivity back in after we compose all our plots). For example, lets 
+
+2. Create the ggplot you want to co-explore with, adding latent interactivity using the ggiraph package (e.g. use `geom_point_interactive` instead of `geom_point` and add a `data_id` aesthetic set to the same column as col_id)
+
+3. Compose the two ggplots together using patchwork
+
+4. Make the plots interactive using the ggiraph package
+
+
+### Example Code 
+
+```{r fig.height = 6}
+library(uwot)
+library(ggplot2)
+library(patchwork)
+library(ggiraph)
+
+
+# Prepare Data & Colour Schemes
+penguins <- na.omit(read.csv(system.file("penguins.csv", package = "gg1d")))
+palette_species = c(Chinstrap = "#C55BCC", Adelie = "#FF7F02", Gentoo = "#047476")
+
+# Create gg1d plot
+gg1d_penguins <- gg1d(
+  penguins, 
+  col_id = "name", 
+  interactive = FALSE, 
+  col_sort = "species", 
+  palettes = list(species = palette_species),
+  options = gg1d_options(relative_height_numeric = 1.2, show_legend = FALSE)
+  )
+
+# Perform the umap
+umap_mx <- umap(penguins, scale = "scale", n_neighbors = 70)
+df_umap <- as.data.frame(umap_mx)
+colnames(df_umap) <- c("UMAP_1", "UMAP_2")
+df_umap[["name"]] <- penguins[["name"]]
+df_umap[["species"]] <- penguins[["species"]]
+
+# Create the umap plot 
+gg_umap <- ggplot(df_umap, aes(x = UMAP_1, y = UMAP_2, colour = species, data_id = name)) +
+  geom_point_interactive() + 
+  scale_color_manual(values = palette_species) +
+  theme_bw()
+
+# Combine the gg1d plot and the umap using patchwork
+combined_plots <- free(gg_umap, type = "label") / free(gg1d_penguins, side = "tb")
+
+# Make interactive
+interactive_multiplot <- girafe(ggobj = combined_plots, height_svg = 6, width_svg = 10, options )
+
+# Add some settings to choose how to make combined plots interactive
+interactive_multiplot <- girafe_options(x = interactive_multiplot,
+    opts_selection(type = "multiple", only_shiny = FALSE, css = "opacity: 1"),
+    opts_selection_inv(css = "opacity: 0.12")
+    )
+
+interactive_multiplot
+```
+Create
+

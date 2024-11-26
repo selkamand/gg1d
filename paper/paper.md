@@ -1,5 +1,5 @@
 ---
-title: 'Advancing Exploratory Data Analysis in R: The **gg1d** Package for Multidimensional Data Visualization'
+title: '**gg1d**: exploratory data analysis using tiled one-dimensional graphics'
 tags:
 - R
 - cancer
@@ -30,8 +30,7 @@ affiliations:
 
 Exploratory data analysis (EDA) involves examining the relationships between both categorical and quantitative features. The gg1d R package streamlines EDA by providing a turnkey approach to visualising n-dimensional data which graphically reveals correlative or associative relationships between 2 or more features (\autoref{fig:figure1}). gg1d represents all dataset features as distinct, vertically aligned bar or tile plots, with plot types auto-selected based on whether variables are categorical or numeric. It reduces both the code and time required to detect complex multi-feature relationships that would otherwise only be found through statistical modelling or thorough manual review (\autoref{fig:figure2}, \autoref{fig:figure3}).
 
-
-![**gg1d** visualizations of common datasets revealing: A) Petals of the setosa species of iris are drastically smaller than other iris species; B) The majority of individuals who perished during the Titanic disaster were adult males; C) *Gentoo* penguins from Biscoe Island (dark green) have shallower bill depths than *Chinstrap* or *Adelie* penguins, despite their increased body mass. Exclamation marks indicate missing values. \label{fig:figure1}](figure1.pdf)
+![**gg1d** visualizations of common datasets revealing: A) Petals of the *setosa* species of iris are drastically smaller than other iris species; B) The majority of individuals who perished during the Titanic disaster were adult males; C) *Gentoo* penguins from Biscoe Island (dark green) have shallower bill depths than *Chinstrap* or *Adelie* penguins, despite their increased body mass. Exclamation marks indicate missing values. \label{fig:figure1}](figure1.pdf)
 
 \newpage
 

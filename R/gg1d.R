@@ -364,8 +364,7 @@ gg1d <- function(
     gglist, ncol = 1,
     heights = relheights,
     guides = if(options$legend_position %in% c("bottom", "top")) "collect" else NULL
-  ) &
-  theme(legend.position =  options$legend_position)
+  )
 
 
   # Interactivity -----------------------------------------------------------

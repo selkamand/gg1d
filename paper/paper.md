@@ -1,5 +1,5 @@
 ---
-title: '**gg1d**: An R Package for Graphically Summarizing Datasets using Stacked 1-Dimensional Plots'
+title: '**gg1d**: exploratory data analysis using tiled one-dimensional graphics'
 tags:
 - R
 - cancer

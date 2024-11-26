@@ -1,5 +1,5 @@
 ---
-title: "advanced_interactivity"
+title: "Advanced Interactivity"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{tooltips}
@@ -18,20 +18,22 @@ knitr::opts_chunk$set(
 library(gg1d)
 ```
 
-## Adding Custom Tooltips
+This vignette demonstrates how to enhance the interactivity of gg1d visualizations by adding custom tooltips or cross-linking them with other plots, such as UMAP visualizations.
 
-Custom tooltips make your visualizations more interactive and insightful. You can easily add tooltips to any column in your dataset by creating a new column with the suffix `_tooltip`
+## Adding custom tooltips
 
-### Example: Adding Tooltips to the Magpies Barplot
+Custom tooltips make your visualizations more interactive and insightful. To add tooltips, create a new column with the `_tooltip` suffix that contains the desired text.
 
-Let’s use the lazy_birdwatcher dataset to add custom tooltips for the Magpies column. By adding a Magpies_tooltip column, we can provide context for the values, such as highlighting when there are more than three magpies.
+For example, lets add custom-tooltips to the `Magpie` column of the **lazy_birdwatcher** dataset by creating a `Magpies_tooltip` column. Values should represent what text to show in the tooltip.
 
-```{r fig.height=6, message=FALSE}
+```{r fig.height=4, fig.width=10, message=FALSE}
 # No Custom Tooltip
 gg1d(lazy_birdwatcher)
 ```
 
-```{r}
+We create a `Magpies_tooltip` character column and set the value to either `"More than 3 magpies!'` or `"How boring. Too few magpies (nMagpies)"`. gg1d will automatically detect this column based on the name and set the tooltip accordingly.
+
+```{r message=FALSE, fig.height=4, fig.width=10}
 # Add a custom tooltip column
 lazy_birdwatcher["Magpies_tooltip"] <- ifelse(
   lazy_birdwatcher[["Magpies"]] > 3, 
@@ -43,28 +45,25 @@ lazy_birdwatcher["Magpies_tooltip"] <- ifelse(
 gg1d(lazy_birdwatcher)
 ```
 
+## Cross-linking gg1d plots with other visualisations
 
-## Cross-linking gg1d plots with other visualisatios
+Cross-linking enables coordinated exploration of gg1d plots with other visualizations produced by custom scripts or other packages. This workflow demonstrates how to combine interactivity using `ggiraph` and patchwork.
 
-gg1d plots can be cross-linked with visualisations produced by custom scripts or other packages.  
-
-In this example we will produce both gg1d visualisation and a umap summarising the `palmer_penguins` and render them together so they can be coexplored.
-
+As an example, lets create both a gg1d visualisation and a UMAP summarising the `palmer_penguins` dataset, then cross-link them so they can be coexplored.
 
 ### Workflow
 
-1. Create your gg1d plot. Ensure you set `col_id` to embed a data-identifier required for cross-linking plots (in our case, we will use the unique name given to the penguins). Also set `interactive = FALSE` to force gg1 to returns a ggplot object instead of a htmlwidget (we'll add the interactivity back in after we compose all our plots). For example, lets 
+1.  Create your gg1d plot. Ensure you set `col_id` to embed a data-identifier required for cross-linking plots (in our case, we will use the unique name given to the penguins). Also set `interactive = FALSE` to force gg1 to returns a ggplot object instead of a htmlwidget (we'll add the interactivity back in after we compose all our plots). For example, lets
 
-2. Create the ggplot you want to co-explore with, adding latent interactivity using the ggiraph package (e.g. use `geom_point_interactive` instead of `geom_point` and add a `data_id` aesthetic set to the same column as col_id)
+2.  Create the ggplot you want to co-explore with, adding latent interactivity using the ggiraph package (e.g. use `geom_point_interactive` instead of `geom_point` and add a `data_id` aesthetic set to the same column as col_id)
 
-3. Compose the two ggplots together using patchwork
+3.  Compose the two ggplots together using patchwork
 
-4. Make the plots interactive using the ggiraph package
+4.  Make the plots interactive using the ggiraph package
 
+### Example Code
 
-### Example Code 
-
-```{r fig.height = 6}
+```{r fig.width=10, fig.height=6, message=FALSE}
 library(uwot)
 library(ggplot2)
 library(patchwork)
@@ -110,7 +109,6 @@ interactive_multiplot <- girafe_options(x = interactive_multiplot,
     opts_selection_inv(css = "opacity: 0.12")
     )
 
+# Draw Interactive Multiplot
 interactive_multiplot
 ```
-Create
-

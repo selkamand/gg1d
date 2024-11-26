@@ -347,7 +347,7 @@ gg1d <- function(
   gglist <- gglist[!vapply(gglist, is.null, logical(1))]
 
   # Align only axes (not labels)
-  gglist <- lapply(gglist, FUN = function(p){patchwork::free(p,type = "label")})
+  gglist <- lapply(gglist, FUN = function(p){patchwork::free(p, type = "label")})
 
   # Get relative heights for plots (make numeric variables taller)
   relheights <- ifelse(

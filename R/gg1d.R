@@ -113,7 +113,8 @@ gg1d <- function(
     data[[col_id]] <- seq_len(nrow(data))
   } else {
     assertions::assert_string(col_id)
-    assertions::assert_names_include(data, names = col_id)
+    assertions::assert_names_include(data, names = col_id, msg = "Column {.code {col_id}} does not exist in your dataset. Please set the {.arg col_id} argument to a valid column name.")
+    assertions::assert_no_duplicates(data[[col_id]])
   }
 
 
@@ -148,7 +149,7 @@ gg1d <- function(
     if (verbose >=1) cli::cli_alert_info("Sorting X axis by: Order of appearance")
   } else {
     assertions::assert_string(col_sort)
-    assertions::assert_names_include(data, names = col_sort)
+    assertions::assert_names_include(data, names = col_sort, msg = "Column {.code {col_sort}} does not exist in your dataset. Please set the {.arg col_sort} argument to a valid column name.")
 
     if(verbose >=1){ cli::cli_bullets(c(
       "*" = "Sorting X axis by: {.strong {col_sort}}",
@@ -519,7 +520,6 @@ choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colour
       colors <- colours_default
     }
     })
-
 
   return(colors)
 

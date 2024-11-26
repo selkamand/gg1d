@@ -204,19 +204,35 @@ gg1d <- function(
 
       # Create interactive geom aesthetics
       if(is.na(coltooltip)){
-        aes_interactive <- aes(
-          data_id = .data[[col_id]],
-          tooltip = paste0(
-            tag_bold(colname), ": ", .data[[colname]],
-            "<br>",
-            tag_bold(col_id), ": ", .data[[col_id]]
+
+        # If an ID column is not manually specified,
+        # We should just include the current colname & values in tooltip
+        if(is.null(col_id)){
+          aes_interactive <- aes(
+            data_id = .data[[col_id]],
+            tooltip = paste0(
+              tag_bold(colname), ": ", .data[[colname]]
+            )
           )
-        )
+        }
+        # If ID column is manually specified, include the ID value in the tooltip
+        else{
+          aes_interactive <- aes(
+            data_id = .data[[col_id]],
+            tooltip = paste0(
+              tag_bold(colname), ": ", .data[[colname]],
+              "<br/>",
+              tag_bold(col_id), ": ", .data[[col_id]]
+            )
+          )
+        }
       }
+      # If user has specified a custom tooltip using _tooltip suffix column
+      # We should just use that as the tooltip
       else
       {
         # replace values of NA with ""
-        data[[coltooltip]] <- ifelse(is.na(data[[coltooltip]]), "",data[[coltooltip]])
+        data[[coltooltip]] <- ifelse(is.na(data[[coltooltip]]), "", data[[coltooltip]])
 
         aes_interactive <- aes(
           data_id = .data[[col_id]],

@@ -97,3 +97,8 @@ gg1d(
 ```
 
 <img src="man/figures/README-customise_colours-1.png" width="100%" />
+
+## Community Contributions
+
+All types of contributions are encouraged and valued. See our [guide to
+community contributions](CONTRIBUTING.md) for different ways to help.

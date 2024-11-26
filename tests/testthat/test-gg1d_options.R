@@ -1,5 +1,4 @@
 test_that("gg1d_options returns a list with the correct structure", {
-
   # Runs without error
   expect_no_error(gg1d_options())
 
@@ -11,7 +10,6 @@ test_that("gg1d_options returns a list with the correct structure", {
 })
 
 test_that("gg1d_options handles legend_nrow and legend_ncol conflict", {
-
   # Warn user they constrained both legend rows and columns (and that only legend_ncol will be used)
   expect_warning(gg1d_options(legend_nrow = 2, legend_ncol = 3), regexp = "[bB]oth.* were supplied")
 
@@ -40,4 +38,3 @@ test_that("gg1d_options correctly matches argument values", {
   expect_error(gg1d_options(legend_position = "middle"), "legend_position")
   expect_error(gg1d_options(transform_heatmap = "logarithm"), "transform_heatmap")
 })
-

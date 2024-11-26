@@ -46,7 +46,7 @@ utils::globalVariables(".data")
 #'   col_sort = "Magpies",
 #'   palettes = list(
 #'     Birdwatcher = c(Robert = "#E69F00", Catherine = "#999999"),
-#'     Day = c(Weekday = "#999999" ,Weekend = "#009E73")
+#'     Day = c(Weekday = "#999999", Weekend = "#009E73")
 #'   ),
 #'   options = gg1d_options(
 #'     show_legend = TRUE,
@@ -74,9 +74,7 @@ gg1d <- function(
     cols_to_plot = NULL,
     tooltip_column_suffix = "_tooltip",
     ignore_column_regex = "_ignore$",
-    options = gg1d_options(show_legend = !interactive)
-) {
-
+    options = gg1d_options(show_legend = !interactive)) {
   # Data validation
   assertions::assert_dataframe(data)
   assertions::assert_number(maxlevels)
@@ -93,7 +91,7 @@ gg1d <- function(
   # Conditional checks for non-gg1d_options parameters
   if (!is.null(cols_to_plot)) assertions::assert_names_include(data, names = cols_to_plot)
   if (!is.null(palettes)) assertions::assert_list(palettes)
-  if(!all(colnames(data) %in% names(palettes))) assertions::assert_greater_than_or_equal_to(length(options$colours_default), minimum = maxlevels)
+  if (!all(colnames(data) %in% names(palettes))) assertions::assert_greater_than_or_equal_to(length(options$colours_default), minimum = maxlevels)
 
   # Argument Matching
   sort_type <- rlang::arg_match(sort_type)
@@ -109,9 +107,11 @@ gg1d <- function(
   # Preprocessing -----------------------------------------------------------
   # Add col_id column if it user hasn't supplied one
   if (is.null(col_id)) {
+    col_id_manually_specified <- FALSE
     col_id <- "DefaultID"
     data[[col_id]] <- seq_len(nrow(data))
   } else {
+    col_id_manually_specified <- TRUE
     assertions::assert_string(col_id)
     assertions::assert_names_include(data, names = col_id, msg = "Column {.code {col_id}} does not exist in your dataset. Please set the {.arg col_id} argument to a valid column name.")
     assertions::assert_no_duplicates(data[[col_id]])
@@ -120,7 +120,8 @@ gg1d <- function(
 
   # Identify Plottable Columns  ------------------------------------------------------------
   df_col_info <- column_info_table(
-    data, maxlevels = maxlevels,
+    data,
+    maxlevels = maxlevels,
     col_id = col_id,
     cols_to_plot = cols_to_plot,
     tooltip_column_suffix = tooltip_column_suffix,
@@ -146,16 +147,17 @@ gg1d <- function(
   if (verbose) cli::cli_h3("Sorting")
 
   if (is.null(col_sort)) {
-    if (verbose >=1) cli::cli_alert_info("Sorting X axis by: Order of appearance")
+    if (verbose >= 1) cli::cli_alert_info("Sorting X axis by: Order of appearance")
   } else {
     assertions::assert_string(col_sort)
     assertions::assert_names_include(data, names = col_sort, msg = "Column {.code {col_sort}} does not exist in your dataset. Please set the {.arg col_sort} argument to a valid column name.")
 
-    if(verbose >=1){ cli::cli_bullets(c(
-      "*" = "Sorting X axis by: {.strong {col_sort}}",
-      "*" = "Order type: {.strong {sort_type}}",
-      "*" = "Sort order: {.strong {ifelse(desc, 'descending', 'ascending')}}"
-    ))
+    if (verbose >= 1) {
+      cli::cli_bullets(c(
+        "*" = "Sorting X axis by: {.strong {col_sort}}",
+        "*" = "Order type: {.strong {sort_type}}",
+        "*" = "Sort order: {.strong {ifelse(desc, 'descending', 'ascending')}}"
+      ))
     }
 
     data[[col_id]] <- forcats::fct_reorder(data[[col_id]], rank::smartrank(data[[col_sort]], sort_by = sort_type, desc = desc, verbose = FALSE))
@@ -175,7 +177,7 @@ gg1d <- function(
   }
 
   # Make sure theres at least 1 plottable column
-  if(plottable_cols == 0){
+  if (plottable_cols == 0) {
     cli::cli_abort("No plottable columns found")
   }
 
@@ -192,37 +194,43 @@ gg1d <- function(
 
       # Don't plot if not plottable
       if (!plottable) {
-
         # If column is the sorting Identifier - don't info about it
-        if(colname == col_id)
+        if (colname == col_id) {
           return(NULL)
+        }
         if (verbose >= 2) cli::cli_alert_warning("{.warn Skipping} column {.strong {colname}}")
         return(NULL)
       } else {
         if (verbose >= 2) cli::cli_alert_success("{.success Plotting} column {.strong {colname}}")
       }
 
-      # Create interactive geom aesthetics
-      if(is.na(coltooltip)){
-        aes_interactive <- aes(
-          data_id = .data[[col_id]],
-          tooltip = paste0(
-            tag_bold(colname), ": ", .data[[colname]],
-            "<br>",
-            tag_bold(col_id), ": ", .data[[col_id]]
-          )
-        )
-      }
-      else
-      {
-        # replace values of NA with ""
-        data[[coltooltip]] <- ifelse(is.na(data[[coltooltip]]), "",data[[coltooltip]])
 
-        aes_interactive <- aes(
-          data_id = .data[[col_id]],
-          tooltip = .data[[coltooltip]]
+      ## Create Interactive Geoms Aesthetics ---------------------------------------------
+      if (!is.na(coltooltip)) {
+        # If user specifies a custom tooltip using _tooltip suffix column
+        # we just use that as the tooltip
+        data[[coltooltip]] <- ifelse(is.na(data[[coltooltip]]), "", data[[coltooltip]])
+        tooltip_text <- data[[coltooltip]]
+      } else {
+        # Construct the default tooltip
+        tooltip_text <- paste0(
+          tag_bold(colname), ": ", data[[colname]],
+
+          # Only describe ID column if col_id was manually specified
+          if (col_id_manually_specified) {
+            paste0(
+              "<br/>",
+              tag_bold(col_id), ": ", data[[col_id]]
+            )
+          } else {
+            ""
+          }
         )
       }
+      aes_interactive <- aes(
+        data_id = .data[[col_id]],
+        tooltip = tooltip_text
+      )
 
       # Draw the actual plot
 
@@ -232,20 +240,25 @@ gg1d <- function(
           data,
           aes(
             x = .data[[col_id]],
-            y = if(options$beautify_text) beautify(colname) else colname,
+            y = if (options$beautify_text) beautify(colname) else colname,
             fill = .data[[colname]]
           )
         ) +
           ggiraph::geom_tile_interactive(mapping = aes_interactive, width = options$width, na.rm = TRUE) +
-          {if(options$show_na_marker_categorical) {
-            ggplot2::geom_text(
-              data = function(x){x[is.na(x[[colname]]), ,drop=FALSE]},  #only add text where value is NA
-              aes(label = options$na_marker), size = options$na_marker_size, na.rm = TRUE, vjust=0.5, color = options$na_marker_colour,
-            ) }} +
+          {
+            if (options$show_na_marker_categorical) {
+              ggplot2::geom_text(
+                data = function(x) {
+                  x[is.na(x[[colname]]), , drop = FALSE]
+                }, # only add text where value is NA
+                aes(label = options$na_marker), size = options$na_marker_size, na.rm = TRUE, vjust = 0.5, color = options$na_marker_colour,
+              )
+            }
+          } +
           ggplot2::scale_x_discrete(drop = drop_unused_id_levels) +
           ggplot2::guides(fill = ggplot2::guide_legend(
             title.position = options$legend_title_position,
-            title = if(options$beautify_text) beautify(colname) else colname,
+            title = if (options$beautify_text) beautify(colname) else colname,
             nrow = min(ndistinct, options$legend_nrow),
             ncol = min(ndistinct, options$legend_ncol),
           )) +
@@ -259,7 +272,7 @@ gg1d <- function(
             vertical_spacing = options$vertical_spacing,
             fontsize_y_title = options$fontsize_y_title
           ) +
-          ggplot2::ylab(if(options$beautify_text) beautify(colname) else colname) +
+          ggplot2::ylab(if (options$beautify_text) beautify(colname) else colname) +
           ggplot2::scale_fill_manual(values = palette, na.value = options$colours_missing) +
           ggplot2::scale_y_discrete(position = options$y_axis_position)
       }
@@ -268,7 +281,7 @@ gg1d <- function(
         breaks <- sensible_3_breaks(data[[colname]], digits = options$max_digits_barplot_y_numbers)
         labels <- sensible_3_labels(
           data[[colname]],
-          axis_label = if(options$beautify_text) beautify(colname) else colname,
+          axis_label = if (options$beautify_text) beautify(colname) else colname,
           fontsize_y_title = options$fontsize_y_title,
           digits = options$max_digits_barplot_y_numbers
         )
@@ -276,8 +289,10 @@ gg1d <- function(
         gg <- ggplot2::ggplot(data, aes(x = .data[[col_id]], y = .data[[colname]])) +
           ggiraph::geom_col_interactive(mapping = aes_interactive, width = options$width, na.rm = TRUE) +
           ggplot2::geom_text(
-            data = function(x){x[is.na(x[[colname]]), ,drop=FALSE]},  #only add text where value is NA
-            aes(label = options$na_marker, y = 0), size = options$na_marker_size, na.rm = TRUE, vjust=0, color = options$na_marker_colour
+            data = function(x) {
+              x[is.na(x[[colname]]), , drop = FALSE]
+            }, # only add text where value is NA
+            aes(label = options$na_marker, y = 0), size = options$na_marker_size, na.rm = TRUE, vjust = 0, color = options$na_marker_colour
           ) +
           ggplot2::scale_x_discrete(drop = drop_unused_id_levels) +
           # ggplot2::geom_hline(yintercept = breaks[c(1, 3)]) +
@@ -289,29 +304,36 @@ gg1d <- function(
             expand = c(0, 0)
           ) +
           theme_numeric_bar(vertical_spacing = options$vertical_spacing, fontsize_barplot_y_numbers = options$fontsize_barplot_y_numbers)
-
       }
       # Numeric Heatmap -------------------------------------------------------------------------
       else if (coltype == "numeric" && options$numeric_plot_type == "heatmap") {
-        colname_formatted <- if(options$beautify_text) beautify(colname) else colname
+        colname_formatted <- if (options$beautify_text) beautify(colname) else colname
         gg <- ggplot2::ggplot(data, aes(
           x = .data[[col_id]],
           y = colname,
-          fill = .data[[colname]])
-        ) +
+          fill = .data[[colname]]
+        )) +
           ggiraph::geom_tile_interactive(mapping = aes_interactive, width = options$width, na.rm = TRUE) +
           ggplot2::scale_x_discrete(drop = drop_unused_id_levels) +
           ggplot2::scale_y_discrete(position = options$y_axis_position) +
-          {if(options$show_na_marker_heatmap) {
-            ggplot2::geom_text(
-              data = function(x){x[is.na(x[[colname]]), ,drop=FALSE]},  #only add text where value is NA
-              aes(label = options$na_marker), size = options$na_marker_size, na.rm = TRUE, vjust=0.5
-            ) }} +
-          {if(options$show_values_heatmap) {
-            ggplot2::geom_text(
-              aes(label = .data[[colname]]),
-              size = options$fontsize_values_heatmap, color = options$colours_values_heatmap, na.rm = TRUE, vjust=0.5
-            ) }} +
+          {
+            if (options$show_na_marker_heatmap) {
+              ggplot2::geom_text(
+                data = function(x) {
+                  x[is.na(x[[colname]]), , drop = FALSE]
+                }, # only add text where value is NA
+                aes(label = options$na_marker), size = options$na_marker_size, na.rm = TRUE, vjust = 0.5
+              )
+            }
+          } +
+          {
+            if (options$show_values_heatmap) {
+              ggplot2::geom_text(
+                aes(label = .data[[colname]]),
+                size = options$fontsize_values_heatmap, color = options$colours_values_heatmap, na.rm = TRUE, vjust = 0.5
+              )
+            }
+          } +
           ggplot2::ylab(colname_formatted) +
           theme_numeric_heatmap(
             show_legend_titles = options$show_legend_titles,
@@ -321,7 +343,7 @@ gg1d <- function(
             legend_text_size = options$legend_text_size,
             legend_key_size = options$legend_key_size,
             vertical_spacing = options$vertical_spacing,
-            fontsize_y_title  = options$fontsize_y_title
+            fontsize_y_title = options$fontsize_y_title
           ) +
           ggplot2::scale_fill_gradient(
             low = options$colours_heatmap_low,
@@ -329,14 +351,13 @@ gg1d <- function(
             na.value = options$colours_missing,
             trans = options$transform_heatmap,
             guide = ggplot2::guide_colorbar(
-              direction = if(options$legend_orientation_heatmap == "horizontal") "horizontal" else "vertical",
+              direction = if (options$legend_orientation_heatmap == "horizontal") "horizontal" else "vertical",
               title.position = "top",
-              title = if(!options$show_legend_title) NULL else colname_formatted,
+              title = if (!options$show_legend_title) NULL else colname_formatted,
               title.hjust = 0
             )
           )
-      }
-      else {
+      } else {
         cli::cli_abort("Unsure how to plot coltype: {coltype}")
       }
       return(gg)
@@ -348,7 +369,9 @@ gg1d <- function(
   gglist <- gglist[!vapply(gglist, is.null, logical(1))]
 
   # Align only axes (not labels)
-  gglist <- lapply(gglist, FUN = function(p){patchwork::free(p, type = "label")})
+  gglist <- lapply(gglist, FUN = function(p) {
+    patchwork::free(p, type = "label")
+  })
 
   # Get relative heights for plots (make numeric variables taller)
   relheights <- ifelse(
@@ -361,25 +384,26 @@ gg1d <- function(
   if (verbose >= 2) cli::cli_alert_info("Stacking plots vertically")
 
   ggpatch <- patchwork::wrap_plots(
-    gglist, ncol = 1,
+    gglist,
+    ncol = 1,
     heights = relheights,
-    guides = if(options$legend_position %in% c("bottom", "top")) "collect" else NULL
+    guides = if (options$legend_position %in% c("bottom", "top")) "collect" else NULL
   )
 
 
   # Interactivity -----------------------------------------------------------
-  if(interactive){
-    if(verbose >= 2) cli::cli_alert_info("Making plot interactive since `interactive = TRUE`")
+  if (interactive) {
+    if (verbose >= 2) cli::cli_alert_info("Making plot interactive since `interactive = TRUE`")
     ggpatch <- ggiraph::girafe(
       ggobj = ggpatch,
       width_svg = options$interactive_svg_width,
       height_svg = options$interactive_svg_height,
-      options =  list(
+      options = list(
         opts_hover = ggiraph::opts_hover(css = "stroke:black;cursor:pointer;r:5px;")
       )
-    )}
-  else{
-    if(verbose >= 2) cli::cli_alert_info("Rendering static plot. For interactive version set `interactive = TRUE`")
+    )
+  } else {
+    if (verbose >= 2) cli::cli_alert_info("Rendering static plot. For interactive version set `interactive = TRUE`")
   }
 
   # Return -----------------------------------------------------------
@@ -400,7 +424,7 @@ gg1d <- function(
 #' 4) tooltip_col (the name of the column to use as the tooltip) or NA if no obvious tooltip column found
 #'
 #'
-column_info_table <- function(data, maxlevels = 6, col_id = NULL, cols_to_plot, tooltip_column_suffix = "_tooltip", ignore_column_regex = "_ignore$" ,palettes, colours_default, colours_default_logical, verbose) {
+column_info_table <- function(data, maxlevels = 6, col_id = NULL, cols_to_plot, tooltip_column_suffix = "_tooltip", ignore_column_regex = "_ignore$", palettes, colours_default, colours_default_logical, verbose) {
   # Assertions
   assertions::assert_string(col_id)
   assertions::assert_names_include(data, col_id)
@@ -424,16 +448,16 @@ column_info_table <- function(data, maxlevels = 6, col_id = NULL, cols_to_plot, 
   lgl_too_many_levels <- df_column_info$coltype == "categorical" & df_column_info$ndistinct > maxlevels
   df_column_info[["plottable"]] <-
     !lgl_too_many_levels & !df_column_info$coltype %in% c("invalid", "id", "tooltip") &
-    (is.null(cols_to_plot) | df_column_info$colnames %in% c(cols_to_plot)) &
-    (!grepl(x=df_column_info$colnames, pattern = ignore_column_regex))
+      (is.null(cols_to_plot) | df_column_info$colnames %in% c(cols_to_plot)) &
+      (!grepl(x = df_column_info$colnames, pattern = ignore_column_regex))
 
 
   if (sum(lgl_too_many_levels) > 0) {
     char_cols_with_too_many_levels <- df_column_info$colnames[lgl_too_many_levels]
     # Only comment about those columns the user wants to plot
-    if(!is.null(cols_to_plot)) char_cols_with_too_many_levels <- char_cols_with_too_many_levels[char_cols_with_too_many_levels %in% cols_to_plot]
+    if (!is.null(cols_to_plot)) char_cols_with_too_many_levels <- char_cols_with_too_many_levels[char_cols_with_too_many_levels %in% cols_to_plot]
     char_cols_with_too_many_levels_formatted <- paste0(char_cols_with_too_many_levels, " (", df_column_info$ndistinct[lgl_too_many_levels], ")")
-    if(verbose & length(char_cols_with_too_many_levels > 0)) cli::cli_alert_warning("{.strong Categorical columns} must have {.strong <= {maxlevels} unique values} to be visualised. Columns with too many unique values: {.strong {char_cols_with_too_many_levels_formatted}}")
+    if (verbose & length(char_cols_with_too_many_levels > 0)) cli::cli_alert_warning("{.strong Categorical columns} must have {.strong <= {maxlevels} unique values} to be visualised. Columns with too many unique values: {.strong {char_cols_with_too_many_levels_formatted}}")
   }
 
   # Add palette colours
@@ -452,13 +476,14 @@ column_info_table <- function(data, maxlevels = 6, col_id = NULL, cols_to_plot, 
 }
 
 
-coltooltip <- function(data, tooltip_column_suffix){
-   vapply(
-     colnames(data),
-     function(name) { colnames(data)[match(paste0(name, tooltip_column_suffix), colnames(data))]},
-     character(1)
-   )
-
+coltooltip <- function(data, tooltip_column_suffix) {
+  vapply(
+    colnames(data),
+    function(name) {
+      colnames(data)[match(paste0(name, tooltip_column_suffix), colnames(data))]
+    },
+    character(1)
+  )
 }
 
 coltypes <- function(data, col_id) {
@@ -494,41 +519,36 @@ colvalues <- function(data) {
   }, FUN.VALUE = numeric(1))
 }
 
-choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colours_default, colours_default_logical){
-
+choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colours_default, colours_default_logical) {
   assertions::assert_character(colours_default)
 
-  colors <- lapply(seq_len(ncol(data)), FUN = function(i){
+  colors <- lapply(seq_len(ncol(data)), FUN = function(i) {
     colname <- colnames(data)[[i]]
     is_plottable <- plottable[[i]]
     is_lgl <- is.logical(data[[colname]])
 
-    if(!is_plottable | coltype[i] != "categorical"){
+    if (!is_plottable | coltype[i] != "categorical") {
       return(NULL)
-    }
-    else if(colname %in% names(palettes)){
+    } else if (colname %in% names(palettes)) {
       colors <- unlist(palettes[[colname]])
       assertions::assert_names_include(colors, names = stats::na.omit(unique(data[[colname]])))
       return(palettes[[colname]])
-    }
-    else if (is_lgl){
+    } else if (is_lgl) {
       colors <- colours_default_logical
-    }
-    else{
+    } else {
       assertions::assert(length(colours_default) >= ndistinct[i], msg = "Too many unique values in column to assign each a colour using the default palette. Either change the default palette to one that supports colours, reduce the number of levels in this column, or exclude it from the plotting using `cols_to_plot` argument OR maxlevels")
       colors <- colours_default
     }
-    })
+  })
 
   return(colors)
-
 }
 
 
 
 
 
-theme_categorical <- function(fontsize_y_title = 12, show_legend = TRUE,show_legend_titles = FALSE, legend_position = "right", legend_title_size = NULL, legend_text_size = NULL, legend_key_size = 0.3, vertical_spacing = 0) {
+theme_categorical <- function(fontsize_y_title = 12, show_legend = TRUE, show_legend_titles = FALSE, legend_position = "right", legend_title_size = NULL, legend_text_size = NULL, legend_key_size = 0.3, vertical_spacing = 0) {
   ggplot2::theme_minimal() %+replace%
 
     ggplot2::theme(
@@ -538,12 +558,12 @@ theme_categorical <- function(fontsize_y_title = 12, show_legend = TRUE,show_leg
       axis.text.x = element_blank(),
       axis.title.x = element_blank(),
       axis.title.y = element_text(size = fontsize_y_title, angle = 0),
-      legend.title = if(show_legend_titles) element_text(size = legend_title_size, face = "bold", hjust = 0) else element_blank(),
+      legend.title = if (show_legend_titles) element_text(size = legend_title_size, face = "bold", hjust = 0) else element_blank(),
       legend.justification = c(0, 0.5),
       legend.margin = ggplot2::margin(0, 0, 0, 0),
       legend.location = "panel",
-      legend.text = element_text(size = legend_text_size, vjust=0.5),
-      legend.position = if(show_legend) legend_position else "none",
+      legend.text = element_text(size = legend_text_size, vjust = 0.5),
+      legend.position = if (show_legend) legend_position else "none",
       strip.placement = "outside",
       # plot.background = ggplot2::element_rect(color = "red"),
       # panel.background = ggplot2::element_rect(color = "black"),
@@ -587,14 +607,14 @@ theme_numeric_heatmap <- function(fontsize_y_title = 12, show_legend = TRUE, leg
       legend.justification = c(0, 0.5),
       legend.margin = ggplot2::margin(0, 0, 0, 0),
       legend.text = element_text(size = legend_text_size),
-      legend.position = if(show_legend) legend_position else "none",
+      legend.position = if (show_legend) legend_position else "none",
       strip.placement = "outside",
       plot.margin = ggplot2::margin(t = 0, r = 0, b = vertical_spacing, l = 0, unit = "pt")
     )
 }
 
 
-tag_bold <- function(x){
+tag_bold <- function(x) {
   paste0("<b>", x, "</b>", collapse = "")
 }
 
@@ -606,44 +626,45 @@ tag_bold <- function(x){
 #'
 #' @return vector of length 2. first element descripts upper break position, lower describes lower break
 #'
-sensible_2_breaks <- function(vector){
+sensible_2_breaks <- function(vector) {
   upper <- max(vector, na.rm = TRUE)
   lower <- min(0, min(vector, na.rm = TRUE), na.rm = TRUE)
   c(upper, lower)
 }
 
-sensible_3_breaks <- function(vector, digits = 3){
+sensible_3_breaks <- function(vector, digits = 3) {
   upper <- max(vector, na.rm = TRUE)
   lower <- min(0, min(vector, na.rm = TRUE), na.rm = TRUE)
 
   # Round
-  if(!is.null(digits)) upper <- round_up(upper, digits)
-  if(!is.null(digits)) lower <- round_down(lower, digits)
+  if (!is.null(digits)) upper <- round_up(upper, digits)
+  if (!is.null(digits)) lower <- round_down(lower, digits)
 
-  middle = mean(c(upper, lower))
+  middle <- mean(c(upper, lower))
 
   breaks <- c(upper, middle, lower)
 
-  if(upper == lower){
+  if (upper == lower) {
     return(lower)
   }
 
   return(breaks)
 }
 
-sensible_3_labels <- function(vector, axis_label, fontsize_y_title = 14,  digits = 3){
+sensible_3_labels <- function(vector, axis_label, fontsize_y_title = 14, digits = 3) {
   upper <- max(vector, na.rm = TRUE)
   lower <- min(0, min(vector, na.rm = TRUE), na.rm = TRUE)
 
 
   # Round
-  if(!is.null(digits)) upper <- round_up(upper, digits)
-  if(!is.null(digits)) lower <- round_down(lower, digits)
+  if (!is.null(digits)) upper <- round_up(upper, digits)
+  if (!is.null(digits)) lower <- round_down(lower, digits)
 
-  axis_label <- paste0("<span style = 'font-size: ",fontsize_y_title,"pt'>",axis_label, "</span>")
+  axis_label <- paste0("<span style = 'font-size: ", fontsize_y_title, "pt'>", axis_label, "</span>")
 
-  if (lower == upper)
+  if (lower == upper) {
     return(axis_label)
+  }
 
   as.character(c(upper, axis_label, lower))
 }
@@ -658,18 +679,18 @@ sensible_3_labels <- function(vector, axis_label, fontsize_y_title = 14,  digits
 #'
 #' @return string
 #'
-beautify <- function(string, autodetect_units = TRUE){
+beautify <- function(string, autodetect_units = TRUE) {
   # underscores to spaces
-  string <- gsub(x=string, pattern = "_", replacement = " ")
+  string <- gsub(x = string, pattern = "_", replacement = " ")
 
   # dots to spaces
-  string <- gsub(x=string, pattern = ".", replacement = " ", fixed = TRUE)
+  string <- gsub(x = string, pattern = ".", replacement = " ", fixed = TRUE)
 
   # camelCase to camel Case
-  string <- gsub(x=string, pattern = "([a-z])([A-Z])", replacement = "\\1 \\2")
+  string <- gsub(x = string, pattern = "([a-z])([A-Z])", replacement = "\\1 \\2")
 
   # Autodetect units (and move to brackets)
-  if(autodetect_units){
+  if (autodetect_units) {
     string <- sub("\\bm\\b", "(m)", string)
     string <- sub("\\bmm\\b", "(mm)", string)
     string <- sub("\\cm\\b", "(cm)", string)
@@ -687,8 +708,8 @@ beautify <- function(string, autodetect_units = TRUE){
 
 
   # Capitalise Each Word
-  string <- gsub(x=string, pattern = "^([a-z])",  perl = TRUE, replacement = ("\\U\\1"))
-  string <- gsub(x=string, pattern = " ([a-z])",  perl = TRUE, replacement = (" \\U\\1"))
+  string <- gsub(x = string, pattern = "^([a-z])", perl = TRUE, replacement = ("\\U\\1"))
+  string <- gsub(x = string, pattern = " ([a-z])", perl = TRUE, replacement = (" \\U\\1"))
 
   return(string)
 }
@@ -702,4 +723,3 @@ round_down <- function(x, digits) {
   multiplier <- 10^digits
   floor(x * multiplier) / multiplier
 }
-

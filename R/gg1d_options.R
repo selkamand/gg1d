@@ -41,12 +41,10 @@
 #' @export
 #' @inherit gg1d examples
 gg1d_options <- function(
-
     # Default Colours
-    colours_default = c("#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F","#E5C494"),
+    colours_default = c("#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F", "#E5C494"),
     colours_default_logical = c("TRUE" = "#648fff", "FALSE" = "#dc267f"),
     colours_missing = "grey90",
-
     # Legend
     show_legend_titles = FALSE,
     legend_title_position = c("top", "bottom", "left", "right"),
@@ -55,12 +53,10 @@ gg1d_options <- function(
     legend_orientation_heatmap = c("horizontal", "vertical"),
     show_legend = TRUE,
     legend_position = c("right", "left", "bottom", "top"),
-
     # Missing Data
     na_marker = "!", na_marker_size = 8, na_marker_colour = "black",
     show_na_marker_categorical = FALSE,
     show_na_marker_heatmap = FALSE,
-
     # Heatmap
     colours_heatmap_low = "purple",
     colours_heatmap_high = "seagreen",
@@ -68,26 +64,21 @@ gg1d_options <- function(
     fontsize_values_heatmap = 3,
     show_values_heatmap = FALSE,
     colours_values_heatmap = "white",
-
     # Global Paramaters
     vertical_spacing = 0,
-    numeric_plot_type = c('bar', "heatmap"),
+    numeric_plot_type = c("bar", "heatmap"),
     y_axis_position = c("left", "right"),
     width = 0.9,
     relative_height_numeric = 4,
     cli_header = "Running gg1d",
-
     # Interactivity
     interactive_svg_width = NULL,
     interactive_svg_height = NULL,
-
     # Text
     fontsize_barplot_y_numbers = 8,
     max_digits_barplot_y_numbers = 3,
     fontsize_y_title = 12,
-    beautify_text = TRUE
-  ){
-
+    beautify_text = TRUE) {
   # Legend-related
   assertions::assert_flag(show_legend)
   assertions::assert_flag(show_legend_titles)
@@ -95,8 +86,8 @@ gg1d_options <- function(
   if (!is.null(legend_nrow)) assertions::assert_number(legend_nrow)
   if (!is.null(legend_ncol)) assertions::assert_number(legend_ncol)
   if (!is.null(legend_title_size)) assertions::assert_number(legend_title_size)
-  if(!is.null(legend_ncol) & !is.null(legend_nrow)) {
-    cli::cli_warn(c("!"="Both {.arg legend_ncol} and {.arg legend_nrow} were supplied. {.arg legend_nrow} will be ignored.  Explicitly set one of these arguments to NULL to avoid this warning message"))
+  if (!is.null(legend_ncol) & !is.null(legend_nrow)) {
+    cli::cli_warn(c("!" = "Both {.arg legend_ncol} and {.arg legend_nrow} were supplied. {.arg legend_nrow} will be ignored.  Explicitly set one of these arguments to NULL to avoid this warning message"))
     legend_nrow <- NULL
   }
 
@@ -129,11 +120,15 @@ gg1d_options <- function(
   transform_heatmap <- rlang::arg_match(transform_heatmap)
 
   # Interactive
-  if(!is.null(interactive_svg_width)) { assertions::assert_number(interactive_svg_width) }
-  if(!is.null(interactive_svg_height)) { assertions::assert_number(interactive_svg_height) }
+  if (!is.null(interactive_svg_width)) {
+    assertions::assert_number(interactive_svg_width)
+  }
+  if (!is.null(interactive_svg_height)) {
+    assertions::assert_number(interactive_svg_height)
+  }
 
   # Ignore relative_height_numeric if plot type is numeric
-  if(numeric_plot_type == "heatmap") relative_height_numeric = 1
+  if (numeric_plot_type == "heatmap") relative_height_numeric <- 1
 
   # Create options list
   opts <- list(

@@ -36,8 +36,8 @@ We create a `Magpies_tooltip` character column and set the value to either `"Mor
 ```{r message=FALSE, fig.height=4, fig.width=10}
 # Add a custom tooltip column
 lazy_birdwatcher["Magpies_tooltip"] <- ifelse(
-  lazy_birdwatcher[["Magpies"]] > 3, 
-  yes = "More than 3 magpies!", 
+  lazy_birdwatcher[["Magpies"]] > 3,
+  yes = "More than 3 magpies!",
   no = paste0("How boring. Too few magpies (", lazy_birdwatcher[["Magpies"]], ")")
 )
 
@@ -72,17 +72,17 @@ library(ggiraph)
 
 # Prepare Data & Colour Schemes
 penguins <- na.omit(read.csv(system.file("penguins.csv", package = "gg1d")))
-palette_species = c(Chinstrap = "#C55BCC", Adelie = "#FF7F02", Gentoo = "#047476")
+palette_species <- c(Chinstrap = "#C55BCC", Adelie = "#FF7F02", Gentoo = "#047476")
 
 # Create gg1d plot
 gg1d_penguins <- gg1d(
-  penguins, 
-  col_id = "name", 
-  interactive = FALSE, 
-  col_sort = "species", 
+  penguins,
+  col_id = "name",
+  interactive = FALSE,
+  col_sort = "species",
   palettes = list(species = palette_species),
   options = gg1d_options(relative_height_numeric = 1.2, show_legend = FALSE)
-  )
+)
 
 # Perform the umap
 umap_mx <- umap(penguins, scale = "scale", n_neighbors = 70)
@@ -91,9 +91,9 @@ colnames(df_umap) <- c("UMAP_1", "UMAP_2")
 df_umap[["name"]] <- penguins[["name"]]
 df_umap[["species"]] <- penguins[["species"]]
 
-# Create the umap plot 
+# Create the umap plot
 gg_umap <- ggplot(df_umap, aes(x = UMAP_1, y = UMAP_2, colour = species, data_id = name)) +
-  geom_point_interactive() + 
+  geom_point_interactive() +
   scale_color_manual(values = palette_species) +
   theme_bw()
 
@@ -101,13 +101,14 @@ gg_umap <- ggplot(df_umap, aes(x = UMAP_1, y = UMAP_2, colour = species, data_id
 combined_plots <- free(gg_umap, type = "label") / free(gg1d_penguins, side = "tb")
 
 # Make interactive
-interactive_multiplot <- girafe(ggobj = combined_plots, height_svg = 6, width_svg = 10, options )
+interactive_multiplot <- girafe(ggobj = combined_plots, height_svg = 6, width_svg = 10, options)
 
 # Add some settings to choose how to make combined plots interactive
-interactive_multiplot <- girafe_options(x = interactive_multiplot,
-    opts_selection(type = "multiple", only_shiny = FALSE, css = "opacity: 1"),
-    opts_selection_inv(css = "opacity: 0.12")
-    )
+interactive_multiplot <- girafe_options(
+  x = interactive_multiplot,
+  opts_selection(type = "multiple", only_shiny = FALSE, css = "opacity: 1"),
+  opts_selection_inv(css = "opacity: 0.12")
+)
 
 # Draw Interactive Multiplot
 interactive_multiplot

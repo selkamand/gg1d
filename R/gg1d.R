@@ -109,9 +109,11 @@ gg1d <- function(
   # Preprocessing -----------------------------------------------------------
   # Add col_id column if it user hasn't supplied one
   if (is.null(col_id)) {
+    col_id_manually_specified <- FALSE
     col_id <- "DefaultID"
     data[[col_id]] <- seq_len(nrow(data))
   } else {
+    col_id_manually_specified <- TRUE
     assertions::assert_string(col_id)
     assertions::assert_names_include(data, names = col_id, msg = "Column {.code {col_id}} does not exist in your dataset. Please set the {.arg col_id} argument to a valid column name.")
     assertions::assert_no_duplicates(data[[col_id]])
@@ -202,43 +204,29 @@ gg1d <- function(
         if (verbose >= 2) cli::cli_alert_success("{.success Plotting} column {.strong {colname}}")
       }
 
-      # Create interactive geom aesthetics
-      if(is.na(coltooltip)){
 
-        # If an ID column is not manually specified,
-        # We should just include the current colname & values in tooltip
-        if(is.null(col_id)){
-          aes_interactive <- aes(
-            data_id = .data[[col_id]],
-            tooltip = paste0(
-              tag_bold(colname), ": ", .data[[colname]]
-            )
-          )
-        }
-        # If ID column is manually specified, include the ID value in the tooltip
-        else{
-          aes_interactive <- aes(
-            data_id = .data[[col_id]],
-            tooltip = paste0(
-              tag_bold(colname), ": ", .data[[colname]],
-              "<br/>",
-              tag_bold(col_id), ": ", .data[[col_id]]
-            )
-          )
-        }
-      }
-      # If user has specified a custom tooltip using _tooltip suffix column
-      # We should just use that as the tooltip
-      else
-      {
-        # replace values of NA with ""
+      ## Create Interactive Geoms Aesthetics ---------------------------------------------
+      if (!is.na(coltooltip)) {
+        # If user specifies a custom tooltip using _tooltip suffix column
+        # we just use that as the tooltip
         data[[coltooltip]] <- ifelse(is.na(data[[coltooltip]]), "", data[[coltooltip]])
+        tooltip_text <- data[[coltooltip]]
+      } else {
+        # Construct the default tooltip
+        tooltip_text <- paste0(
+          tag_bold(colname), ": ", data[[colname]],
 
-        aes_interactive <- aes(
-          data_id = .data[[col_id]],
-          tooltip = .data[[coltooltip]]
+          # Only describe ID column if col_id was manually specified
+          if (col_id_manually_specified) paste0(
+            "<br/>",
+            tag_bold(col_id), ": ", data[[col_id]]
+          ) else ""
         )
       }
+      aes_interactive <- aes(
+        data_id = .data[[col_id]],
+        tooltip = tooltip_text
+      )
 
       # Draw the actual plot
 

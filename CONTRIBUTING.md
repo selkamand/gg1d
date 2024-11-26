@@ -12,8 +12,11 @@ There are many ways to contribute to gg1d.
 If your package produces ggplots that you would like to interactively
 link with gg1d visualisations, consider converting your geoms to their ggiraph
 interactive equivalents and adding a data_id based the same values you supply to
-gg1d via the col_id argument. That way end-users can create a
-data-linked gg1d plot composed with your packages plots using patchwork
+gg1d via the `col_id` argument. That way end-users can create a
+data-linked gg1d plot composed with your packages plots using patchwork. 
+
+A detailed description of cross-linking between gg1d plots and other visualisations
+is available [here]. (https://selkamand.github.io/gg1d/articles/advanced_interactivity.html#cross-linking-gg1d-plots-with-other-visualisations)
 
 #### Directly contribute to the gg1d codebase
 

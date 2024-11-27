@@ -17,7 +17,6 @@ BugReports: https://github.com/selkamand/gg1d/issues
 Imports: 
     assertions,
     cli,
-    forcats,
     ggiraph,
     ggplot2,
     ggtext,

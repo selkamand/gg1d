@@ -150,7 +150,7 @@ gg1d <- function(
     })
     order_hierarchical <- do.call(order, ranks)
     data <- data[order_hierarchical,]
-    data[[col_id]] <- forcats::fct_inorder(data[[col_id]])
+    data[[col_id]] <- fct_inorder(data[[col_id]])
 
     # Order columns based
     if(order_matches_sort) {
@@ -738,4 +738,8 @@ round_up <- function(x, digits) {
 round_down <- function(x, digits) {
   multiplier <- 10^digits
   floor(x * multiplier) / multiplier
+}
+
+fct_inorder <- function(x){
+  factor(x, levels = unique(x))
 }

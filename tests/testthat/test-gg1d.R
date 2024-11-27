@@ -50,7 +50,8 @@ mock_data <- data.frame(
   ID = 1:10,
   Category = rep(c("A", "B", "C", "D", "E"), 2),
   Numeric = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
-  Logical = c(TRUE, FALSE, TRUE, FALSE, TRUE, TRUE, FALSE, FALSE, TRUE, FALSE),
+  Logical = c(TRUE, FALSE, TRUE, FALSE, TRUE, TRUE, TRUE,TRUE, TRUE, FALSE),
+  Category2 = c(rep("A", 7), rep("B", 3)),
   Tooltip = letters[1:10],
   stringsAsFactors = FALSE
 )
@@ -155,4 +156,10 @@ test_that("gg1d correctly applies column tooltips", {
   colnames(data)[5] <- "Category_tooltip"
   result <- gg1d(data = data, debug_return_col_info = TRUE, verbose = FALSE)
   expect_equal(result$coltooltip[[which(result$colnames == "Category")]], "Category_tooltip")
+})
+
+test_that("gg1d heirarchical sort works", {
+  result <- expect_no_error(
+    gg1d(data = mock_data, col_sort = c("Category2", "Logical"), verbose = FALSE)
+  )
 })

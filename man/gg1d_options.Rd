@@ -134,7 +134,7 @@ gg1d(
   col_sort = "Magpies",
   palettes = list(
     Birdwatcher = c(Robert = "#E69F00", Catherine = "#999999"),
-    Day = c(Weekday = "#999999" ,Weekend = "#009E73")
+    Day = c(Weekday = "#999999", Weekend = "#009E73")
   ),
   options = gg1d_options(
     show_legend = TRUE,

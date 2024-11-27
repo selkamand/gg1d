@@ -10,3 +10,4 @@
 ^paper/
 inst/birdwatching.csv
 CONTRIBUTING.md
+^logo/

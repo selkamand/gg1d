@@ -15,7 +15,8 @@ utils::globalVariables(".data")
 #'     \item \strong{0}: Silent, no messages.
 #'   }
 #' @param col_id name of column to use as an identifier. If null, artificial IDs will be created based on row-number.
-#' @param col_sort name of column to sort on
+#' @param col_sort name of columns to sort on. To do a hierarchical sort, supply a vector of column names in the order they should be sorted (character).
+#' @param order_matches_sort should the column plots be stacked top-to-bottom in the order they appear in {.arg col_sort} (flag)
 #' @param drop_unused_id_levels if col_id is a factor with unused levels, should these be dropped or included in visualisation
 #' @param interactive produce interactive ggiraph visualiastion (flag)
 #' @param debug_return_col_info return column info instead of plots. Helpful when debugging (flag)
@@ -61,7 +62,9 @@ utils::globalVariables(".data")
 #' @export
 #'
 gg1d <- function(
-    data, col_id = NULL, col_sort = NULL, maxlevels = 6,
+    data, col_id = NULL, col_sort = NULL,
+    order_matches_sort = TRUE,
+    maxlevels = 6,
     verbose = 2,
     drop_unused_id_levels = FALSE,
     interactive = TRUE,
@@ -87,6 +90,7 @@ gg1d <- function(
   assertions::assert_class(options, "gg1d_options", msg = "The options argument must be created using {.code gg1d_options()}")
   assertions::assert_number(max_plottable_cols)
   assertions::assert_greater_than(max_plottable_cols, 0)
+  assertions::assert_flag(order_matches_sort)
 
   # Conditional checks for non-gg1d_options parameters
   if (!is.null(cols_to_plot)) assertions::assert_names_include(data, names = cols_to_plot)
@@ -117,6 +121,43 @@ gg1d <- function(
     assertions::assert_no_duplicates(data[[col_id]])
   }
 
+  # Sort Order -------------------------------------------------------------------
+  # convert ID col to factor if not already
+  if (!is.factor(data[[col_id]])) {
+    data[[col_id]] <- as.factor(data[[col_id]])
+  }
+
+  if (verbose) cli::cli_h3("Sorting")
+
+  if (is.null(col_sort)) {
+    if (verbose >= 1) cli::cli_alert_info("Sorting X axis by: Order of appearance")
+  } else {
+    assertions::assert_character_vector(col_sort)
+    assertions::assert_length_greater_than(col_sort, length = 0)
+    assertions::assert_names_include(data, names = col_sort, msg = "Column {.code {col_sort}} does not exist in your dataset. Please set the {.arg col_sort} argument to a valid column name.")
+
+    if (verbose >= 1) {
+      cli::cli_bullets(c(
+        "*" = "Sorting X axis by: {.strong {col_sort}}",
+        "*" = "Order type: {.strong {sort_type}}",
+        "*" = "Sort order: {.strong {ifelse(desc, 'descending', 'ascending')}}"
+      ))
+    }
+
+    # Heirarchical Sort by specified columns
+    ranks <- lapply(col_sort, function(column_to_sort_by){
+      rank::smartrank(data[[column_to_sort_by]], sort_by = sort_type, desc = desc, verbose = FALSE)
+    })
+    order_hierarchical <- do.call(order, ranks)
+    data <- data[order_hierarchical,]
+    data[[col_id]] <- forcats::fct_inorder(data[[col_id]])
+
+    # Order columns based
+    if(order_matches_sort) {
+      data <- data[,c(col_sort, setdiff(colnames(data), col_sort))]
+    }
+  }
+
 
   # Identify Plottable Columns  ------------------------------------------------------------
   df_col_info <- column_info_table(
@@ -137,31 +178,6 @@ gg1d <- function(
     return(df_col_info)
   }
 
-
-  # Sort Order -------------------------------------------------------------------
-  # convert ID col to factor if not already
-  if (!is.factor(data[[col_id]])) {
-    data[[col_id]] <- as.factor(data[[col_id]])
-  }
-
-  if (verbose) cli::cli_h3("Sorting")
-
-  if (is.null(col_sort)) {
-    if (verbose >= 1) cli::cli_alert_info("Sorting X axis by: Order of appearance")
-  } else {
-    assertions::assert_string(col_sort)
-    assertions::assert_names_include(data, names = col_sort, msg = "Column {.code {col_sort}} does not exist in your dataset. Please set the {.arg col_sort} argument to a valid column name.")
-
-    if (verbose >= 1) {
-      cli::cli_bullets(c(
-        "*" = "Sorting X axis by: {.strong {col_sort}}",
-        "*" = "Order type: {.strong {sort_type}}",
-        "*" = "Sort order: {.strong {ifelse(desc, 'descending', 'ascending')}}"
-      ))
-    }
-
-    data[[col_id]] <- forcats::fct_reorder(data[[col_id]], rank::smartrank(data[[col_sort]], sort_by = sort_type, desc = desc, verbose = FALSE))
-  }
 
   # Plot --------------------------------------------------------------------
   if (verbose) cli::cli_h3("Generating Plot")

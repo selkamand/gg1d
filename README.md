@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# gg1d
+# gg1d <a href="https://selkamand.github.io/gg1d/"><img src="man/figures/logo.png" align="right" height="120" alt="gg1d website" /></a>
 
 <!-- badges: start -->
 
@@ -66,10 +66,10 @@ df <- read.csv(path_gg1d, header = TRUE, na.strings = "")
 
 # Plot data, sort by Glasses
 gg1d(
-  df, 
-  col_id = "ID", 
-  col_sort = "Glasses", 
-  interactive = FALSE, 
+  df,
+  col_id = "ID",
+  col_sort = "Glasses",
+  interactive = FALSE,
   verbose = FALSE,
   options = gg1d_options(legend_nrow = 2)
 )
@@ -83,15 +83,15 @@ Customise colours by supplying a named list to the `palettes` argument
 
 ``` r
 gg1d(
-  df, 
-  col_id = "ID", 
-  col_sort = "Glasses", 
+  df,
+  col_id = "ID",
+  col_sort = "Glasses",
   palettes = list("EyeColour" = c(
     Brown = "rosybrown4",
     Blue = "steelblue",
     Green = "seagreen"
-    )),
-  interactive = FALSE, 
+  )),
+  interactive = FALSE,
   verbose = FALSE,
   options = gg1d_options(legend_nrow = 2)
 )

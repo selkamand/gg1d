@@ -15,14 +15,13 @@ RoxygenNote: 7.3.2
 URL: https://github.com/selkamand/gg1d, https://selkamand.github.io/gg1d/
 BugReports: https://github.com/selkamand/gg1d/issues
 Imports: 
-    assertions,
+    assertions (>= 0.2.0),
     cli,
-    forcats,
     ggiraph,
     ggplot2,
     ggtext,
-    patchwork,
-    rank,
+    patchwork (>= 1.3.0),
+    rank (>= 0.1.0.9000),
     rlang
 Suggests: 
     covr,
@@ -37,3 +36,5 @@ VignetteBuilder: knitr
 Depends: 
     R (>= 2.10)
 LazyData: true
+Remotes:  
+    selkamand/rank

@@ -198,13 +198,8 @@ test_that("gg1d heirarchical sort works", {
     gg1d(data = mock_data, col_sort = c("Category2", "Logical"), sort_type = "alphabetical", desc = FALSE,  order_matches_sort = TRUE, return = "data", verbose = FALSE)
   )
 
-  withr::with_locale(
-    c(LC_COLLATE = "C"),
-    # Snapshot with desc = FALSE
-    expect_snapshot(
-      gg1d(data = mock_data, col_sort = c("Category2", "Logical"), sort_type = "alphabetical", desc = TRUE,  order_matches_sort = TRUE, return = "data", verbose = FALSE)
-    )
+  # Snapshot with desc = FALSE
+  expect_snapshot(
+    gg1d(data = mock_data, col_sort = c("Category2", "Logical"), sort_type = "alphabetical", desc = TRUE,  order_matches_sort = TRUE, return = "data", verbose = FALSE)
   )
-
-
 })

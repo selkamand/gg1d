@@ -21,7 +21,7 @@ Imports:
     ggplot2,
     ggtext,
     patchwork (>= 1.3.0),
-    rank,
+    rank (>= 0.1.0.9000),
     rlang
 Suggests: 
     covr,
@@ -36,3 +36,5 @@ VignetteBuilder: knitr
 Depends: 
     R (>= 2.10)
 LazyData: true
+Remotes:  
+    selkamand/rank

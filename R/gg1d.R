@@ -19,7 +19,12 @@ utils::globalVariables(".data")
 #' @param order_matches_sort should the column plots be stacked top-to-bottom in the order they appear in {.arg col_sort} (flag)
 #' @param drop_unused_id_levels if col_id is a factor with unused levels, should these be dropped or included in visualisation
 #' @param interactive produce interactive ggiraph visualiastion (flag)
-#' @param debug_return_col_info return column info instead of plots. Helpful when debugging (flag)
+#' @param return a string describing what this function should return. Options include:
+#'   \itemize{
+#'     \item \strong{plot}: Return the gg1d visualisation (default)
+#'     \item \strong{colum_info}: Return a data.frame describing the columns the dataset.
+#'     \item \strong{data}: Return the processed dataset used for plotting.
+#'   }
 #' @param palettes A list of named vectors. List names correspond to \strong{data} column names (categorical only). Vector names to levels of columns. Vector values are colours, the vector names are used to map values in data to a colour.
 #' @param sort_type controls how categorical variables are sorted.
 #' Numerical variables are always sorted in numerical order irrespective of the value given here.
@@ -68,7 +73,7 @@ gg1d <- function(
     verbose = 2,
     drop_unused_id_levels = FALSE,
     interactive = TRUE,
-    debug_return_col_info = FALSE,
+    return = c("plot", "column_info", "data"),
     palettes = NULL,
     sort_type = c("frequency", "alphabetical"),
     desc = TRUE,
@@ -99,6 +104,7 @@ gg1d <- function(
 
   # Argument Matching
   sort_type <- rlang::arg_match(sort_type)
+  return <- rlang::arg_match(return)
 
 
   # Formatting --------------------------------------------------------------
@@ -148,6 +154,7 @@ gg1d <- function(
     ranks <- lapply(col_sort, function(column_to_sort_by){
       rank::smartrank(data[[column_to_sort_by]], sort_by = sort_type, desc = desc, verbose = FALSE)
     })
+
     order_hierarchical <- do.call(order, ranks)
     data <- data[order_hierarchical,]
     data[[col_id]] <- fct_inorder(data[[col_id]])
@@ -173,11 +180,13 @@ gg1d <- function(
     verbose = verbose
   )
 
-  # If debugging, return df_col_info
-  if (debug_return_col_info) {
+  # Debug Options: return column info or processed dataframe
+  if (return == "column_info")
     return(df_col_info)
-  }
-
+  else if(return == "data")
+   return(data)
+  else if(return != "plot")
+    stop("No implementation has been written for debug = ", debug, ". Please create a github issue with this error message: https://github.com/selkamand/gg1d/issues/new")
 
   # Plot --------------------------------------------------------------------
   if (verbose) cli::cli_h3("Generating Plot")

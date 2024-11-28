@@ -68,14 +68,14 @@ test_that("gg1d handles missing col_id gracefully", {
 })
 
 test_that("gg1d filters columns based on maxlevels", {
-  result <- gg1d(data = mock_data, maxlevels = 4, debug_return_col_info = TRUE, verbose = FALSE)
+  result <- gg1d(data = mock_data, maxlevels = 4, return = "column_info", verbose = FALSE)
   expect_false("Category" %in% result$colnames[result$plottable])
 })
 
 test_that("gg1d applies ignore_column_regex", {
   data <- mock_data
   colnames(data)[2] <- "IgnoreMe_ignore"
-  result <- gg1d(data = data, debug_return_col_info = TRUE, verbose = FALSE)
+  result <- gg1d(data = data, return = "column_info", verbose = FALSE)
   expect_false("IgnoreMe_ignore" %in% result$colnames[result$plottable])
 })
 
@@ -94,7 +94,7 @@ test_that("gg1d validates palettes input", {
   palettes <- list(
     Category = c(A = "red", B = "green", C = "blue", D = "black", E = "purple")
   )
-  result <- gg1d(data = mock_data, palettes = palettes, debug_return_col_info = TRUE, verbose = FALSE)
+  result <- gg1d(data = mock_data, palettes = palettes,return = "column_info", verbose = FALSE)
   expect_equal(result$palette[[which(result$colnames == "Category")]], palettes$Category)
 
   # Throws error if missing colours for any values
@@ -111,14 +111,20 @@ test_that("gg1d raises error for invalid column inputs", {
 })
 
 
-test_that("gg1d returns column information when debug_return_col_info is TRUE", {
-  result <- gg1d(data = mock_data, debug_return_col_info = TRUE, verbose = FALSE)
+test_that("gg1d returns column information when return='column_info'", {
+  result <- gg1d(data = mock_data, return = "column_info", verbose = FALSE)
   expect_s3_class(result, "data.frame")
   expect_true(all(c("colnames", "coltype", "plottable", "palette") %in% colnames(result)))
 })
 
+test_that("gg1d returns processed data when return='data'", {
+  result <- gg1d(data = mock_data, return = "data", verbose = FALSE)
+  expect_s3_class(result, "data.frame")
+  expect_true(all(colnames(mock_data) %in% colnames(result)))
+})
+
 test_that("gg1d handles logical columns with default logical colors", {
-  result <- gg1d(data = mock_data, debug_return_col_info = TRUE, verbose = FALSE)
+  result <- gg1d(data = mock_data, return = "column_info", verbose = FALSE)
   expect_equal(
     result$palette[[which(result$colnames == "Logical")]],
     c("TRUE" = "#648fff", "FALSE" = "#dc267f")
@@ -136,7 +142,7 @@ test_that("gg1d gracefully handles non-plottable datasets", {
 test_that("gg1d warns about too many unique levels in categorical data", {
   data <- data.frame(ID = 1:10, TooManyLevels = as.factor(1:10))
   suppressMessages(expect_message(
-    gg1d(data = data, maxlevels = 5, debug_return_col_info = TRUE, verbose = TRUE),
+    gg1d(data = data, maxlevels = 5, return = "column_info", verbose = TRUE),
     "must have <= 5 unique values"
   ))
 })
@@ -154,12 +160,46 @@ test_that("gg1d can handle interactive and static plot settings", {
 test_that("gg1d correctly applies column tooltips", {
   data <- mock_data
   colnames(data)[5] <- "Category_tooltip"
-  result <- gg1d(data = data, debug_return_col_info = TRUE, verbose = FALSE)
+  result <- gg1d(data = data, return = "column_info", verbose = FALSE)
   expect_equal(result$coltooltip[[which(result$colnames == "Category")]], "Category_tooltip")
 })
 
 test_that("gg1d heirarchical sort works", {
-  result <- expect_no_error(
+  expect_no_error(
     gg1d(data = mock_data, col_sort = c("Category2", "Logical"), verbose = FALSE)
+  )
+
+  expect_snapshot(
+    gg1d(data = mock_data, col_sort = c("Category2", "Logical"), return = "data", verbose = FALSE)
+  )
+})
+
+test_that("gg1d heirarchical sort works", {
+  expect_no_error(
+    gg1d(data = mock_data, col_sort = c("Category2", "Logical"), verbose = FALSE)
+  )
+
+  sorted_result <- gg1d(data = mock_data, col_sort = c("Category2", "Logical"),  order_matches_sort = TRUE, return = "data", verbose = FALSE)
+  sorted_result_order_does_not_match_sort <- gg1d(data = mock_data, col_sort = c("Category2", "Logical"),  order_matches_sort = FALSE, return = "data", verbose = FALSE)
+
+  # Since order_matches_sort = TRUE first two columns should be the ones we sort on
+  expect_equal(colnames(sorted_result)[1:2], c("Category2", "Logical"))
+
+  # If order_matches_sort = FALSE, column order should stay the same
+  expect_equal(colnames(sorted_result_order_does_not_match_sort)[1:2], colnames(mock_data)[1:2])
+
+  # Snapshot the heirarchically sorted result
+  expect_snapshot(
+    sorted_result
+  )
+
+  # Snapshot the heirarchically sorted result
+  expect_snapshot(
+    gg1d(data = mock_data, col_sort = c("Category2", "Logical"), sort_type = "alphabetical", desc = FALSE,  order_matches_sort = TRUE, return = "data", verbose = FALSE)
+  )
+
+  # Snapshot with desc = FALSE
+  expect_snapshot(
+    gg1d(data = mock_data, col_sort = c("Category2", "Logical"), sort_type = "alphabetical", desc = TRUE,  order_matches_sort = TRUE, return = "data", verbose = FALSE)
   )
 })

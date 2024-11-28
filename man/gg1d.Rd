@@ -13,7 +13,7 @@ gg1d(
   verbose = 2,
   drop_unused_id_levels = FALSE,
   interactive = TRUE,
-  debug_return_col_info = FALSE,
+  return = c("plot", "column_info", "data"),
   palettes = NULL,
   sort_type = c("frequency", "alphabetical"),
   desc = TRUE,
@@ -47,7 +47,12 @@ gg1d(
 
 \item{interactive}{produce interactive ggiraph visualiastion (flag)}
 
-\item{debug_return_col_info}{return column info instead of plots. Helpful when debugging (flag)}
+\item{return}{a string describing what this function should return. Options include:
+\itemize{
+\item \strong{plot}: Return the gg1d visualisation (default)
+\item \strong{colum_info}: Return a data.frame describing the columns the dataset.
+\item \strong{data}: Return the processed dataset used for plotting.
+}}
 
 \item{palettes}{A list of named vectors. List names correspond to \strong{data} column names (categorical only). Vector names to levels of columns. Vector values are colours, the vector names are used to map values in data to a colour.}
 

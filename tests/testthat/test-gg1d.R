@@ -202,18 +202,18 @@ test_that("gg1d heirarchical sort works", {
 })
 
 
-test_that("autoconvert_numeric_binaries converts numeric columns with only 0, 1, and NA to factors", {
+test_that("convert_binary_numeric_to_factor converts numeric columns with only 0, 1, and NA to factors", {
   # Input data with a numeric column containing 0, 1, and NA
   data <- data.frame(
     col1 = c(0, 1, 0, 1, NA),
     col2 = c("A", "B", "C", "D", "E")
   )
 
-  # Test with autoconvert_numeric_binaries = TRUE
+  # Test with convert_binary_numeric_to_factor = TRUE
   result <- gg1d(
     data = data,
     return = "data",
-    autoconvert_numeric_binaries = TRUE,
+    convert_binary_numeric_to_factor = TRUE,
     verbose = FALSE
   )
 
@@ -225,18 +225,18 @@ test_that("autoconvert_numeric_binaries converts numeric columns with only 0, 1,
   expect_true(is.character(result$col2))
 })
 
-test_that("autoconvert_numeric_binaries does not convert numeric columns when FALSE", {
+test_that("convert_binary_numeric_to_factor does not convert numeric columns when FALSE", {
   # Input data with a numeric column containing 0, 1, and NA
   data <- data.frame(
     col1 = c(0, 1, 0, 1, NA),
     col2 = c("A", "B", "C", "D", "E")
   )
 
-  # Test with autoconvert_numeric_binaries = FALSE
+  # Test with convert_binary_numeric_to_factor = FALSE
   result <- gg1d(
     data = data,
     return = "data",
-    autoconvert_numeric_binaries = FALSE,
+    convert_binary_numeric_to_factor = FALSE,
     verbose = FALSE
   )
 
@@ -247,18 +247,18 @@ test_that("autoconvert_numeric_binaries does not convert numeric columns when FA
   expect_true(is.character(result$col2))
 })
 
-test_that("autoconvert_numeric_binaries skips non-0-1 numeric columns", {
+test_that("convert_binary_numeric_to_factor skips non-0-1 numeric columns", {
   # Input data with a numeric column containing non-0-1 values
   data <- data.frame(
     col1 = c(0, 1, 0, 1, NA),
     col2 = c(0, 2, 3, 4, 5)  # This column should not be converted
   )
 
-  # Test with autoconvert_numeric_binaries = TRUE
+  # Test with convert_binary_numeric_to_factor = TRUE
   result <- gg1d(
     data = data,
     return = "data",
-    autoconvert_numeric_binaries = TRUE,
+    convert_binary_numeric_to_factor = TRUE,
     verbose = FALSE
   )
 
@@ -270,7 +270,7 @@ test_that("autoconvert_numeric_binaries skips non-0-1 numeric columns", {
   expect_true(is.numeric(result$col2))
 })
 
-test_that("autoconvert_numeric_binaries handles edge cases gracefully", {
+test_that("convert_binary_numeric_to_factor handles edge cases gracefully", {
   # Input data with no 0-1 numeric columns
   data <- data.frame(
     col1 = c(2, 3, 4, 5, NA),
@@ -278,11 +278,11 @@ test_that("autoconvert_numeric_binaries handles edge cases gracefully", {
     verbose = FALSE
   )
 
-  # Test with autoconvert_numeric_binaries = TRUE
+  # Test with convert_binary_numeric_to_factor = TRUE
   result <- gg1d(
     data = data,
     return = "data",
-    autoconvert_numeric_binaries = TRUE,
+    convert_binary_numeric_to_factor = TRUE,
     verbose = FALSE
   )
 
@@ -291,7 +291,7 @@ test_that("autoconvert_numeric_binaries handles edge cases gracefully", {
   expect_true(is.character(result$col2))
 })
 
-test_that("autoconvert_numeric_binaries maintains column names", {
+test_that("convert_binary_numeric_to_factor maintains column names", {
   # Input data
   data <- data.frame(
     id = 1:5,
@@ -300,12 +300,12 @@ test_that("autoconvert_numeric_binaries maintains column names", {
     verbose = FALSE
   )
 
-  # Test with autoconvert_numeric_binaries = TRUE
+  # Test with convert_binary_numeric_to_factor = TRUE
   result <- gg1d(
     data = data,
     col_id = "id",
     return = "data",
-    autoconvert_numeric_binaries = TRUE,
+    convert_binary_numeric_to_factor = TRUE,
     verbose = FALSE
   )
 
@@ -313,35 +313,35 @@ test_that("autoconvert_numeric_binaries maintains column names", {
   expect_setequal(colnames(result), colnames(data))
 })
 
-test_that("autoconvert_numeric_binaries does NOT affect data if no numeric binary columns exist", {
+test_that("convert_binary_numeric_to_factor does NOT affect data if no numeric binary columns exist", {
   # Input data with a numeric column and a col_id column
   data <- data.frame(
     col_id = c(101, 102, 103, 104, 105),  # Should remain unchanged
     numeric_col = c(10, 20, 30, 40, 50)   # Should remain numeric
   )
 
-  # Test with autoconvert_numeric_binaries = TRUE
+  # Test with convert_binary_numeric_to_factor = TRUE
   result1 <- gg1d(
     data = data,
     return = "data",
     col_id = "col_id",
-    autoconvert_numeric_binaries = TRUE,
+    convert_binary_numeric_to_factor = TRUE,
     verbose = FALSE
   )
 
-  # Test with autoconvert_numeric_binaries = FALSE
+  # Test with convert_binary_numeric_to_factor = FALSE
   result2 <- gg1d(
     data = data,
     return = "data",
     col_id = "col_id",
-    autoconvert_numeric_binaries = FALSE,
+    convert_binary_numeric_to_factor = FALSE,
     verbose = FALSE
   )
 
   expect_identical(result1, result2)
 })
 
-test_that("autoconvert_numeric_binaries does NOT affect col_id even if it only contains 0 & 1", {
+test_that("convert_binary_numeric_to_factor does NOT affect col_id even if it only contains 0 & 1", {
 
   # Input data with a numeric column and a col_id column
   data <- data.frame(
@@ -349,12 +349,12 @@ test_that("autoconvert_numeric_binaries does NOT affect col_id even if it only c
     numeric_col = c(10, 20)   # Should remain numeric
   )
 
-  # Test with autoconvert_numeric_binaries = TRUE and specifying col_id
+  # Test with convert_binary_numeric_to_factor = TRUE and specifying col_id
   result1 <- gg1d(
     data = data,
     return = "data",
     col_id = "col_id",
-    autoconvert_numeric_binaries = TRUE,
+    convert_binary_numeric_to_factor = TRUE,
     verbose = FALSE
   )
 
@@ -363,7 +363,7 @@ test_that("autoconvert_numeric_binaries does NOT affect col_id even if it only c
     data = data,
     return = "data",
     col_id = "col_id",
-    autoconvert_numeric_binaries = FALSE,
+    convert_binary_numeric_to_factor = FALSE,
     verbose = FALSE
   )
 

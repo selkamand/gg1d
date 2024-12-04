@@ -35,7 +35,7 @@ utils::globalVariables(".data")
 #' @param cols_to_plot names of columns in \strong{data} that should be plotted. By default plots all valid columns (character)
 #' @param tooltip_column_suffix the suffix added to a column name that indicates column should be used as a tooltip (string)
 #' @param ignore_column_regex a regex string that, if matches a column name,  will cause that  column to be exclude from plotting (string)  (default: "_ignore$")
-#' @param autoconvert_numeric_binaries  If a numeric column conatins only values 0, 1, & NA, then automatically convert to a factor.
+#' @param convert_binary_numeric_to_factor  If a numeric column conatins only values 0, 1, & NA, then automatically convert to a factor.
 #' @param options a list of additional visual parameters created by calling [gg1d_options()]. See \code{\link{gg1d_options}} for details.
 #'
 #' @return ggiraph interactive visualisation
@@ -83,7 +83,7 @@ gg1d <- function(
     cols_to_plot = NULL,
     tooltip_column_suffix = "_tooltip",
     ignore_column_regex = "_ignore$",
-    autoconvert_numeric_binaries = TRUE,
+    convert_binary_numeric_to_factor = TRUE,
     options = gg1d_options(show_legend = !interactive)) {
   # Data validation
   assertions::assert_dataframe(data)
@@ -168,7 +168,7 @@ gg1d <- function(
   }
 
   # Autoconvert numerics with only values 0, 1, NA to logicals
-  if(autoconvert_numeric_binaries){
+  if(convert_binary_numeric_to_factor){
     data <- convert_numerics_with_only_values_0_1_and_NA_to_logicals(data, exclude = col_id)
   }
 

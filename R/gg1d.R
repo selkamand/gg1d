@@ -16,7 +16,7 @@ utils::globalVariables(".data")
 #'   }
 #' @param col_id name of column to use as an identifier. If null, artificial IDs will be created based on row-number.
 #' @param col_sort name of columns to sort on. To do a hierarchical sort, supply a vector of column names in the order they should be sorted (character).
-#' @param order_matches_sort should the column plots be stacked top-to-bottom in the order they appear in {.arg col_sort} (flag)
+#' @param order_matches_sort should the column plots be stacked top-to-bottom in the order they appear in \code{col_sort} (flag)
 #' @param drop_unused_id_levels if col_id is a factor with unused levels, should these be dropped or included in visualisation
 #' @param interactive produce interactive ggiraph visualiastion (flag)
 #' @param return a string describing what this function should return. Options include:

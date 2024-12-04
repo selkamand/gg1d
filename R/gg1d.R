@@ -35,6 +35,7 @@ utils::globalVariables(".data")
 #' @param cols_to_plot names of columns in \strong{data} that should be plotted. By default plots all valid columns (character)
 #' @param tooltip_column_suffix the suffix added to a column name that indicates column should be used as a tooltip (string)
 #' @param ignore_column_regex a regex string that, if matches a column name,  will cause that  column to be exclude from plotting (string)  (default: "_ignore$")
+#' @param autoconvert_numeric_binaries  If a numeric column conatins only values 0, 1, & NA, then automatically convert to a factor.
 #' @param options a list of additional visual parameters created by calling [gg1d_options()]. See \code{\link{gg1d_options}} for details.
 #'
 #' @return ggiraph interactive visualisation
@@ -82,6 +83,7 @@ gg1d <- function(
     cols_to_plot = NULL,
     tooltip_column_suffix = "_tooltip",
     ignore_column_regex = "_ignore$",
+    autoconvert_numeric_binaries = TRUE,
     options = gg1d_options(show_legend = !interactive)) {
   # Data validation
   assertions::assert_dataframe(data)
@@ -165,6 +167,10 @@ gg1d <- function(
     }
   }
 
+  # Autoconvert numerics with only values 0, 1, NA to logicals
+  if(autoconvert_numeric_binaries){
+    data <- convert_numerics_with_only_values_0_1_and_NA_to_logicals(data, exclude = col_id)
+  }
 
   # Identify Plottable Columns  ------------------------------------------------------------
   df_col_info <- column_info_table(
@@ -751,4 +757,26 @@ round_down <- function(x, digits) {
 
 fct_inorder <- function(x){
   factor(x, levels = unique(x))
+}
+
+
+# Autoconvert pseudo-logical to a factor
+numeric_only_includes_zero_one_and_na <- function(vec){
+  is.numeric(vec) & all(unique(vec) %in% c(0, 1, NA))
+}
+
+convert_numerics_with_only_values_0_1_and_NA_to_logicals <- function(data, exclude = NULL) {
+  col_is_convertable <- vapply(data, numeric_only_includes_zero_one_and_na, FUN.VALUE = logical(1))
+
+  if(!is.null(exclude))
+    col_is_convertable <- col_is_convertable & (colnames(data) != exclude)
+
+  data[, col_is_convertable] <- lapply(data[, col_is_convertable, drop = FALSE], as_binary_factor)
+  return(data)
+}
+
+as_binary_factor <- function(vec){
+  vec <- as.factor(vec)
+  levels(vec) <- c(0, 1, NA)
+  return(vec)
 }

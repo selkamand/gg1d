@@ -22,6 +22,7 @@ gg1d(
   cols_to_plot = NULL,
   tooltip_column_suffix = "_tooltip",
   ignore_column_regex = "_ignore$",
+  convert_binary_numeric_to_factor = TRUE,
   options = gg1d_options(show_legend = !interactive)
 )
 }
@@ -71,6 +72,8 @@ Options are \code{alphabetical} or \code{frequency}}
 \item{tooltip_column_suffix}{the suffix added to a column name that indicates column should be used as a tooltip (string)}
 
 \item{ignore_column_regex}{a regex string that, if matches a column name,  will cause that  column to be exclude from plotting (string)  (default: "_ignore$")}
+
+\item{convert_binary_numeric_to_factor}{If a numeric column conatins only values 0, 1, & NA, then automatically convert to a factor.}
 
 \item{options}{a list of additional visual parameters created by calling \code{\link[=gg1d_options]{gg1d_options()}}. See \code{\link{gg1d_options}} for details.}
 }

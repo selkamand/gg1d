@@ -1,3 +1,15 @@
+# Mock Data
+mock_data <- data.frame(
+  ID = 1:10,
+  Category = rep(c("A", "B", "C", "D", "E"), 2),
+  Numeric = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+  Logical = c(TRUE, FALSE, TRUE, FALSE, TRUE, TRUE, TRUE,TRUE, TRUE, FALSE),
+  Category2 = c(rep("A", 7), rep("B", 3)),
+  Tooltip = letters[1:10],
+  stringsAsFactors = FALSE
+)
+
+
 test_that("gg1d works as expected", {
   expect_error(suppressMessages(gg1d(mtcars)), NA)
 })
@@ -40,21 +52,6 @@ cli::test_that_cli("gg1d doesn't warn about columns the user isn't interested in
   # If user only wants to plot glasses, there's no reason to warn about Letters
   suppressMessages(expect_no_message(gg1d(df, cols_to_plot = c("Glasses"), verbose = 2), message = "Columns with too many unique values:"))
 })
-
-
-
-# Newtests ----------------------------------------------------------------
-
-# Mock Data
-mock_data <- data.frame(
-  ID = 1:10,
-  Category = rep(c("A", "B", "C", "D", "E"), 2),
-  Numeric = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
-  Logical = c(TRUE, FALSE, TRUE, FALSE, TRUE, TRUE, TRUE,TRUE, TRUE, FALSE),
-  Category2 = c(rep("A", 7), rep("B", 3)),
-  Tooltip = letters[1:10],
-  stringsAsFactors = FALSE
-)
 
 # Core Tests
 test_that("gg1d returns a plot object", {
@@ -203,3 +200,174 @@ test_that("gg1d heirarchical sort works", {
     gg1d(data = mock_data, col_sort = c("Category2", "Logical"), sort_type = "alphabetical", desc = TRUE,  order_matches_sort = TRUE, return = "data", verbose = FALSE)
   )
 })
+
+
+test_that("convert_binary_numeric_to_factor converts numeric columns with only 0, 1, and NA to factors", {
+  # Input data with a numeric column containing 0, 1, and NA
+  data <- data.frame(
+    col1 = c(0, 1, 0, 1, NA),
+    col2 = c("A", "B", "C", "D", "E")
+  )
+
+  # Test with convert_binary_numeric_to_factor = TRUE
+  result <- gg1d(
+    data = data,
+    return = "data",
+    convert_binary_numeric_to_factor = TRUE,
+    verbose = FALSE
+  )
+
+  # Check that the column is converted to a factor
+  expect_true(is.factor(result$col1))
+  expect_equal(levels(result$col1), c("0", "1"))
+
+  # Check that other columns are unaffected
+  expect_true(is.character(result$col2))
+})
+
+test_that("convert_binary_numeric_to_factor does not convert numeric columns when FALSE", {
+  # Input data with a numeric column containing 0, 1, and NA
+  data <- data.frame(
+    col1 = c(0, 1, 0, 1, NA),
+    col2 = c("A", "B", "C", "D", "E")
+  )
+
+  # Test with convert_binary_numeric_to_factor = FALSE
+  result <- gg1d(
+    data = data,
+    return = "data",
+    convert_binary_numeric_to_factor = FALSE,
+    verbose = FALSE
+  )
+
+  # Check that the column remains numeric
+  expect_true(is.numeric(result$col1))
+
+  # Check that other columns are unaffected
+  expect_true(is.character(result$col2))
+})
+
+test_that("convert_binary_numeric_to_factor skips non-0-1 numeric columns", {
+  # Input data with a numeric column containing non-0-1 values
+  data <- data.frame(
+    col1 = c(0, 1, 0, 1, NA),
+    col2 = c(0, 2, 3, 4, 5)  # This column should not be converted
+  )
+
+  # Test with convert_binary_numeric_to_factor = TRUE
+  result <- gg1d(
+    data = data,
+    return = "data",
+    convert_binary_numeric_to_factor = TRUE,
+    verbose = FALSE
+  )
+
+  # Check that the first column is converted to a factor
+  expect_true(is.factor(result$col1))
+  expect_equal(levels(result$col1), c("0", "1"))
+
+  # Check that the second column remains numeric
+  expect_true(is.numeric(result$col2))
+})
+
+test_that("convert_binary_numeric_to_factor handles edge cases gracefully", {
+  # Input data with no 0-1 numeric columns
+  data <- data.frame(
+    col1 = c(2, 3, 4, 5, NA),
+    col2 = c("A", "B", "C", "D", "E"),
+    verbose = FALSE
+  )
+
+  # Test with convert_binary_numeric_to_factor = TRUE
+  result <- gg1d(
+    data = data,
+    return = "data",
+    convert_binary_numeric_to_factor = TRUE,
+    verbose = FALSE
+  )
+
+  # Check that no columns are converted to factors
+  expect_true(is.numeric(result$col1))
+  expect_true(is.character(result$col2))
+})
+
+test_that("convert_binary_numeric_to_factor maintains column names", {
+  # Input data
+  data <- data.frame(
+    id = 1:5,
+    binary_col = c(0, 1, 0, 1, NA),
+    numeric_col = c(10, 20, 30, 40, 50),
+    verbose = FALSE
+  )
+
+  # Test with convert_binary_numeric_to_factor = TRUE
+  result <- gg1d(
+    data = data,
+    col_id = "id",
+    return = "data",
+    convert_binary_numeric_to_factor = TRUE,
+    verbose = FALSE
+  )
+
+  # Check column names are unchanged
+  expect_setequal(colnames(result), colnames(data))
+})
+
+test_that("convert_binary_numeric_to_factor does NOT affect data if no numeric binary columns exist", {
+  # Input data with a numeric column and a col_id column
+  data <- data.frame(
+    col_id = c(101, 102, 103, 104, 105),  # Should remain unchanged
+    numeric_col = c(10, 20, 30, 40, 50)   # Should remain numeric
+  )
+
+  # Test with convert_binary_numeric_to_factor = TRUE
+  result1 <- gg1d(
+    data = data,
+    return = "data",
+    col_id = "col_id",
+    convert_binary_numeric_to_factor = TRUE,
+    verbose = FALSE
+  )
+
+  # Test with convert_binary_numeric_to_factor = FALSE
+  result2 <- gg1d(
+    data = data,
+    return = "data",
+    col_id = "col_id",
+    convert_binary_numeric_to_factor = FALSE,
+    verbose = FALSE
+  )
+
+  expect_identical(result1, result2)
+})
+
+test_that("convert_binary_numeric_to_factor does NOT affect col_id even if it only contains 0 & 1", {
+
+  # Input data with a numeric column and a col_id column
+  data <- data.frame(
+    col_id = c(1, 0),  # Should remain unchanged
+    numeric_col = c(10, 20)   # Should remain numeric
+  )
+
+  # Test with convert_binary_numeric_to_factor = TRUE and specifying col_id
+  result1 <- gg1d(
+    data = data,
+    return = "data",
+    col_id = "col_id",
+    convert_binary_numeric_to_factor = TRUE,
+    verbose = FALSE
+  )
+
+
+  result2 <- gg1d(
+    data = data,
+    return = "data",
+    col_id = "col_id",
+    convert_binary_numeric_to_factor = FALSE,
+    verbose = FALSE
+  )
+
+  expect_identical(result1, result2)
+})
+
+

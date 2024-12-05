@@ -11,3 +11,4 @@
 inst/birdwatching.csv
 CONTRIBUTING.md
 ^logo/
+^vignettes/articles$

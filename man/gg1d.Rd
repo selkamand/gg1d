@@ -33,7 +33,7 @@ gg1d(
 
 \item{col_sort}{name of columns to sort on. To do a hierarchical sort, supply a vector of column names in the order they should be sorted (character).}
 
-\item{order_matches_sort}{should the column plots be stacked top-to-bottom in the order they appear in {.arg col_sort} (flag)}
+\item{order_matches_sort}{should the column plots be stacked top-to-bottom in the order they appear in \code{col_sort} (flag)}
 
 \item{maxlevels}{for categorical variables, what is the maximum number of distinct values to allow (too many will make it hard to find a palette that suits). (number)}
 

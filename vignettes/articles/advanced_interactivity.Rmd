@@ -1,10 +1,5 @@
 ---
 title: "Advanced Interactivity"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{tooltips}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r, include = FALSE}
@@ -22,7 +17,7 @@ This vignette demonstrates how to enhance the interactivity of gg1d visualizatio
 
 ## Adding custom tooltips
 
-Custom tooltips make your visualizations more interactive and insightful. To add tooltips, create a new column with the `_tooltip` suffix that contains the desired text.
+Custom tooltips make your visualizations more engaging and informative. To add tooltips, create a new column with the `_tooltip` suffix that contains the desired text.
 
 For example, lets add custom-tooltips to the `Magpie` column of the **lazy_birdwatcher** dataset by creating a `Magpies_tooltip` column. Values should represent what text to show in the tooltip.
 
@@ -31,7 +26,7 @@ For example, lets add custom-tooltips to the `Magpie` column of the **lazy_birdw
 gg1d(lazy_birdwatcher)
 ```
 
-We create a `Magpies_tooltip` character column and set the value to either `"More than 3 magpies!'` or `"How boring. Too few magpies (nMagpies)"`. gg1d will automatically detect this column based on the name and set the tooltip accordingly.
+We create a `Magpies_tooltip` character column and set the value to either `"More than 3 magpies!'` or `"How boring. Too few magpies (nMagpies)"`. The gg1d function automatically recognises this column (thanks to the suffix) and sets the tooltip accordingly.
 
 ```{r message=FALSE, fig.height=4, fig.width=10}
 # Add a custom tooltip column
@@ -47,13 +42,13 @@ gg1d(lazy_birdwatcher)
 
 ## Cross-linking gg1d plots with other visualisations
 
-Cross-linking enables coordinated exploration of gg1d plots with other visualizations produced by custom scripts or other packages. This workflow demonstrates how to combine interactivity using `ggiraph` and patchwork.
+Cross-linking enables coordinated exploration of gg1d plots with other visualizations, produced by custom scripts or other packages. This workflow demonstrates how to combine interactive plots using `ggiraph` and `patchwork`.
 
-As an example, lets create both a gg1d visualisation and a UMAP summarising the `palmer_penguins` dataset, then cross-link them so they can be coexplored.
+As an example, we'll cross-link a gg1d visualisation and a UMAP visualisation summarising the `palmer_penguins` dataset.
 
 ### Workflow
 
-1.  Create your gg1d plot. Ensure you set `col_id` to embed a data-identifier required for cross-linking plots (in our case, we will use the unique name given to the penguins). Also set `interactive = FALSE` to force gg1 to returns a ggplot object instead of a htmlwidget (we'll add the interactivity back in after we compose all our plots). For example, lets
+1.  **Create your gg1d plot**. Ensure you set `col_id` to embed a data-identifier required for cross-linking plots (in our case, we will use the unique name given to the penguins). Also set `interactive = FALSE` to force gg1 to returns a ggplot object instead of a htmlwidget (we'll add the interactivity back in after we compose all our plots). For example, lets
 
 2.  Create the ggplot you want to co-explore with, adding latent interactivity using the ggiraph package (e.g. use `geom_point_interactive` instead of `geom_point` and add a `data_id` aesthetic set to the same column as col_id)
 

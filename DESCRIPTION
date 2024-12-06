@@ -2,8 +2,11 @@ Package: gg1d
 Title: Exploratory Data Analysis using Tiled One-Dimensional Graphics
 Version: 0.0.0.9000
 Authors@R: 
-    person("Sam", "El-Kamand", , "selkamand@gmail.com", role = c("aut", "cre"),
-           comment = c(ORCID = "0000-0003-2270-8088"))
+    c(
+      person("Sam", "El-Kamand", , "sam.elkamand@gmail.com", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0003-2270-8088")),
+      person("Children's Cancer Institute Australia", role = c("cph"))
+     )
 Description: Streamlines exploratory data analysis by providing a turnkey approach 
   to visualising n-dimensional data which graphically reveals correlative or associative relationships 
   between 2 or more features. Represents all dataset features as distinct, vertically 
@@ -29,7 +32,6 @@ Suggests:
     rmarkdown,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
-VignetteBuilder: knitr
 Depends: 
     R (>= 2.10)
 LazyData: true

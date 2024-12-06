@@ -12,3 +12,4 @@ inst/birdwatching.csv
 CONTRIBUTING.md
 ^logo/
 ^vignettes/articles$
+^cran-comments\.md$

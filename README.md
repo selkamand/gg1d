@@ -6,8 +6,6 @@
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/selkamand/gg1d/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/selkamand/gg1d/actions/workflows/R-CMD-check.yaml)
-[![CRAN
-status](https://www.r-pkg.org/badges/version/gg1d)](https://CRAN.R-project.org/package=gg1d)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![Codecov test
@@ -40,6 +38,12 @@ gg1d can be used for exploratory data analysis (EDA) or to produce
 publication quality graphics summarizing a dataset.
 
 ## Installation
+
+``` r
+install.packages("gg1d")
+```
+
+### Development Version
 
 You can install the development version of gg1d from
 [GitHub](https://github.com/) with:

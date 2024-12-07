@@ -6,8 +6,6 @@
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/selkamand/gg1d/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/selkamand/gg1d/actions/workflows/R-CMD-check.yaml)
-[![CRAN
-status](https://www.r-pkg.org/badges/version/gg1d)](https://CRAN.R-project.org/package=gg1d)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![Codecov test
@@ -108,4 +106,6 @@ gg1d(
 ## Community Contributions
 
 All types of contributions are encouraged and valued. See our [guide to
-community contributions](CONTRIBUTING.md) for different ways to help.
+community
+contributions](https://selkamand.github.io/gg1d/CONTRIBUTING.html) for
+different ways to help.

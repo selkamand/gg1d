@@ -4,7 +4,7 @@ editor_options:
     wrap: 72
 ---
 
-### Contribute to the Software
+### Contributing to gg1d
 
 There are many ways to contribute to gg1d.
 

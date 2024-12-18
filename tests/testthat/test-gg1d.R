@@ -76,6 +76,18 @@ test_that("gg1d applies ignore_column_regex", {
   expect_false("IgnoreMe_ignore" %in% result$colnames[result$plottable])
 })
 
+test_that("gg1d does not check any regex when ignore_column_regex = NULL", {
+  data <- mock_data
+  colnames(data)[2] <- "Do_NOT_IgnoreMe_ignore"
+
+  # Runs without error
+  expect_no_error(gg1d(data = data, ignore_column_regex = NULL, return = "column_info", verbose = FALSE))
+
+  # Gets the expected result
+  result <- gg1d(data = data, ignore_column_regex = NULL, return = "column_info", verbose = FALSE)
+  expect_true("Do_NOT_IgnoreMe_ignore" %in% result$colnames[result$plottable])
+})
+
 test_that("gg1d limits the number of plottable columns", {
   data <- mock_data
   for (i in 1:20) {

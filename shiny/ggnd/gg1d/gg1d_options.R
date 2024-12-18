@@ -45,7 +45,6 @@ gg1d_options <- function(
     colours_default = c("#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F", "#E5C494"),
     colours_default_logical = c("TRUE" = "#648fff", "FALSE" = "#dc267f"),
     colours_missing = "grey90",
-
     # Legend
     show_legend_titles = FALSE,
     legend_title_position = c("top", "bottom", "left", "right"),
@@ -81,36 +80,36 @@ gg1d_options <- function(
     fontsize_y_title = 12,
     beautify_text = TRUE) {
   # Legend-related
-  assertions::assert_flag(show_legend)
-  assertions::assert_flag(show_legend_titles)
-  assertions::assert_number(legend_key_size)
-  if (!is.null(legend_nrow)) assertions::assert_number(legend_nrow)
-  if (!is.null(legend_ncol)) assertions::assert_number(legend_ncol)
-  if (!is.null(legend_title_size)) assertions::assert_number(legend_title_size)
+  assert_flag(show_legend)
+  assert_flag(show_legend_titles)
+  assert_number(legend_key_size)
+  if (!is.null(legend_nrow)) assert_number(legend_nrow)
+  if (!is.null(legend_ncol)) assert_number(legend_ncol)
+  if (!is.null(legend_title_size)) assert_number(legend_title_size)
   if (!is.null(legend_ncol) & !is.null(legend_nrow)) {
     cli::cli_warn(c("!" = "Both {.arg legend_ncol} and {.arg legend_nrow} were supplied. {.arg legend_nrow} will be ignored.  Explicitly set one of these arguments to NULL to avoid this warning message"))
     legend_nrow <- NULL
   }
 
   # Colors and styling
-  assertions::assert_string(colours_missing)
-  assertions::assert_string(colours_heatmap_low)
-  assertions::assert_string(colours_heatmap_high)
-  assertions::assert_string(colours_values_heatmap)
-  assertions::assert_equal(length(colours_default_logical), 2)
-  assertions::assert_names_include(colours_default_logical, c("TRUE", "FALSE"))
+  assert_string(colours_missing)
+  assert_string(colours_heatmap_low)
+  assert_string(colours_heatmap_high)
+  assert_string(colours_values_heatmap)
+  assert_equal(length(colours_default_logical), 2)
+  assert_names_include(colours_default_logical, c("TRUE", "FALSE"))
 
   # NA markers and visualization
-  assertions::assert_logical(show_na_marker_categorical)
-  assertions::assert_logical(show_na_marker_heatmap)
-  assertions::assert_logical(show_values_heatmap)
-  assertions::assert_string(na_marker_colour)
+  assert_logical(show_na_marker_categorical)
+  assert_logical(show_na_marker_heatmap)
+  assert_logical(show_values_heatmap)
+  assert_string(na_marker_colour)
 
   # Text and layout
-  assertions::assert_flag(beautify_text)
-  assertions::assert_number(vertical_spacing)
-  assertions::assert_number(fontsize_values_heatmap)
-  assertions::assert_number(relative_height_numeric)
+  assert_flag(beautify_text)
+  assert_number(vertical_spacing)
+  assert_number(fontsize_values_heatmap)
+  assert_number(relative_height_numeric)
 
   # Argument matching (these check the allowed values for these parameters)
   legend_position <- rlang::arg_match(legend_position)
@@ -122,10 +121,10 @@ gg1d_options <- function(
 
   # Interactive
   if (!is.null(interactive_svg_width)) {
-    assertions::assert_number(interactive_svg_width)
+    assert_number(interactive_svg_width)
   }
   if (!is.null(interactive_svg_height)) {
-    assertions::assert_number(interactive_svg_height)
+    assert_number(interactive_svg_height)
   }
 
   # Ignore relative_height_numeric if plot type is numeric

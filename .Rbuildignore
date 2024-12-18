@@ -13,3 +13,5 @@ inst/birdwatching.csv
 ^vignettes/articles$
 ^cran-comments\.md$
 ^CRAN-SUBMISSION$
+^shiny/
+^site/

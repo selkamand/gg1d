@@ -1,10 +1,12 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# gg1d <a href="https://selkamand.github.io/gg1d/"><img src="man/figures/logo.png" align="right" height="120" alt="gg1d website" /></a>
+# gg1d <a href="https://selkamand.github.io/gg1d/"><img src="man/figures/logo.png" align="right" height="138" alt="gg1d website" /></a>
 
 <!-- badges: start -->
 
+[![CRAN
+status](https://www.r-pkg.org/badges/version/gg1d)](https://CRAN.R-project.org/package=gg1d)
 [![R-CMD-check](https://github.com/selkamand/gg1d/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/selkamand/gg1d/actions/workflows/R-CMD-check.yaml)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)

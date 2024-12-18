@@ -28,7 +28,7 @@ column_info_table(
 
 \item{tooltip_column_suffix}{the suffix added to a column name that indicates column should be used as a tooltip (string)}
 
-\item{ignore_column_regex}{a regex string that, if matches a column name,  will cause that  column to be exclude from plotting (string)  (default: "_ignore$")}
+\item{ignore_column_regex}{a regex string that, if matches a column name,  will cause that  column to be excluded from plotting (string). If NULL no regex check will be performed. (default: "_ignore$")}
 
 \item{palettes}{A list of named vectors. List names correspond to \strong{data} column names (categorical only). Vector names to levels of columns. Vector values are colours, the vector names are used to map values in data to a colour.}
 

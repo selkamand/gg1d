@@ -8,7 +8,8 @@ test_that("beautify works as expected", {
     "flipper_length_mm" = "Flipper Length (mm)",
     "body_mass_g" = "Body Mass (g)",
     "kgtest_kg" = "Kgtest (kg)",
-    "sex" = "Sex"
+    "sex" = "Sex",
+    "Length (mm)" = "Length (mm)"
   )
 
   expect_equal(examples, beautify(names(examples)), ignore_attr = TRUE)

@@ -22,6 +22,9 @@ Effortlessly visualize all columns in a data frame with vertically
 aligned plots and automatic plot selection based on variable type. Plots
 are fully interactive, and custom tooltips can be added.
 
+A graphical user interface to all gg1d visualisations is available at
+<https://selkamand.github.io/EDA/>
+
 **Why 1 dimensional plots?**
 
 To understand trends in your data, especially correlative relationships

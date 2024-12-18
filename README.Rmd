@@ -26,6 +26,8 @@ knitr::opts_chunk$set(
 
 Effortlessly visualize all columns in a data frame with vertically aligned plots and automatic plot selection based on variable type. Plots are fully interactive, and custom tooltips can be added.
 
+A graphical user interface to all gg1d visualisations is available at https://selkamand.github.io/EDA/
+
 **Why 1 dimensional plots?**
 
 To understand trends in your data, especially correlative relationships between 2 or more features, it can be useful to densely stack visual representations of each feature vertically, regardless of data type. By unifying the $x$-axis across each plot, **gg1d** turns a series of 1D plots into an $n\text{-dimensional}$ visualization where $n = \text{number of columns in dataset}$. 

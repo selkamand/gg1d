@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# gg1d <a href="https://selkamand.github.io/gg1d/"><img src="man/figures/logo.png" align="right" height="120" alt="gg1d website" /></a>
+# gg1d <a href="https://selkamand.github.io/gg1d/"><img src="man/figures/logo.png" align="right" height="138" alt="gg1d website" /></a>
 
 <!-- badges: start -->
 

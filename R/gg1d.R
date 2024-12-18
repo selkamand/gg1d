@@ -595,6 +595,7 @@ theme_categorical <- function(fontsize_y_title = 12, show_legend = TRUE, show_le
       axis.text.x = element_blank(),
       axis.title.x = element_blank(),
       axis.title.y = element_text(size = fontsize_y_title, angle = 0),
+      axis.title.y.right = element_text(size = fontsize_y_title, angle = 0),
       legend.title = if (show_legend_titles) element_text(size = legend_title_size, face = "bold", hjust = 0) else element_blank(),
       legend.justification = c(0, 0.5),
       legend.margin = ggplot2::margin(0, 0, 0, 0),

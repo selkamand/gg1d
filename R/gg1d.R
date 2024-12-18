@@ -725,19 +725,19 @@ beautify <- function(string, autodetect_units = TRUE) {
 
   # Autodetect units (and move to brackets)
   if (autodetect_units) {
-    string <- sub("\\bm\\b", "(m)", string)
-    string <- sub("\\bmm\\b", "(mm)", string)
-    string <- sub("\\cm\\b", "(cm)", string)
-    string <- sub("\\km\\b", "(km)", string)
-    string <- sub("\\bg\\b", "(g)", string)
-    string <- sub("\\bkg\\b", "(kg)", string)
-    string <- sub("\\bmg\\b", "(mm)", string)
-    string <- sub("\\boz\\b", "(oz)", string)
-    string <- sub("\\blb\\b", "(lb)", string)
-    string <- sub("\\bin\\b", "(in)", string)
-    string <- sub("\\bft\\b", "(ft)", string)
-    string <- sub("\\byd\\b", "(yd)", string)
-    string <- sub("\\bmi\\b", "(mi)", string)
+    string <- sub("\\sm(\\s|$)", " (m)", string)
+    string <- sub("\\smm(\\s|$)", " (mm)", string)
+    string <- sub("\\sm(\\s|$)", " (cm)", string)
+    string <- sub("\\sm(\\s|$)", " (km)", string)
+    string <- sub("\\sg(\\s|$)", " (g)", string)
+    string <- sub("\\skg(\\s|$)", " (kg)", string)
+    string <- sub("\\smg(\\s|$)", " (mm)", string)
+    string <- sub("\\soz(\\s|$)", " (oz)", string)
+    string <- sub("\\slb(\\s|$)", " (lb)", string)
+    string <- sub("\\sin(\\s|$)", " (in)", string)
+    string <- sub("\\sft(\\s|$)", " (ft)", string)
+    string <- sub("\\syd(\\s|$)", " (yd)", string)
+    string <- sub("\\smi(\\s|$)", " (mi)", string)
   }
 
 

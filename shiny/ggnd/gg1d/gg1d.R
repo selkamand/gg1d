@@ -86,24 +86,24 @@ gg1d <- function(
     convert_binary_numeric_to_factor = TRUE,
     options = gg1d_options(show_legend = !interactive)) {
   # Data validation
-  assertions::assert_dataframe(data)
-  assertions::assert_number(maxlevels)
-  assertions::assert_flag(drop_unused_id_levels)
-  assertions::assert_flag(interactive)
-  assertions::assert_flag(limit_plots)
-  assertions::assert_flag(desc)
-  assertions::assert_string(tooltip_column_suffix)
-  assertions::assert_string(ignore_column_regex)
-  assertions::assert_class(options, "gg1d_options", msg = "The options argument must be created using {.code gg1d_options()}")
-  assertions::assert_number(max_plottable_cols)
-  assertions::assert_greater_than(max_plottable_cols, 0)
-  assertions::assert_flag(order_matches_sort)
-  assertions::assert_flag(convert_binary_numeric_to_factor)
+  assert_dataframe(data)
+  assert_number(maxlevels)
+  assert_flag(drop_unused_id_levels)
+  assert_flag(interactive)
+  assert_flag(limit_plots)
+  assert_flag(desc)
+  assert_string(tooltip_column_suffix)
+  assert_string(ignore_column_regex)
+  assert_class(options, "gg1d_options", msg = "The options argument must be created using {.code gg1d_options()}")
+  assert_number(max_plottable_cols)
+  assert_greater_than(max_plottable_cols, 0)
+  assert_flag(order_matches_sort)
+  assert_flag(convert_binary_numeric_to_factor)
 
   # Conditional checks for non-gg1d_options parameters
-  if (!is.null(cols_to_plot)) assertions::assert_names_include(data, names = cols_to_plot)
-  if (!is.null(palettes)) assertions::assert_list(palettes)
-  if (!all(colnames(data) %in% names(palettes))) assertions::assert_greater_than_or_equal_to(length(options$colours_default), minimum = maxlevels)
+  if (!is.null(cols_to_plot)) assert_names_include(data, names = cols_to_plot)
+  if (!is.null(palettes)) assert_list(palettes)
+  if (!all(colnames(data) %in% names(palettes))) assert_greater_than_or_equal_to(length(options$colours_default), minimum = maxlevels)
 
   # Argument Matching
   sort_type <- rlang::arg_match(sort_type)
@@ -125,9 +125,9 @@ gg1d <- function(
     data[[col_id]] <- seq_len(nrow(data))
   } else {
     col_id_manually_specified <- TRUE
-    assertions::assert_string(col_id)
-    assertions::assert_names_include(data, names = col_id, msg = "Column {.code {col_id}} does not exist in your dataset. Please set the {.arg col_id} argument to a valid column name.")
-    assertions::assert_no_duplicates(data[[col_id]])
+    assert_string(col_id)
+    assert_names_include(data, names = col_id, msg = "Column {.code {col_id}} does not exist in your dataset. Please set the {.arg col_id} argument to a valid column name.")
+    assert_no_duplicates(data[[col_id]])
   }
 
   # Sort Order -------------------------------------------------------------------
@@ -141,9 +141,9 @@ gg1d <- function(
   if (is.null(col_sort)) {
     if (verbose >= 1) cli::cli_alert_info("Sorting X axis by: Order of appearance")
   } else {
-    assertions::assert_character_vector(col_sort)
-    assertions::assert_length_greater_than(col_sort, length = 0)
-    assertions::assert_names_include(data, names = col_sort, msg = "Column {.code {col_sort}} does not exist in your dataset. Please set the {.arg col_sort} argument to a valid column name.")
+    assert_character_vector(col_sort)
+    assert_length_greater_than(col_sort, length = 0)
+    assert_names_include(data, names = col_sort, msg = "Column {.code {col_sort}} does not exist in your dataset. Please set the {.arg col_sort} argument to a valid column name.")
 
     if (verbose >= 1) {
       cli::cli_bullets(c(
@@ -460,8 +460,8 @@ gg1d <- function(
 #'
 column_info_table <- function(data, maxlevels = 6, col_id = NULL, cols_to_plot, tooltip_column_suffix = "_tooltip", ignore_column_regex = "_ignore$", palettes, colours_default, colours_default_logical, verbose) {
   # Assertions
-  assertions::assert_string(col_id)
-  assertions::assert_names_include(data, col_id)
+  assert_string(col_id)
+  assert_names_include(data, col_id)
 
   # Create Column Info Data
   df_column_info <- data.frame(
@@ -554,7 +554,7 @@ colvalues <- function(data) {
 }
 
 choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colours_default, colours_default_logical) {
-  assertions::assert_character(colours_default)
+  assert_character(colours_default)
 
   colors <- lapply(seq_len(ncol(data)), FUN = function(i) {
     colname <- colnames(data)[[i]]
@@ -565,12 +565,12 @@ choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colour
       return(NULL)
     } else if (colname %in% names(palettes)) {
       colors <- unlist(palettes[[colname]])
-      assertions::assert_names_include(colors, names = stats::na.omit(unique(data[[colname]])))
+      assert_names_include(colors, names = stats::na.omit(unique(data[[colname]])))
       return(palettes[[colname]])
     } else if (is_lgl) {
       colors <- colours_default_logical
     } else {
-      assertions::assert(length(colours_default) >= ndistinct[i], msg = "Too many unique values in column to assign each a colour using the default palette. Either change the default palette to one that supports colours, reduce the number of levels in this column, or exclude it from the plotting using `cols_to_plot` argument OR maxlevels")
+      assert(length(colours_default) >= ndistinct[i], msg = "Too many unique values in column to assign each a colour using the default palette. Either change the default palette to one that supports colours, reduce the number of levels in this column, or exclude it from the plotting using `cols_to_plot` argument OR maxlevels")
       colors <- colours_default
     }
   })

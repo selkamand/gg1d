@@ -9,16 +9,11 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
-library(ggparallel)
-library(lpSolve)
-```
-
 A major challenge when visualizing parallel coordinate plots is to choose the order in which axes should be displayed.
 
-This article describes in detail, the approach we use for crossing minimisation. Note that there are other approaches that do not explicitly attempt to minimise crossings, but rather order axes based on how informatively they distinguish groups of interest. For example gg1d supports ordering axes based on how much mutual information they share with the feature being coloured by.
+This article describes the approach we use for crossing minimisation. Note that there are other approaches that do not explicitly attempt to minimise crossings, but rather order axes based on how informatively they distinguish groups of interest. For example gg1d supports ordering axes based on how much mutual information they share with the feature being coloured by.
 
-Sometimes however, especially if you're not colouring by a particular column of interest, crossing minimisation is the most sensible way to go. Crossing minimimisation is a more complex topic, so we're dedicating a full article to breaking down the approach used in gg1d.
+Sometimes however, especially if you're not colouring by a particular column of interest, crossing minimisation is the most sensible approach. Crossing minimimisation is a more complex topic, so we're dedicating a full article to breaking down the approach used in gg1d. Note crossing minimisation is automatically employed when `order_columns_by = "auto"` and no colouring is applied
 
 Here we describe an approach that involves
 

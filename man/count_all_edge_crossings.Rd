@@ -15,14 +15,14 @@ count_all_edge_crossings(
 \item{data}{A \code{data.frame} or \code{tibble} containing the dataset. Only numeric
 columns are considered for edge crossing calculations.}
 
-\item{approximate}{if data has more than 300 rows, estimate crossings based on \code{subsample_prop}.}
+\item{approximate}{estimate crossings based on a subsample of the data. See \code{subsample_prop} for details.}
 
 \item{subsample_prop}{only used when approximate = TRUE.
 If 0-1, controls the proportion of data to be sampled to speed up computation.
-If a whole number other than 0 or 1, will control the number of rows subsampled}
+If a whole number other than 0 or 1, represents the number of rows subsampled}
 
 \item{recalibrate}{when approximating crossings via subsetting,
-should mumber of crossings calculateed for the subsample be upscaled to match the full count.
+should number of crossings calculated for the subsample be upscaled to match the full count.
 (turned off by default since it amplifies sampling error).}
 }
 \value{

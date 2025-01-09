@@ -96,12 +96,12 @@ count_edge_crossings <- function(l, r) {
 #'
 #' @param data A `data.frame` or `tibble` containing the dataset. Only numeric
 #'   columns are considered for edge crossing calculations.
-#' @param approximate if data has more than 300 rows, estimate crossings based on \code{subsample_prop}.
+#' @param approximate estimate crossings based on a subsample of the data. See \code{subsample_prop} for details.
 #' @param subsample_prop only used when approximate = TRUE.
 #' If 0-1, controls the proportion of data to be sampled to speed up computation.
-#' If a whole number other than 0 or 1, will control the number of rows subsampled
+#' If a whole number other than 0 or 1, represents the number of rows subsampled
 #' @param recalibrate when approximating crossings via subsetting,
-#' should mumber of crossings calculateed for the subsample be upscaled to match the full count.
+#' should number of crossings calculated for the subsample be upscaled to match the full count.
 #' (turned off by default since it amplifies sampling error).
 #' @return A `data.frame` with three columns:
 #'   \describe{
@@ -120,6 +120,8 @@ count_edge_crossings <- function(l, r) {
 #'
 #' @keywords internal
 count_all_edge_crossings <- function(data, approximate = FALSE, subsample_prop = 0.4, recalibrate = FALSE) {
+  assertions::assert(nrow(data) == 2, msg = "Dataset must contain at least 2 rows to count edge crossings")
+
   # Restrict to numeric columns only
   data <- data[, vapply(data, is.numeric, logical(1))]
 
@@ -127,7 +129,7 @@ count_all_edge_crossings <- function(data, approximate = FALSE, subsample_prop =
   ls_column_pairs <- utils::combn(colnames(data), m = 2, simplify = FALSE)
 
   # Optionally approximate if data is too large
-  if (approximate && nrow(data) > 300) {
+  if (approximate) {
 
     # How many rows should we sample?
     nrows_to_sample <- if (subsample_prop >= 0 && subsample_prop <= 1) {
@@ -135,6 +137,9 @@ count_all_edge_crossings <- function(data, approximate = FALSE, subsample_prop =
     } else {
       subsample_prop
     }
+
+    # Sample at least 2 rows
+    nrows_to_sample <- max(2, nrows_to_sample)
 
     # Perform the subsampling
     data_subsample <- data[sample(nrow(data), nrows_to_sample), ]
@@ -512,6 +517,77 @@ feature_vector_to_total_path_distance <- function(axis_names, mx) {
 #   return(y_ranked)
 # }
 
+#' Compute Mutual Information
+#'
+#' Computes mutual information between each feature in the `features` data frame and the `target` vector.
+#' The features are discretized using the "equalfreq" method from [infotheo::discretize()].
+#'
+#' @param features A data frame of features. These will be discretized using the "equalfreq" method
+#' (see [infotheo::discretize()]).
+#' @param target A vector (character or factor) representing the variable to compute mutual information with.
+#' @param return_colnames Logical; if `TRUE`, returns the column names from `features` ordered by their
+#' mutual information with `target` (highest to lowest). If `FALSE`, returns mutual information values. (default: `FALSE`)
+#'
+#' @return
+#' If `return_colnames = FALSE`, a named numeric vector of mutual information scores is returned (one for each column in `features`), sorted in descending order.
+#' The names of the vector correspond to the column names of `features`.
+#' If `return_colnames = TRUE`, only the ordered column names of `features` are returned.
+#'
+#' @examples
+#' data(iris)
+#' # Compute mutual information scores
+#' mutinfo(iris[1:4], iris[[5]])
+#'
+#' # Get column names ordered by mutual information with target column (most mutual info first)
+#' mutinfo(iris[1:4], iris[[5]], return_colnames = TRUE)
+#'
+#' @export
+mutinfo <- function(features, target, return_colnames = FALSE){
+  rlang::check_installed("infotheo", reason = "to order axes based on mutual information")
+
+  # Assertions & conversions
+  assertions::assert_dataframe(features)
+  if(is.factor(target)) { target <- as.character(target) }
+  assertions::assert_vector(target)
+
+  # Discretize as required for mutual information computations
+  discretized <- infotheo::discretize(features, disc = "equalfreq")
+
+  # Compute mutual information between each column in data and the target vector
+  mutual_info <- vapply(discretized, FUN = function(feature){
+    infotheo::mutinformation(X = feature, Y = target, method = "emp")
+  }, FUN.VALUE = numeric(1))
+
+  # mutual info should be a named vector of mutual informations between
+  # each feature in the features data.frame and the target vector
+  mutual_info <- sort(mutual_info, decreasing = TRUE)
+
+  if(return_colnames){
+    return(names(mutual_info))
+  }
+
+  return(mutual_info)
+}
+
+similarity_matrix_mutinfo <- function(data, normalize = TRUE){
+  mx <- infotheo::mutinformation(infotheo::discretize(data), method = "emp")
+
+  if(normalize){
+    mx <- uniminmax(mx)
+  }
+
+  return(mx)
+}
+
+dist_matrix_mutinfo <- function(data){
+  1-similarity_matrix_mutinfo(data, normalize = TRUE)
+}
+
+# Mutinfo based distance from Joe 1989 https://www.jstor.org/stable/2289859?seq=3
+dist_matrix_mutinfo2 <- function(data){
+  mx = similarity_matrix_mutinfo(data, normalize = FALSE)
+  1 - (1 - exp( -2 *mx )) ^.5
+}
 
 # Exported Function -------------------------------------------------------
 

@@ -20,17 +20,20 @@ BugReports: https://github.com/selkamand/gg1d/issues
 Imports: 
     assertions (>= 0.2.0),
     cli,
-    ggiraph,
+    ggiraph (>= 0.8.11),
     ggplot2,
     ggtext,
+    grDevices,
     patchwork (>= 1.3.0),
     rank (>= 0.1.1),
     rlang
 Suggests: 
     covr,
+    infotheo,
     knitr,
     rmarkdown,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    TSP
 Config/Needs/website: uwot, datarium, palmerpenguins
 Config/testthat/edition: 3
 Depends: 

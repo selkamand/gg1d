@@ -97,6 +97,40 @@ gg1d(
 )
 ```
 
+
+## Parallel Coordinate Plots
+
+For datasets with many observations and mostly numeric features, parallel coordinate plots may be more appropriate.
+
+```{r minibeans_class, fig.width = 7, fig.height = 5}
+ggparallel(
+ data = minibeans,
+ col_colour = "Class",
+ order_columns_by = "auto",
+ interactive = FALSE
+)
+```
+
+
+```{r minibeans_highlight, fig.width = 7, fig.height = 5}
+ ggparallel(
+   data = minibeans,
+   col_colour = "Class",
+   highlight = "DERMASON",
+   order_columns_by = "auto",
+   interactive = FALSE
+ )
+```
+
+```{r minibeans_noclass, fig.width = 7, fig.height = 5}
+ ggparallel(
+   data = minibeans,
+   order_columns_by = "auto",
+   interactive = FALSE
+ )
+```
+
+
 ## Community Contributions
 
 All types of contributions are encouraged and valued. See our [guide to

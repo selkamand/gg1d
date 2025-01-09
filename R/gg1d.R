@@ -64,7 +64,6 @@ utils::globalVariables(".data")
 #'   )
 #' )
 #'
-#' @importFrom ggplot2 ggplot aes geom_col geom_tile theme %+replace% element_blank element_text element_line
 #' @export
 #'
 gg1d <- function(

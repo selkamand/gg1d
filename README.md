@@ -108,6 +108,49 @@ gg1d(
 
 <img src="man/figures/README-customise_colours-1.png" width="100%" />
 
+## Parallel Coordinate Plots
+
+For datasets with many observations and mostly numeric features,
+parallel coordinate plots may be more appropriate.
+
+``` r
+ggparallel(
+ data = minibeans,
+ col_colour = "Class",
+ order_columns_by = "auto",
+ interactive = FALSE
+)
+#> ℹ Ordering columns based on mutual information with [Class]
+```
+
+<img src="man/figures/README-minibeans_class-1.png" width="100%" />
+
+``` r
+ ggparallel(
+   data = minibeans,
+   col_colour = "Class",
+   highlight = "DERMASON",
+   order_columns_by = "auto",
+   interactive = FALSE
+ )
+#> ℹ Ordering columns based on how well they differentiate 1 group from the rest [DERMASON] (based on mutual information)
+```
+
+<img src="man/figures/README-minibeans_highlight-1.png" width="100%" />
+
+``` r
+ ggparallel(
+   data = minibeans,
+   order_columns_by = "auto",
+   interactive = FALSE
+ )
+#> ℹ To add colour to plot set `col_colour` to one of: Class
+#> ℹ Ordering columns to minimise crossings
+#> ℹ Choosing axis order via repetitive nearest neighbour with two-opt refinement
+```
+
+<img src="man/figures/README-minibeans_noclass-1.png" width="100%" />
+
 ## Community Contributions
 
 All types of contributions are encouraged and valued. See our [guide to

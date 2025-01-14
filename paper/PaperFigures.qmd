@@ -8,6 +8,7 @@ editor: visual
 
 ```{r}
 library(gg1d)
+library(ggparallel)
 library(here)
 ```
 
@@ -99,7 +100,23 @@ figure1c
 ggsaves::ggisaves(figure1c, prefix = "figure1c", outfolder = here("paper/"), dpi = 300, title = "PalmerPenguins")
 ```
 
-## Figure 2
+## Figure 2 (new; parallel coordinate plots)
+
+```{r fig.height = 5, fig.width = 10}
+drybeans <- read.csv(system.file(package = "ggparallel", "dry_beans.csv"))
+
+pcptheme <- ggparallel_options(show_column_names = TRUE, show_bounds_labels = FALSE, show_points = TRUE, show_bounds_rect = FALSE, x_axis_text_angle = 90, x_axis_text_hjust = 0, fontsize_x_axis_text = 14)
+
+figure2pcpa <- ggparallel(drybeans, options = pcptheme, col_colour = "Class", order_observations_by = "original")
+
+
+figure2pcpb <- ggparallel(drybeans, options=pcptheme, col_colour = "Class", order_observations_by = "original", highlight = "DERMASON")
+
+ggsaves::ggsaves(figure2pcpa, prefix = "figure2pcpa", outfolder = here("paper"), height = 5, width = 12, dpi = 300)
+ggsaves::ggsaves(figure2pcpb, prefix = "figure2pcpb", outfolder = here("paper"), height = 5, width = 12, dpi = 300)
+```
+
+## Figure 3 (used to be figure2)
 
 ```{r, fig.height = 4, fig.width = 16}
 figure2a <- gg1d(
@@ -157,11 +174,9 @@ library(DataExplorer)
 create_report(lazy_birdwatcher)
 ```
 
-## Figure 3
-
-UMAP + Iris
+## Figure 4d
 
 ```{r}
-library(uwot)
-umap(iris[1:4])
+GGally::ggparcoord(gg1d::lazy_birdwatcher |> dplyr::select(Birdwatcher, Day, Magpies), missing = "min10", groupColumn = 1, columns = 2:3, scale = "uniminmax", showPoints = TRUE) + ggplot2::theme_bw()
+  
 ```

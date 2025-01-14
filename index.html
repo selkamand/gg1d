@@ -38,6 +38,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="articles/advanced_interactivity.html">Advanced Interactivity</a></li>
     <li><a class="dropdown-item" href="articles/gallery.html">Gallery</a></li>
+    <li><a class="dropdown-item" href="articles/pcp_axis_sorting.html">Parallel Coordinate Plots: Automaticaly Ordering Axes</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
@@ -125,6 +126,40 @@
 <span>  options <span class="op">=</span> <span class="fu"><a href="reference/gg1d_options.html">gg1d_options</a></span><span class="op">(</span>legend_nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-customise_colours-1.png" width="100%"></p>
+</div>
+<div class="section level2">
+<h2 id="parallel-coordinate-plots">Parallel Coordinate Plots<a class="anchor" aria-label="anchor" href="#parallel-coordinate-plots"></a>
+</h2>
+<p>For datasets with many observations and mostly numeric features, parallel coordinate plots may be more appropriate.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/ggparallel.html">ggparallel</a></span><span class="op">(</span></span>
+<span> data <span class="op">=</span> <span class="va">minibeans</span>,</span>
+<span> col_colour <span class="op">=</span> <span class="st">"Class"</span>,</span>
+<span> order_columns_by <span class="op">=</span> <span class="st">"auto"</span>,</span>
+<span> interactive <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; ℹ Ordering columns based on mutual information with [Class]</span></span></code></pre></div>
+<p><img src="reference/figures/README-minibeans_class-1.png" width="100%"></p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span> <span class="fu"><a href="reference/ggparallel.html">ggparallel</a></span><span class="op">(</span></span>
+<span>   data <span class="op">=</span> <span class="va">minibeans</span>,</span>
+<span>   col_colour <span class="op">=</span> <span class="st">"Class"</span>,</span>
+<span>   highlight <span class="op">=</span> <span class="st">"DERMASON"</span>,</span>
+<span>   order_columns_by <span class="op">=</span> <span class="st">"auto"</span>,</span>
+<span>   interactive <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span> <span class="op">)</span></span>
+<span><span class="co">#&gt; ℹ Ordering columns based on how well they differentiate 1 group from the rest [DERMASON] (based on mutual information)</span></span></code></pre></div>
+<p><img src="reference/figures/README-minibeans_highlight-1.png" width="100%"></p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span> <span class="fu"><a href="reference/ggparallel.html">ggparallel</a></span><span class="op">(</span></span>
+<span>   data <span class="op">=</span> <span class="va">minibeans</span>,</span>
+<span>   order_columns_by <span class="op">=</span> <span class="st">"auto"</span>,</span>
+<span>   interactive <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span> <span class="op">)</span></span>
+<span><span class="co">#&gt; ℹ To add colour to plot set `col_colour` to one of: Class</span></span>
+<span><span class="co">#&gt; ℹ Ordering columns to minimise crossings</span></span>
+<span><span class="co">#&gt; ℹ Choosing axis order via repetitive nearest neighbour with two-opt refinement</span></span></code></pre></div>
+<p><img src="reference/figures/README-minibeans_noclass-1.png" width="100%"></p>
 </div>
 <div class="section level2">
 <h2 id="community-contributions">Community Contributions<a class="anchor" aria-label="anchor" href="#community-contributions"></a>

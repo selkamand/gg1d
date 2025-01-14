@@ -6,8 +6,8 @@
            version="5.3.1"
            xsi:schemaLocation="http://www.crossref.org/schema/5.3.1 http://www.crossref.org/schemas/crossref5.3.1.xsd">
   <head>
-    <doi_batch_id>20241126032827-2607b632d35665555c5388aaebf208c905528def</doi_batch_id>
-    <timestamp>20241126032827</timestamp>
+    <doi_batch_id>20250114021423-906a8da6fe6a0cb5b441086b0f5ed8784ef55e3a</doi_batch_id>
+    <timestamp>20250114021423</timestamp>
     <depositor>
       <depositor_name>JOSS Admin</depositor_name>
       <email_address>admin@theoj.org</email_address>
@@ -37,8 +37,9 @@
       </journal_issue>
       <journal_article publication_type="full_text">
         <titles>
-          <title>gg1d: exploratory data analysis using tiled
-one-dimensional graphics</title>
+          <title>gg1d: visualizations for exploratory data analysis
+using tiled one-dimensional graphics and parallel coordinate
+plots</title>
         </titles>
         <contributors>
           <person_name sequence="first" contributor_role="author">
@@ -95,6 +96,75 @@ one-dimensional graphics</title>
           </collection>
         </doi_data>
         <citation_list>
+          <citation key="Stagg:2023">
+            <article_title>webR: The statistical language r compiled to
+WebAssembly via emscripten</article_title>
+            <author>Stagg</author>
+            <cYear>2023</cYear>
+            <unstructured_citation>Stagg, G. W., Lionel, H., &amp;
+Others. (2023). webR: The statistical language r compiled to WebAssembly
+via emscripten.
+https://docs.r-wasm.org/webr/latest/</unstructured_citation>
+          </citation>
+          <citation key="Vander:2023">
+            <article_title>Penguins go parallel: A grammar of graphics
+framework for generalized parallel coordinate plots</article_title>
+            <author>Susan VanderPlas</author>
+            <journal_title>Journal of Computational and Graphical
+Statistics</journal_title>
+            <issue>4</issue>
+            <volume>32</volume>
+            <doi>10.1080/10618600.2023.2195462</doi>
+            <cYear>2023</cYear>
+            <unstructured_citation>Susan VanderPlas, A. U., Yawei Ge,
+&amp; Hofmann, H. (2023). Penguins go parallel: A grammar of graphics
+framework for generalized parallel coordinate plots. Journal of
+Computational and Graphical Statistics, 32(4), 1572–1587.
+https://doi.org/10.1080/10618600.2023.2195462</unstructured_citation>
+          </citation>
+          <citation key="Chang:2024">
+            <volume_title>Shiny: Web application framework for
+r</volume_title>
+            <author>Chang</author>
+            <doi>https://doi.org/10.32614/CRAN.package.shiny</doi>
+            <cYear>2024</cYear>
+            <unstructured_citation>Chang, W., Cheng, J., Allaire, J.,
+Sievert, C., Schloerke, B., Xie, Y., Allen, J., McPherson, J., Dipert,
+A., &amp; Borges, B. (2024). Shiny: Web application framework for r.
+https://doi.org/https://doi.org/10.32614/CRAN.package.shiny</unstructured_citation>
+          </citation>
+          <citation key="Schloerke:2024:shinylive">
+            <volume_title>Shinylive: Run ’shiny’ applications in the
+browser</volume_title>
+            <author>Schloerke</author>
+            <cYear>2024</cYear>
+            <unstructured_citation>Schloerke, B., Chang, W., Stagg, G.,
+&amp; Aden-Buie, G. (2024). Shinylive: Run ’shiny’ applications in the
+browser.
+https://CRAN.R-project.org/package=shinylive</unstructured_citation>
+          </citation>
+          <citation key="Gu:2022">
+            <article_title>Complex heatmap visualization</article_title>
+            <author>Gu</author>
+            <journal_title>iMeta</journal_title>
+            <issue>3</issue>
+            <volume>1</volume>
+            <doi>10.1002/imt2.43</doi>
+            <cYear>2022</cYear>
+            <unstructured_citation>Gu, Z. (2022). Complex heatmap
+visualization. iMeta, 1(3), e43.
+https://doi.org/10.1002/imt2.43</unstructured_citation>
+          </citation>
+          <citation key="Cui:2024">
+            <volume_title>DataExplorer: Automate data exploration and
+treatment</volume_title>
+            <author>Cui</author>
+            <doi>https://doi.org/10.32614/CRAN.package.DataExplorer</doi>
+            <cYear>2024</cYear>
+            <unstructured_citation>Cui, B. (2024). DataExplorer:
+Automate data exploration and treatment.
+https://doi.org/https://doi.org/10.32614/CRAN.package.DataExplorer</unstructured_citation>
+          </citation>
           <citation key="gohel:2024">
             <article_title>Ggiraph: Make ’ggplot2’ graphics
 interactive</article_title>
@@ -104,6 +174,17 @@ interactive</article_title>
             <unstructured_citation>Gohel, D., &amp; Skintzos, P. (2024).
 Ggiraph: Make ’ggplot2’ graphics interactive.
 https://doi.org/10.32614/CRAN.package.ggiraph</unstructured_citation>
+          </citation>
+          <citation key="Waring:2022">
+            <volume_title>Skimr: Compact and flexible summaries of
+data</volume_title>
+            <author>Waring</author>
+            <doi>https://doi.org/10.32614/CRAN.package.skimr</doi>
+            <cYear>2022</cYear>
+            <unstructured_citation>Waring, E., Quinn, M., McNamara, A.,
+Arino de la Rubia, E., Zhu, H., &amp; Ellis, S. (2022). Skimr: Compact
+and flexible summaries of data.
+https://doi.org/https://doi.org/10.32614/CRAN.package.skimr</unstructured_citation>
           </citation>
           <citation key="pedersen:2024">
             <article_title>Patchwork: The composer of

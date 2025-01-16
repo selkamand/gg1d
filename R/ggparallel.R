@@ -286,7 +286,7 @@ ggparallel <- function(
     data = df_long,
     alpha = options$line_alpha,
     linetype = options$line_type,
-    hover_nearest = TRUE,
+    hover_nearest = FALSE,
     linewidth = if(!is.null(options$line_width)) options$line_width else NULL,
     aes(
       tooltip = .data[[col_id]], data_id = .data[[col_id]], group = .data[[col_id]]

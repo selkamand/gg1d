@@ -8,7 +8,7 @@
 #' @param legend_title_position Position of the legend title ("top", "bottom", "left", "right").
 #' @param legend_nrow Number of rows in the legend (number).
 #' @param legend_ncol Number of columns in the legend. If set, `legend_nrow` should be `NULL` (number).
-#' @param legend_key_size Size of the legend key symbols (number).
+#' @param legend_key_size Size of the legend key symbols. (number).
 #' @param beautify_text Beautify y-axis text and legend titles by capitalizing words and adding spaces (flag).
 #' @param fontsize_x_axis_text fontsize of the x-axis text describing column names (number)
 #' @param max_digits_bounds Number of digits to round the axis bounds label text to (number)
@@ -35,7 +35,7 @@ ggparallel_options <- function(
   legend_title_position = c("left", "top", "bottom",  "right"),
   legend_nrow = NULL,
   legend_ncol = NULL,
-  legend_key_size = 0.3,
+  legend_key_size = 1,
 
   # Text
   beautify_text = TRUE,

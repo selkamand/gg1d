@@ -320,6 +320,7 @@ ggparallel <- function(
     ggplot2::theme(
       legend.title = if(options$show_legend_titles) element_text(hjust = 0.5) else element_blank(),
       legend.position = options$legend_position,
+      legend.key.size = ggplot2::unit(options$legend_key_size, units = "lines"),
       axis.text.y = element_blank(),
       axis.title.y = element_blank(),
       panel.grid.major.y = element_blank(),

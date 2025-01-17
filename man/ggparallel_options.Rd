@@ -11,7 +11,7 @@ ggparallel_options(
   legend_title_position = c("left", "top", "bottom", "right"),
   legend_nrow = NULL,
   legend_ncol = NULL,
-  legend_key_size = 0.3,
+  legend_key_size = 1,
   beautify_text = TRUE,
   max_digits_bounds = 1,
   x_axis_text_angle = 90,
@@ -42,7 +42,7 @@ ggparallel_options(
 
 \item{legend_ncol}{Number of columns in the legend. If set, \code{legend_nrow} should be \code{NULL} (number).}
 
-\item{legend_key_size}{Size of the legend key symbols (number).}
+\item{legend_key_size}{Size of the legend key symbols. (number).}
 
 \item{beautify_text}{Beautify y-axis text and legend titles by capitalizing words and adding spaces (flag).}
 

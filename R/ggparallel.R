@@ -318,7 +318,7 @@ ggparallel <- function(
     ggplot2::scale_y_continuous(expand = c(0.2, 0)) +
     ggplot2::theme_minimal() +
     ggplot2::theme(
-      legend.title = element_text(hjust = 0.5),
+      legend.title = if(options$show_legend_titles) element_text(hjust = 0.5) else element_blank(),
       legend.position = options$legend_position,
       axis.text.y = element_blank(),
       axis.title.y = element_blank(),

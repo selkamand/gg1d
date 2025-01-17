@@ -16,6 +16,7 @@ ggparallel_options(
   max_digits_bounds = 1,
   x_axis_text_angle = 90,
   x_axis_text_hjust = 0,
+  x_axis_text_vjust = 0.5,
   fontsize_x_axis_text = 12,
   show_column_names = TRUE,
   show_points = FALSE,
@@ -51,6 +52,8 @@ ggparallel_options(
 \item{x_axis_text_angle}{Angle of the x axis text describing column names (number)}
 
 \item{x_axis_text_hjust}{Horizontal Justification of the x axis text describing column names (number)}
+
+\item{x_axis_text_vjust}{Vertical Justification of the x axis text describing column names (number)}
 
 \item{fontsize_x_axis_text}{fontsize of the x-axis text describing column names (number)}
 

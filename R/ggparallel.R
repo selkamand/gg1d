@@ -326,9 +326,12 @@ ggparallel <- function(
       panel.grid.major.y = element_blank(),
       panel.grid.minor.y = element_blank(),
       panel.grid.major.x = options$x_axis_gridlines,
-      axis.text.x = if (options$show_column_names) element_text(
+      axis.text.x.top = if (options$show_column_names) element_text(
         face = "bold", color = "black", size = options$fontsize_x_axis_text,
-        angle = options$x_axis_text_angle, hjust = options$x_axis_text_hjust)
+        angle = options$x_axis_text_angle,
+        hjust = options$x_axis_text_hjust,
+        vjust = options$x_axis_text_vjust
+        )
       else element_blank()
       )
 

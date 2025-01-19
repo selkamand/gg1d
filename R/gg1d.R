@@ -210,8 +210,8 @@ gg1d <- function(
 
     # If col_sort is not null
     if(!is.null(col_sort)){
-      mutinfo_vs_col_sort <- mutinfo(df_plottable_data[-which(plottable_cols == col_sort)], target = df_plottable_data[[col_sort]])
-      plottable_cols <- names(mutinfo_vs_col_sort)[seq_len(max_plottable_cols-1)]
+      mutinfo_vs_col_sort <- mutinfo(df_plottable_data[-which(plottable_cols %in% col_sort)], target = df_plottable_data[[col_sort[1]]])
+      plottable_cols <- names(mutinfo_vs_col_sort)[seq_len(max_plottable_cols-length(col_sort))]
       plottable_cols <- c(col_sort, plottable_cols)
       cli::cli_alert_warning("Autoplotting > {max_plottable_cols} fields by `gg1d` is not recommended (visualisation ends up very squished). Chossing the {max_plottable_cols}/{n_plottable_cols} plottable columns which maximise mutual information with `{col_sort}`. To show all plottable columns, set {.code limit_plots = FALSE}. Alternatively, manually choose which columns are plotted by setting `cols_to_plot`")
     }

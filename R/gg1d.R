@@ -441,11 +441,11 @@ gg1d <- function(
     gglist,
     ncol = 1,
     heights = relheights,
-    guides = if (options$legend_position %in% c("bottom", "top")) "collect" else NULL
+    guides = if (options$show_legend & options$legend_position %in% c("bottom", "top")) "collect" else NULL
   )
 
   if(options$legend_position %in% c("bottom", "top"))
-    ggpatch <- ggpatch & theme(legend.position = options$legend_position)
+    ggpatch <- ggpatch & theme(legend.position = if(options$show_legend) options$legend_position else "none")
 
   # Interactivity -----------------------------------------------------------
   if (interactive) {

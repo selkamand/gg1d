@@ -31,7 +31,7 @@ utils::globalVariables(".data")
 #' Options are `alphabetical` or `frequency`
 #' @param desc sort in descending order (flag)
 #' @param limit_plots throw an error when there are > \code{max_plottable_cols} in dataset (flag)
-#' @param max_plottable_cols maximum number of columns that can be plotted (default: 15) (number)
+#' @param max_plottable_cols maximum number of columns that can be plotted (default: 10) (number)
 #' @param cols_to_plot names of columns in \strong{data} that should be plotted. By default plots all valid columns (character)
 #' @param tooltip_column_suffix the suffix added to a column name that indicates column should be used as a tooltip (string)
 #' @param ignore_column_regex a regex string that, if matches a column name,  will cause that  column to be excluded from plotting (string). If NULL no regex check will be performed. (default: "_ignore$")
@@ -69,7 +69,7 @@ utils::globalVariables(".data")
 gg1d <- function(
     data, col_id = NULL, col_sort = NULL,
     order_matches_sort = TRUE,
-    maxlevels = 6,
+    maxlevels = 7,
     verbose = 2,
     drop_unused_id_levels = FALSE,
     interactive = TRUE,
@@ -78,7 +78,7 @@ gg1d <- function(
     sort_type = c("frequency", "alphabetical"),
     desc = TRUE,
     limit_plots = TRUE,
-    max_plottable_cols = 15,
+    max_plottable_cols = 10,
     cols_to_plot = NULL,
     tooltip_column_suffix = "_tooltip",
     ignore_column_regex = "_ignore$",
@@ -161,7 +161,7 @@ gg1d <- function(
     data <- data[order_hierarchical,]
     data[[col_id]] <- fct_inorder(data[[col_id]])
 
-    # Order columns based
+    # Order columns based on col_sort
     if(order_matches_sort) {
       data <- data[,c(col_sort, setdiff(colnames(data), col_sort))]
     }
@@ -206,11 +206,26 @@ gg1d <- function(
   # Make sure theres not too many plottable cols
   if (limit_plots && n_plottable_cols > max_plottable_cols) {
 
-    # Only consider the first {max_plottable_cols} columns plottable.
-    plottable_cols <- plottable_cols[seq_len(max_plottable_cols)]
+    df_plottable_data <- data[, plottable_cols, drop=FALSE]
+
+    # If col_sort is not null
+    if(!is.null(col_sort)){
+      mutinfo_vs_col_sort <- mutinfo(df_plottable_data[-which(plottable_cols == col_sort)], target = df_plottable_data[[col_sort]])
+      plottable_cols <- names(mutinfo_vs_col_sort)[seq_len(max_plottable_cols-1)]
+      plottable_cols <- c(col_sort, plottable_cols)
+      cli::cli_alert_warning("Autoplotting > {max_plottable_cols} fields by `gg1d` is not recommended (visualisation ends up very squished). Showing only {max_plottable_cols} plottable columns with the greatest mutual information with `{col_sort}`. To show all plottable columns, set {.code limit_plots = FALSE}. Alternatively, manually choose which columns are plotted by setting `cols_to_plot`")
+    }
+    else {
+      optimal_axis_order <- get_optimal_axis_order(data = df_plottable_data, metric = "mutinfo")
+      # Only consider the first {max_plottable_cols} columns plottable.
+      plottable_cols <- optimal_axis_order[seq_len(max_plottable_cols)]
+      col_sort <- plottable_cols[1]
+      cli::cli_alert_warning("Autoplotting > {max_plottable_cols} fields by `gg1d` is not recommended (visualisation ends up very squished). Showing only the first {max_plottable_cols} plottable columns (by appearance in dataset). To show all plottable columns, set {.code limit_plots = FALSE}. Alternatively, manually choose which columns are plotted by setting `cols_to_plot`")
+    }
+
+    # Apply New plottable columns
     df_col_info$plottable <- df_col_info$colnames %in% plottable_cols
-    #TODO: if adding a 'reason' for column dropping, explain 'plottable > max_plottable_cols' so dropped due to order of appearance in dataset'
-    cli::cli_alert_warning("Autoplotting > {max_plottable_cols} fields by `gg1d` is not recommended (visualisation ends up very squished). Showing only the first {max_plottable_cols} plottable columns (by appearance in dataset). To show all plottable columns, set {.code limit_plots = FALSE}. Alternatively, manually choose which columns are plotted by setting `cols_to_plot`")
+
   }
 
   # Make sure theres at least 1 plottable column

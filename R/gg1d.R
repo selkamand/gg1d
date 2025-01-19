@@ -219,6 +219,7 @@ gg1d <- function(
       coltype <- df_col_info[["coltype"]][i]
       coltooltip <- df_col_info[["coltooltip"]][i]
       ndistinct <- df_col_info[["ndistinct"]][i]
+      ndistinct_including_na <- df_col_info[["ndistinct_including_na"]][i]
       plottable <- df_col_info[["plottable"]][i]
       palette <- unlist(df_col_info[["palette"]][i])
 
@@ -290,8 +291,8 @@ gg1d <- function(
           ggplot2::guides(fill = ggplot2::guide_legend(
             title.position = options$legend_title_position,
             title = if (options$beautify_text) beautify(colname) else colname,
-            nrow = min(ndistinct, options$legend_nrow),
-            ncol = min(ndistinct, options$legend_ncol),
+            nrow = min(ndistinct_including_na, options$legend_nrow),
+            ncol = min(ndistinct_including_na, options$legend_ncol),
           )) +
           theme_categorical(
             show_legend_titles = options$show_legend_titles,
@@ -306,6 +307,7 @@ gg1d <- function(
           ggplot2::ylab(if (options$beautify_text) beautify(colname) else colname) +
           ggplot2::scale_fill_manual(values = palette, na.value = options$colours_missing) +
           ggplot2::scale_y_discrete(position = options$y_axis_position)
+        # if(colname == "sex") browser()
       }
       # Numeric Bar -------------------------------------------------------------------------
       else if (coltype == "numeric" && options$numeric_plot_type == "bar") {
@@ -467,8 +469,10 @@ column_info_table <- function(data, maxlevels = 6, col_id = NULL, cols_to_plot, 
     colnames = colnames(data),
     coltype = coltypes(data, col_id),
     coltooltip = coltooltip(data, tooltip_column_suffix),
-    ndistinct = colvalues(data)
+    ndistinct = colvalues(data),
+    anymissing = colmissingness(data)
   )
+  df_column_info[["ndistinct_including_na"]] <- df_column_info[["ndistinct"]] + df_column_info[["anymissing"]]
 
   # Warn if unknown file type in table
   if (c("invalid") %in% df_column_info[["coltype"]]) cli::cli_warn('The following columns will not be plotted due to invalid column types: {df_column_info$colnames[df_column_info$coltype=="invalid"]}')
@@ -551,8 +555,14 @@ coltypes <- function(data, col_id) {
 
 colvalues <- function(data) {
   vapply(data, FUN = function(vec) {
-    length(stats::na.omit(unique(vec)))
+    length(unique(stats::na.omit(vec)))
   }, FUN.VALUE = numeric(1))
+}
+
+colmissingness <- function(data) {
+  vapply(data, FUN = function(vec) {
+    anyNA(vec)
+  }, FUN.VALUE = logical(1))
 }
 
 choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colours_default, colours_default_logical) {

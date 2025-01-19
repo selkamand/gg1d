@@ -196,19 +196,25 @@ gg1d <- function(
 
   # Plot --------------------------------------------------------------------
   if (verbose) cli::cli_h3("Generating Plot")
-  plottable_cols <- sum(df_col_info$plottable == TRUE)
+  n_plottable_cols <- sum(df_col_info$plottable == TRUE)
+  plottable_cols <- df_col_info$colnames[df_col_info$plottable]
 
   if (verbose >= 1) {
-    cli::cli_alert_info("Found {.strong {plottable_cols}} plottable columns in {.strong data}")
+    cli::cli_alert_info("Found {.strong {n_plottable_cols}} plottable columns in {.strong data}")
   }
 
   # Make sure theres not too many plottable cols
-  if (limit_plots && plottable_cols > max_plottable_cols) {
-    cli::cli_abort("Autoplotting > {max_plottable_cols} fields by `gg1d` is not recommended (visualisation ends up very squished). If you're certain you want to proceed, set limit_plots = `FALSE`. Alternatively, use `cols_to_plot` to specify <={max_plottable_cols} columns within your dataset.")
+  if (limit_plots && n_plottable_cols > max_plottable_cols) {
+
+    # Only consider the first {max_plottable_cols} columns plottable.
+    plottable_cols <- plottable_cols[seq_len(max_plottable_cols)]
+    df_col_info$plottable <- df_col_info$colnames %in% plottable_cols
+    #TODO: if adding a 'reason' for column dropping, explain 'plottable > max_plottable_cols' so dropped due to order of appearance in dataset'
+    cli::cli_alert_warning("Autoplotting > {max_plottable_cols} fields by `gg1d` is not recommended (visualisation ends up very squished). Showing only the first {max_plottable_cols} plottable columns (by appearance in dataset). To show all plottable columns, set {.code limit_plots = FALSE}. Alternatively, manually choose which columns are plotted by setting `cols_to_plot`")
   }
 
   # Make sure theres at least 1 plottable column
-  if (plottable_cols == 0) {
+  if (n_plottable_cols == 0) {
     cli::cli_abort("No plottable columns found")
   }
 

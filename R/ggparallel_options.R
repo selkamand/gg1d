@@ -8,7 +8,7 @@
 #' @param legend_title_position Position of the legend title ("top", "bottom", "left", "right").
 #' @param legend_nrow Number of rows in the legend (number).
 #' @param legend_ncol Number of columns in the legend. If set, `legend_nrow` should be `NULL` (number).
-#' @param legend_key_size Size of the legend key symbols (number).
+#' @param legend_key_size Size of the legend key symbols. (number).
 #' @param beautify_text Beautify y-axis text and legend titles by capitalizing words and adding spaces (flag).
 #' @param fontsize_x_axis_text fontsize of the x-axis text describing column names (number)
 #' @param max_digits_bounds Number of digits to round the axis bounds label text to (number)
@@ -18,6 +18,7 @@
 #' @param x_axis_gridlines Customise look of x axis gridlines. Must be either a call to [ggplot2::element_line()] or [ggplot2::element_blank()].
 #' @param x_axis_text_angle Angle of the x axis text describing column names (number)
 #' @param x_axis_text_hjust Horizontal Justification of the x axis text describing column names (number)
+#' @param x_axis_text_vjust Vertical Justification of the x axis text describing column names (number)
 #' @param show_column_names Show column names as x axis text (flag)
 #' @param show_points Show points (flag)
 #' @param show_bounds_labels Show bounds (min and max value) of each feature with labels above / below the axes (flag)
@@ -35,13 +36,14 @@ ggparallel_options <- function(
   legend_title_position = c("left", "top", "bottom",  "right"),
   legend_nrow = NULL,
   legend_ncol = NULL,
-  legend_key_size = 0.3,
+  legend_key_size = 1,
 
   # Text
   beautify_text = TRUE,
   max_digits_bounds = 1,
   x_axis_text_angle = 90,
   x_axis_text_hjust = 0,
+  x_axis_text_vjust = 0.5,
   fontsize_x_axis_text = 12,
 
   # Show / hide text or labels
@@ -79,6 +81,7 @@ ggparallel_options <- function(
   assertions::assert_number(max_digits_bounds)
   assertions::assert_number(x_axis_text_angle)
   assertions::assert_number(x_axis_text_hjust)
+  assertions::assert_number(x_axis_text_vjust)
   assertions::assert_number(fontsize_x_axis_text)
 
   # Show/Hide Related
@@ -120,6 +123,7 @@ ggparallel_options <- function(
     max_digits_bounds = max_digits_bounds,
     x_axis_text_angle = x_axis_text_angle,
     x_axis_text_hjust = x_axis_text_hjust,
+    x_axis_text_vjust = x_axis_text_vjust,
     show_column_names = show_column_names,
     show_points = show_points,
     show_bounds_labels = show_bounds_labels,

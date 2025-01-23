@@ -31,7 +31,7 @@ utils::globalVariables(".data")
 #' Options are `alphabetical` or `frequency`
 #' @param desc sort in descending order (flag)
 #' @param limit_plots throw an error when there are > \code{max_plottable_cols} in dataset (flag)
-#' @param max_plottable_cols maximum number of columns that can be plotted (default: 15) (number)
+#' @param max_plottable_cols maximum number of columns that can be plotted (default: 10) (number)
 #' @param cols_to_plot names of columns in \strong{data} that should be plotted. By default plots all valid columns (character)
 #' @param tooltip_column_suffix the suffix added to a column name that indicates column should be used as a tooltip (string)
 #' @param ignore_column_regex a regex string that, if matches a column name,  will cause that  column to be excluded from plotting (string). If NULL no regex check will be performed. (default: "_ignore$")
@@ -69,7 +69,7 @@ utils::globalVariables(".data")
 gg1d <- function(
     data, col_id = NULL, col_sort = NULL,
     order_matches_sort = TRUE,
-    maxlevels = 6,
+    maxlevels = 7,
     verbose = 2,
     drop_unused_id_levels = FALSE,
     interactive = TRUE,
@@ -78,7 +78,7 @@ gg1d <- function(
     sort_type = c("frequency", "alphabetical"),
     desc = TRUE,
     limit_plots = TRUE,
-    max_plottable_cols = 15,
+    max_plottable_cols = 10,
     cols_to_plot = NULL,
     tooltip_column_suffix = "_tooltip",
     ignore_column_regex = "_ignore$",
@@ -161,7 +161,7 @@ gg1d <- function(
     data <- data[order_hierarchical,]
     data[[col_id]] <- fct_inorder(data[[col_id]])
 
-    # Order columns based
+    # Order columns based on col_sort
     if(order_matches_sort) {
       data <- data[,c(col_sort, setdiff(colnames(data), col_sort))]
     }
@@ -196,19 +196,40 @@ gg1d <- function(
 
   # Plot --------------------------------------------------------------------
   if (verbose) cli::cli_h3("Generating Plot")
-  plottable_cols <- sum(df_col_info$plottable == TRUE)
+  n_plottable_cols <- sum(df_col_info$plottable == TRUE)
+  plottable_cols <- df_col_info$colnames[df_col_info$plottable]
 
   if (verbose >= 1) {
-    cli::cli_alert_info("Found {.strong {plottable_cols}} plottable columns in {.strong data}")
+    cli::cli_alert_info("Found {.strong {n_plottable_cols}} plottable columns in {.strong data}")
   }
 
   # Make sure theres not too many plottable cols
-  if (limit_plots && plottable_cols > max_plottable_cols) {
-    cli::cli_abort("Autoplotting > {max_plottable_cols} fields by `gg1d` is not recommended (visualisation ends up very squished). If you're certain you want to proceed, set limit_plots = `FALSE`. Alternatively, use `cols_to_plot` to specify <={max_plottable_cols} columns within your dataset.")
+  if (limit_plots && n_plottable_cols > max_plottable_cols) {
+
+    df_plottable_data <- data[, plottable_cols, drop=FALSE]
+
+    # If col_sort is not null
+    if(!is.null(col_sort)){
+      mutinfo_vs_col_sort <- mutinfo(df_plottable_data[-which(plottable_cols %in% col_sort)], target = df_plottable_data[[col_sort[1]]])
+      plottable_cols <- names(mutinfo_vs_col_sort)[seq_len(max_plottable_cols-length(col_sort))]
+      plottable_cols <- c(col_sort, plottable_cols)
+      cli::cli_alert_warning("Autoplotting > {max_plottable_cols} fields by `gg1d` is not recommended (visualisation ends up very squished). Chossing the {max_plottable_cols}/{n_plottable_cols} plottable columns which maximise mutual information with `{col_sort}`. To show all plottable columns, set {.code limit_plots = FALSE}. Alternatively, manually choose which columns are plotted by setting `cols_to_plot`")
+    }
+    else {
+      optimal_axis_order <- get_optimal_axis_order(data = df_plottable_data, metric = "mutinfo", verbose = FALSE)
+      # Only consider the first {max_plottable_cols} columns plottable.
+      plottable_cols <- optimal_axis_order[seq_len(max_plottable_cols)]
+      col_sort <- plottable_cols[1]
+      cli::cli_alert_warning("Autoplotting > {max_plottable_cols} fields by `gg1d` is not recommended (visualisation ends up very squished). Choosing {max_plottable_cols}/{n_plottable_cols} plottable columns to maximise total mutual information. To show all plottable columns, set {.code limit_plots = FALSE}. Alternatively, manually choose which columns are plotted by setting `cols_to_plot`")
+    }
+
+    # Apply New plottable columns
+    df_col_info$plottable <- df_col_info$colnames %in% plottable_cols
+
   }
 
   # Make sure theres at least 1 plottable column
-  if (plottable_cols == 0) {
+  if (n_plottable_cols == 0) {
     cli::cli_abort("No plottable columns found")
   }
 
@@ -219,6 +240,7 @@ gg1d <- function(
       coltype <- df_col_info[["coltype"]][i]
       coltooltip <- df_col_info[["coltooltip"]][i]
       ndistinct <- df_col_info[["ndistinct"]][i]
+      ndistinct_including_na <- df_col_info[["ndistinct_including_na"]][i]
       plottable <- df_col_info[["plottable"]][i]
       palette <- unlist(df_col_info[["palette"]][i])
 
@@ -290,8 +312,8 @@ gg1d <- function(
           ggplot2::guides(fill = ggplot2::guide_legend(
             title.position = options$legend_title_position,
             title = if (options$beautify_text) beautify(colname) else colname,
-            nrow = min(ndistinct, options$legend_nrow),
-            ncol = min(ndistinct, options$legend_ncol),
+            nrow = min(ndistinct_including_na, options$legend_nrow),
+            ncol = min(ndistinct_including_na, options$legend_ncol),
           )) +
           theme_categorical(
             show_legend_titles = options$show_legend_titles,
@@ -306,6 +328,7 @@ gg1d <- function(
           ggplot2::ylab(if (options$beautify_text) beautify(colname) else colname) +
           ggplot2::scale_fill_manual(values = palette, na.value = options$colours_missing) +
           ggplot2::scale_y_discrete(position = options$y_axis_position)
+        # if(colname == "sex") browser()
       }
       # Numeric Bar -------------------------------------------------------------------------
       else if (coltype == "numeric" && options$numeric_plot_type == "bar") {
@@ -418,11 +441,11 @@ gg1d <- function(
     gglist,
     ncol = 1,
     heights = relheights,
-    guides = if (options$legend_position %in% c("bottom", "top")) "collect" else NULL
+    guides = if (options$show_legend & options$legend_position %in% c("bottom", "top")) "collect" else NULL
   )
 
   if(options$legend_position %in% c("bottom", "top"))
-    ggpatch <- ggpatch & theme(legend.position = options$legend_position)
+    ggpatch <- ggpatch & theme(legend.position = if(options$show_legend) options$legend_position else "none")
 
   # Interactivity -----------------------------------------------------------
   if (interactive) {
@@ -467,8 +490,10 @@ column_info_table <- function(data, maxlevels = 6, col_id = NULL, cols_to_plot, 
     colnames = colnames(data),
     coltype = coltypes(data, col_id),
     coltooltip = coltooltip(data, tooltip_column_suffix),
-    ndistinct = colvalues(data)
+    ndistinct = colvalues(data),
+    anymissing = colmissingness(data)
   )
+  df_column_info[["ndistinct_including_na"]] <- df_column_info[["ndistinct"]] + df_column_info[["anymissing"]]
 
   # Warn if unknown file type in table
   if (c("invalid") %in% df_column_info[["coltype"]]) cli::cli_warn('The following columns will not be plotted due to invalid column types: {df_column_info$colnames[df_column_info$coltype=="invalid"]}')
@@ -551,8 +576,14 @@ coltypes <- function(data, col_id) {
 
 colvalues <- function(data) {
   vapply(data, FUN = function(vec) {
-    length(stats::na.omit(unique(vec)))
+    length(unique(stats::na.omit(vec)))
   }, FUN.VALUE = numeric(1))
+}
+
+colmissingness <- function(data) {
+  vapply(data, FUN = function(vec) {
+    anyNA(vec)
+  }, FUN.VALUE = logical(1))
 }
 
 choose_colours <- function(data, palettes, plottable, ndistinct, coltype, colours_default, colours_default_logical) {

@@ -93,7 +93,7 @@ test_that("gg1d limits the number of plottable columns", {
   for (i in 1:20) {
     data[[paste0("Col", i)]] <- rnorm(10)
   }
-  expect_error(
+  expect_message(
     gg1d(data = data, max_plottable_cols = 10, verbose = FALSE),
     "Autoplotting > 10 fields by `gg1d` is not recommended"
   )

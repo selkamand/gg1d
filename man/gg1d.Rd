@@ -9,7 +9,7 @@ gg1d(
   col_id = NULL,
   col_sort = NULL,
   order_matches_sort = TRUE,
-  maxlevels = 6,
+  maxlevels = 7,
   verbose = 2,
   drop_unused_id_levels = FALSE,
   interactive = TRUE,
@@ -18,7 +18,7 @@ gg1d(
   sort_type = c("frequency", "alphabetical"),
   desc = TRUE,
   limit_plots = TRUE,
-  max_plottable_cols = 15,
+  max_plottable_cols = 10,
   cols_to_plot = NULL,
   tooltip_column_suffix = "_tooltip",
   ignore_column_regex = "_ignore$",
@@ -65,7 +65,7 @@ Options are \code{alphabetical} or \code{frequency}}
 
 \item{limit_plots}{throw an error when there are > \code{max_plottable_cols} in dataset (flag)}
 
-\item{max_plottable_cols}{maximum number of columns that can be plotted (default: 15) (number)}
+\item{max_plottable_cols}{maximum number of columns that can be plotted (default: 10) (number)}
 
 \item{cols_to_plot}{names of columns in \strong{data} that should be plotted. By default plots all valid columns (character)}
 

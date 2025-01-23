@@ -120,7 +120,8 @@ count_edge_crossings <- function(l, r) {
 #'
 #' @keywords internal
 count_all_edge_crossings <- function(data, approximate = FALSE, subsample_prop = 0.4, recalibrate = FALSE) {
-  assertions::assert(nrow(data) == 2, msg = "Dataset must contain at least 2 rows to count edge crossings")
+
+  assertions::assert(nrow(data) > 2, msg = "Dataset must contain at least 2 rows to count edge crossings")
 
   # Restrict to numeric columns only
   data <- data[, vapply(data, is.numeric, logical(1))]
@@ -177,6 +178,7 @@ count_all_edge_crossings <- function(data, approximate = FALSE, subsample_prop =
 }
 
 dist_matrix_edge_crossings <- function(data, approximate = FALSE, subsample = 0.4, recalibrate = FALSE){
+
   # Compute crossings for all numeric column pairs
   df_crossings <- count_all_edge_crossings(
     data,

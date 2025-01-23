@@ -103,17 +103,17 @@ ggsaves::ggisaves(figure1c, prefix = "figure1c", outfolder = here("paper/"), dpi
 ## Figure 2 (new; parallel coordinate plots)
 
 ```{r fig.height = 5, fig.width = 10}
-drybeans <- read.csv(system.file(package = "ggparallel", "dry_beans.csv"))
+drybeans <- read.csv(system.file(package = "gg1d", "dry_beans.csv"))
 
-pcptheme <- ggparallel_options(show_column_names = TRUE, show_bounds_labels = FALSE, show_points = TRUE, show_bounds_rect = FALSE, x_axis_text_angle = 90, x_axis_text_hjust = 0, fontsize_x_axis_text = 14)
+pcptheme <- ggparallel_options(show_column_names = TRUE, show_bounds_labels = FALSE, show_points = TRUE, show_bounds_rect = FALSE, x_axis_text_angle = 90, x_axis_text_hjust = 0, fontsize_x_axis_text = 14, x_axis_gridlines = element_line(colour = "grey80"), show_legend_titles = TRUE)
 
-figure2pcpa <- ggparallel(drybeans, options = pcptheme, col_colour = "Class", order_observations_by = "original")
+figure2pcpa <- ggparallel(drybeans, options = pcptheme, col_colour = "Class", order_observations_by = "original", interactive = FALSE)
 
 
-figure2pcpb <- ggparallel(drybeans, options=pcptheme, col_colour = "Class", order_observations_by = "original", highlight = "DERMASON")
+figure2pcpb <- ggparallel(drybeans, options=pcptheme, col_colour = "Class", order_observations_by = "original", highlight = "DERMASON", interactive = FALSE)
 
-ggsaves::ggsaves(figure2pcpa, prefix = "figure2pcpa", outfolder = here("paper"), height = 5, width = 12, dpi = 300)
-ggsaves::ggsaves(figure2pcpb, prefix = "figure2pcpb", outfolder = here("paper"), height = 5, width = 12, dpi = 300)
+ggsaves::ggsaves(figure2pcpa, prefix = "figure2pcpa", outfolder = here("paper"), height = 5, width = 10, dpi = 300)
+ggsaves::ggsaves(figure2pcpb, prefix = "figure2pcpb", outfolder = here("paper"), height = 5, width = 10, dpi = 300)
 ```
 
 ## Figure 3 (used to be figure2)

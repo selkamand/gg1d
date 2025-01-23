@@ -131,6 +131,8 @@ ggparallel <- function(
   categorical_column_names <- colnames(data)[column_types == "categorical"]
   data <- data[,c(numeric_column_names ,col_id, col_colour)]
 
+  assertions::assert_length_greater_than(numeric_column_names, length = 1, msg = "Parallel Coordinate Plots can only be drawn if dataset has >= 2 numeric features. Your dataset has {length(numeric_column_names)}. A gg1d tileplot may be more appropriate.")
+
   if(verbose & is.null(col_colour) & length(categorical_column_names) > 0){
     cli::cli_alert_info("To add colour to plot set {.arg col_colour} to one of: {categorical_column_names}")
   }
@@ -286,7 +288,7 @@ ggparallel <- function(
     data = df_long,
     alpha = options$line_alpha,
     linetype = options$line_type,
-    hover_nearest = TRUE,
+    hover_nearest = FALSE,
     linewidth = if(!is.null(options$line_width)) options$line_width else NULL,
     aes(
       tooltip = .data[[col_id]], data_id = .data[[col_id]], group = .data[[col_id]]
@@ -318,16 +320,20 @@ ggparallel <- function(
     ggplot2::scale_y_continuous(expand = c(0.2, 0)) +
     ggplot2::theme_minimal() +
     ggplot2::theme(
-      legend.title = element_text(hjust = 0.5),
+      legend.title = if(options$show_legend_titles) element_text(hjust = 0.5) else element_blank(),
       legend.position = options$legend_position,
+      legend.key.size = ggplot2::unit(options$legend_key_size, units = "lines"),
       axis.text.y = element_blank(),
       axis.title.y = element_blank(),
       panel.grid.major.y = element_blank(),
       panel.grid.minor.y = element_blank(),
       panel.grid.major.x = options$x_axis_gridlines,
-      axis.text.x = if (options$show_column_names) element_text(
+      axis.text.x.top = if (options$show_column_names) element_text(
         face = "bold", color = "black", size = options$fontsize_x_axis_text,
-        angle = options$x_axis_text_angle, hjust = options$x_axis_text_hjust)
+        angle = options$x_axis_text_angle,
+        hjust = options$x_axis_text_hjust,
+        vjust = options$x_axis_text_vjust
+        )
       else element_blank()
       )
 

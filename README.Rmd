@@ -28,9 +28,12 @@ knitr::opts_chunk$set(
 [![Codecov test coverage](https://codecov.io/gh/selkamand/gg1d/graph/badge.svg)](https://app.codecov.io/gh/selkamand/gg1d)
 <!-- badges: end -->
 
+> [!WARNING]  
+> We strongly recommend that you migrate to the [ggEDA](https://github.com/CCICB/ggEDA) package, which provides a richer feature set, ongoing maintenance, and enhanced performance. The gg1d package is no longer under active development and will only receive essential bug-fixes.
+
 Effortlessly visualize all columns in a data frame with vertically aligned plots and automatic plot selection based on variable type. Plots are fully interactive, and custom tooltips can be added.
 
-A graphical user interface to all gg1d visualisations is available at https://selkamand.github.io/EDA/
+A graphical user interface to all gg1d visualisations is available at https://CCICB.github.io/featurepeeker/
 
 **Why 1 dimensional plots?**
 

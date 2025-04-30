@@ -11,7 +11,7 @@ status](https://www.r-pkg.org/badges/version/gg1d)](https://CRAN.R-project.org/p
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![Codecov test
-coverage](https://codecov.io/gh/selkamand/gg1d/branch/main/graph/badge.svg)](https://app.codecov.io/gh/selkamand/gg1d?branch=main)
+coverage](https://codecov.io/gh/selkamand/gg1d/graph/badge.svg)](https://app.codecov.io/gh/selkamand/gg1d)
 ![GitHub Issues or Pull
 Requests](https://img.shields.io/github/issues-closed/selkamand/gg1d)
 [![code
@@ -19,9 +19,6 @@ size](https://img.shields.io/github/languages/code-size/selkamand/gg1d.svg)](htt
 ![GitHub last
 commit](https://img.shields.io/github/last-commit/selkamand/gg1d)
 ![r-universe](https://selkamand.r-universe.dev/badges/gg1d)
-
-[![Codecov test
-coverage](https://codecov.io/gh/selkamand/gg1d/graph/badge.svg)](https://app.codecov.io/gh/selkamand/gg1d)
 <!-- badges: end -->
 
 > \[!WARNING\]  

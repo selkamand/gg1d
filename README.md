@@ -18,6 +18,8 @@ Requests](https://img.shields.io/github/issues-closed/selkamand/gg1d)
 size](https://img.shields.io/github/languages/code-size/selkamand/gg1d.svg)](https://github.com/selkamand/gg1d)
 ![GitHub last
 commit](https://img.shields.io/github/last-commit/selkamand/gg1d)
+![r-universe](https://selkamand.r-universe.dev/badges/gg1d)
+
 <!-- badges: end -->
 
 Effortlessly visualize all columns in a data frame with vertically
@@ -58,6 +60,12 @@ if (!require("remotes"))
     install.packages("remotes")
 
 remotes::install_github("selkamand/gg1d")
+```
+
+Or from R-universe with:
+
+``` r
+install.packages("gg1d", repos = "https://ropensci.r-universe.dev")
 ```
 
 ## Quick Start

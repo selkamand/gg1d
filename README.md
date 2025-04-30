@@ -20,6 +20,8 @@ size](https://img.shields.io/github/languages/code-size/selkamand/gg1d.svg)](htt
 commit](https://img.shields.io/github/last-commit/selkamand/gg1d)
 ![r-universe](https://selkamand.r-universe.dev/badges/gg1d)
 
+[![Codecov test
+coverage](https://codecov.io/gh/selkamand/gg1d/graph/badge.svg)](https://app.codecov.io/gh/selkamand/gg1d)
 <!-- badges: end -->
 
 Effortlessly visualize all columns in a data frame with vertically

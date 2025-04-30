@@ -63,6 +63,7 @@
 </div>
 <!-- badges: start -->
 
+<p><a href="https://app.codecov.io/gh/selkamand/gg1d" class="external-link"><img src="https://codecov.io/gh/selkamand/gg1d/graph/badge.svg" alt="Codecov test coverage"></a> <!-- badges: end --></p>
 <p>Effortlessly visualize all columns in a data frame with vertically aligned plots and automatic plot selection based on variable type. Plots are fully interactive, and custom tooltips can be added.</p>
 <p>A graphical user interface to all gg1d visualisations is available at <a href="https://selkamand.github.io/EDA/" class="external-link uri">https://selkamand.github.io/EDA/</a></p>
 <p><strong>Why 1 dimensional plots?</strong></p>
@@ -82,13 +83,16 @@
 <span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"selkamand/gg1d"</span><span class="op">)</span></span></code></pre></div>
+<p>Or from R-universe with:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"gg1d"</span>, repos <span class="op">=</span> <span class="st">"https://ropensci.r-universe.dev"</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="quick-start">Quick Start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
 </h2>
 <p>For examples of interactive gg1d plots see the <a href="https://selkamand.github.io/gg1d/articles/gallery.html">gg1d gallery</a></p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Load library</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/selkamand/gg1d" class="external-link">gg1d</a></span><span class="op">)</span></span>
 <span></span>
@@ -111,7 +115,7 @@
 <h2 id="customise-colours">Customise Colours<a class="anchor" aria-label="anchor" href="#customise-colours"></a>
 </h2>
 <p>Customise colours by supplying a named list to the <code>palettes</code> argument</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/gg1d.html">gg1d</a></span><span class="op">(</span></span>
 <span>  <span class="va">df</span>,</span>
 <span>  col_id <span class="op">=</span> <span class="st">"ID"</span>,</span>
@@ -131,7 +135,7 @@
 <h2 id="parallel-coordinate-plots">Parallel Coordinate Plots<a class="anchor" aria-label="anchor" href="#parallel-coordinate-plots"></a>
 </h2>
 <p>For datasets with many observations and mostly numeric features, parallel coordinate plots may be more appropriate.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/ggparallel.html">ggparallel</a></span><span class="op">(</span></span>
 <span> data <span class="op">=</span> <span class="va">minibeans</span>,</span>
 <span> col_colour <span class="op">=</span> <span class="st">"Class"</span>,</span>
@@ -140,7 +144,7 @@
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; ℹ Ordering columns based on mutual information with [Class]</span></span></code></pre></div>
 <p><img src="reference/figures/README-minibeans_class-1.png" width="100%"></p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span> <span class="fu"><a href="reference/ggparallel.html">ggparallel</a></span><span class="op">(</span></span>
 <span>   data <span class="op">=</span> <span class="va">minibeans</span>,</span>
 <span>   col_colour <span class="op">=</span> <span class="st">"Class"</span>,</span>
@@ -150,7 +154,7 @@
 <span> <span class="op">)</span></span>
 <span><span class="co">#&gt; ℹ Ordering columns based on how well they differentiate 1 group from the rest [DERMASON] (based on mutual information)</span></span></code></pre></div>
 <p><img src="reference/figures/README-minibeans_highlight-1.png" width="100%"></p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span> <span class="fu"><a href="reference/ggparallel.html">ggparallel</a></span><span class="op">(</span></span>
 <span>   data <span class="op">=</span> <span class="va">minibeans</span>,</span>
 <span>   order_columns_by <span class="op">=</span> <span class="st">"auto"</span>,</span>
@@ -201,7 +205,7 @@
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Sam El-Kamand <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0003-2270-8088" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Sam El-Kamand <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0003-2270-8088" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
 <li><a href="authors.html">More about authors...</a></li>
 </ul>
 </div>
@@ -226,7 +230,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
 </div>
 
     </footer>

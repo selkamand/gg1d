@@ -1,11 +1,11 @@
 pandoc: 3.1.11
-pkgdown: 2.1.1
+pkgdown: 2.1.2
 pkgdown_sha: ~
 articles:
   articles/advanced_interactivity: advanced_interactivity.html
   articles/gallery: gallery.html
   articles/pcp_axis_sorting: pcp_axis_sorting.html
-last_built: 2025-01-23T05:46Z
+last_built: 2025-04-30T01:35Z
 urls:
   reference: https://selkamand.github.io/gg1d/reference
   article: https://selkamand.github.io/gg1d/articles
